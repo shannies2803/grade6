@@ -646,6 +646,17 @@
     .ws-key { font-size: 11.5px; padding: 8px 12px; }
     .pp-sec { font-size: 15px; }
   }
+
+  .ref-sec { margin: 18px 0; break-inside: auto; }
+  .ref-sec h3 { margin: 0 0 6px; } .ref-sec h4 { margin: 12px 0 4px; }
+  .ref-grid { display: grid; gap: 8px 12px; } .ref-grid.g2 { grid-template-columns: repeat(2, 1fr); } .ref-grid.g3 { grid-template-columns: repeat(3, 1fr); } .ref-grid.g4 { grid-template-columns: repeat(4, 1fr); } .ref-grid.g5 { grid-template-columns: repeat(5, 1fr); }
+  .ref-grid figure { margin: 0; text-align: center; break-inside: avoid; } .ref-grid figcaption { font-size: 13px; color: var(--muted, #555); }
+  .ref-grid .stave svg { max-width: 100%; height: auto; }
+  .ref-t { border-collapse: collapse; width: 100%; font-size: 14px; margin: 6px 0; } .ref-t th, .ref-t td { border: 1px solid var(--line, #ccc); padding: 4px 8px; text-align: left; vertical-align: middle; } .ref-t th { background: var(--sunk, #f2f2f2); }
+  .ref-t .stave { margin: 0; } .ref-t .stave svg { max-height: 54px; width: auto; }
+  .ref-terms { columns: 2; column-gap: 24px; font-size: 13.5px; } .ref-terms span { display: block; break-inside: avoid; margin: 2px 0; }
+  @media (max-width: 640px) { .ref-grid.g4, .ref-grid.g5 { grid-template-columns: repeat(2, 1fr); } .ref-grid.g3 { grid-template-columns: repeat(2, 1fr); } .ref-terms { columns: 1; } }
+  @media print { .ref-sec h3 { font-size: 15px; } .ref-grid .stave svg { max-height: 120px; } .ref-grid .stave svg[data-cols] { max-height: 210px; } }
 </style>
 
 <div class="shell">
@@ -1158,7 +1169,7 @@ const Eng = (function(){
 })();
 /* ---------- Plan data: ABRSM Grade 6 music theory ---------- */
 const S = [
- ["Bridge",5,"harmony","Check-up: what Grade 5 left behind","No new teaching. The check-up in Philip's corner covers Grade 5 chords, intervals, keys, transposition and terms, plus a first look at Grade 6 questions.|Grade 6 is a different kind of exam: 3 hours on paper, out of 100 (pass 66, merit 80, distinction 90). Half of it is writing music: harmonising a melody, realising a figured bass and composing a melody. The other half is questions on printed scores.","Look at a Grade 6 question together (the lesson pack has one) and talk about what it asks.","The 24-question check-up in Philip's corner.","Name that chord: you play I, IV or V on the piano; he names it.","The check-up is done and the Mastery tracker is set. Anything red gets an extra look in the next days."],
+ ["Bridge",5,"harmony","Check-up: what Grade 5 left behind","No new teaching. The check-up in Philip's corner covers Grade 5 chords, intervals, keys, transposition and terms, plus a first look at Grade 6 questions.|Grade 6 is a different kind of exam: 3 hours on paper, out of 100 (pass 66, merit 80, distinction 90). Half of it is writing music: harmonising a melody, realising a figured bass and composing a melody. The other half is questions on printed scores.|For looking things up, the Grade 6 reference book (Papers list) has the figures, chords of a key, progressions, the part-writing checklist, notes outside the chord, related keys, devices and the orchestra.","Look at a Grade 6 question together (the lesson pack has one) and talk about what it asks.","The 24-question check-up in Philip's corner.","Name that chord: you play I, IV or V on the piano; he names it.","The check-up is done and the Mastery tracker is set. Anything red gets an extra look in the next days."],
  ["Bridge",5,"chords6","Triads on every note: Roman numerals in major and minor","A triad is three notes a 3rd apart, built on any note of the scale. Its Roman numeral says which note: I on the tonic, II on the supertonic, up to VII.|In a major key: I, IV and V are major; II, III and VI are minor; VII is diminished.|In a minor key we use the harmonic minor, so V is major (raised leading note) and VII is diminished. II is diminished too, which is why it's almost always used as IIb. Avoid III in minor.|The three most important chords are I, IV and V. II and VI are their close relatives: II often replaces IV, and VI often replaces I.","Write the triads I to VII in D major and in B minor, and say whether each is major, minor or diminished.|Play each one on the piano and listen to its colour.","Write triads I, II, IV, V and VI in three keys from the lesson pack.","Chord colours: you play a triad; he says major, minor or diminished.","He can build and name any triad in a major or minor key, with the right accidentals in minor."],
  ["Bridge",5,"chords6","Inversions and figured bass: 5/3, 6/3 and 6/4","Root position: the root is in the bass (a). First inversion: the 3rd is in the bass (b). Second inversion: the 5th is in the bass (c).|Figured bass counts intervals up from the BASS note, not from the root. Root position is 5/3 (usually left blank). First inversion is 6/3 (written just 6). Second inversion is 6/4.|An accidental in the figures changes that note. An accidental on its own (♯ or ♮) means the 3rd above the bass: in minor keys, V needs it for the raised leading note.|To read a figure: start on the bass note, count up the intervals shown, using the key signature unless an accidental says otherwise.","Take C–E–G and write it as a, b and c, with the figures under each bass note.|Read three figured bass notes from the lesson pack and build the chords.","Name 8 chords with Roman numeral and inversion letter (for example IVb), and write their figures.","Figure race: you call out a bass note and a figure; he plays or writes the chord first.","He names root position and inversions quickly and can turn figures into notes in any key up to four sharps or flats."],
  ["Bridge",5,"chords6","Review: chords and figures (Days 2–3)","Go back over Days 2–3. Quick quiz: triads in major and minor, inversions, figures.|Any weak spot from the check-up gets five extra minutes here.","Do the 'together' questions in the lesson pack.","Today's practice in Philip's corner.","Name that chord again, now with inversions.","8 out of 10 or better on chords and figures."],
@@ -1182,7 +1193,7 @@ const S = [
  ["Melody",5,"nonchord","Appoggiaturas, suspensions and anticipations","An appoggiatura falls ON the beat: a clash, often approached by a leap, that resolves by step to the chord note.|A suspension holds a note over from the previous chord (the preparation), clashes on the beat (the suspension) and then falls by step (the resolution). Common ones: 4–3, 7–6 and 9–8.|An anticipation sounds a note of the next chord early, just before the chord changes.","Find each kind in the lesson pack examples and label them.","Passing notes and more game.","Clash or not? You play a melody note over a chord; he says if it belongs.","He tells all six kinds of note apart."],
  ["Melody",5,"modul","Modulation: related keys and how music changes key","Most melodies in the exam modulate: they move to a related key and back.|Closely related keys: the dominant, the subdominant, the relative, and their relatives. From C major: G major, F major, A minor, E minor and D minor.|A modulation is shown by a new accidental: usually the new key's leading note. In C major, an F♯ suggests G major; a G♯ suggests A minor.|A pivot chord belongs to both keys and links them: in C to G, A minor is VI in C and II in G.|To harmonise a modulating melody: spot the new accidental, choose a pivot chord (a chord in both keys) just before it, then name the chords after it in the new key, ending V–I there. From today some Chords for a melody questions do this.","List the related keys of three keys.|Find where two melodies modulate, and to which key.","Keys and modulation game.","Key change spotter: point to the note that shows the new key.","He names related keys instantly and spots modulations from their accidentals."],
  ["Melody",5,"harm","Review: harmonising melodies (Days 18–23)","Go back over Days 18–23: chords for a melody, cadences, bass lines, decorations and modulation.","Harmonise one melody together, start to finish, using the lesson pack.","Today's practice.","Harmonise a melody: best of three.","He harmonises a melody with a correct cadence and no wrong chords."],
- ["Compose",5,"terms6","Melody writing 1: shape, phrases and answers","Exam question 3: continue a given opening to make a melody of about 8 bars for an instrument (you choose from a few), with performance directions.|Structure: two 4-bar phrases. The first ends with an imperfect cadence (or in a new key); the second answers and ends on the tonic.|Use the opening's rhythm and shape again: repeat it, put it in sequence (the same shape higher or lower), or change it a little.|Give the melody a high point (climax) about two-thirds of the way through, and end on the tonic on a strong beat.","Look at an opening from the Compose game and plan the 8 bars together: where are the cadences, where is the climax?","Write a melody from an opening in the Compose game, on paper.","Question and answer: you sing a 2-bar question; he sings an answer that ends on the tonic.","His melody has two clear phrases, reuses the opening's ideas and ends on the tonic."],
+ ["Compose",5,"terms6","Melody writing 1: shape, phrases and answers","Exam question 3: continue a given opening to make a melody of about 8 bars for an instrument (you choose from a few), with performance directions.|Structure: two 4-bar phrases. The first ends with an imperfect cadence (or in a new key); the second answers and ends on the tonic.|Use the opening's rhythm and shape again: repeat it, put it in sequence (the same shape higher or lower), or change it a little.|Give the melody a high point (climax) about two-thirds of the way through, and end on the tonic on a strong beat.|Compose a melody now has 20 openings (violin, viola, cello, flute, oboe, bassoon), each with a plan and a model answer.","Look at an opening from the Compose game and plan the 8 bars together: where are the cadences, where is the climax?","Write a melody from an opening in the Compose game, on paper.","Question and answer: you sing a 2-bar question; he sings an answer that ends on the tonic.","His melody has two clear phrases, reuses the opening's ideas and ends on the tonic."],
  ["Compose",5,"modul","Melody writing 2: modulating to a related key","Most exam openings want a modulation, usually to the dominant (or the relative major from a minor key).|Plan: bars 1–4 in the home key, ending on V or moving to the new key; bars 5–6 in the new key with its new accidental; bars 7–8 back home with a perfect cadence.|The new key's leading note (F♯ going from C to G) is what makes a modulation clear.","Plan and write a modulating melody together from an opening.","A Compose-game opening that asks for a modulation.","Key journey: hum a tune that goes to the dominant and comes back.","His melody modulates clearly and comes home."],
  ["Compose",5,"orch","Writing for an instrument: range and performance directions","The question names an instrument: write within its range and in its style.|Violin from G3 (lowest string) upwards; flute from C4; oboe from B♭3; clarinet in B♭ is written from E3 (it transposes, so the exam usually avoids it or tells you); cello from C2, in bass clef; trumpet and horn usually avoided.|Add performance directions: a tempo marking (an Italian term is fine), dynamics including at least one change, phrasing slurs, and some articulation (staccato, accents) where it suits.|A violin melody can use double stops and bowing marks; wind melodies need places to breathe.","Write the same opening as a violin melody and a flute melody: what changes?","Orchestra game.","Instrument charades: describe a range and sound; he names the instrument.","His melodies stay in range and include tempo, dynamics, phrasing and articulation."],
  ["Compose",5,"terms6","Compose from an opening: practice 1","A full exam-style composition, timed: about 30 minutes.|Use the checklist in the Compose game: length, phrases, cadences, modulation, climax, opening ideas reused, range, performance directions.","Write it, then check it together with the checklist.","Photograph it and ask for feedback in the Compose game.","Swap: you write a 2-bar opening; he continues it.","He finishes in about 30 minutes and the checklist is all ticked."],
@@ -2731,7 +2742,7 @@ function papersHTML() {
   const ps = state.papers || {};
   return `<div class="pp-list">${Object.keys(PAPER_DEF).map(k => `<div class="pp-row"><b>${esc(PAPER_DEF[k].title)}</b><span class="meta">${PAPER_DEF[k].day === "extra" ? "Extra (after Day 48)" : "Day " + PAPER_DEF[k].day}${ps[k] ? ` · ${ps[k].score}/100 on ${short(ps[k].date)}` : ""}</span><span class="spacer"></span><button class="btn small" type="button" data-act="paper" data-k="${k}">Open / print</button><button class="btn small" type="button" data-act="paperscreen" data-k="${k}">On screen</button></div>`).join("")}</div>
   <p style="margin-top:12px"><a href="downloads.html" target="_blank" rel="noopener">All the PDFs to download (lesson packs, papers, question banks)</a></p><p class="meta" style="margin-top:12px">Question bank: about 100 extra Grade 6 questions with answers, sorted by topic, including figured basses and melodies to harmonise with model answers.</p>
-  <div class="row-btns"><button class="btn small" type="button" data-act="bank" data-k="6">Grade 6 question bank</button></div>`;
+  <div class="row-btns"><button class="btn small" type="button" data-act="bank" data-k="6">Grade 6 question bank</button><button class="btn small" type="button" data-act="ref">Grade 6 reference book</button></div>`;
 }
 
 /* ---------- Lesson pack: everything for one day ---------- */
@@ -4164,6 +4175,132 @@ GEN.check = lvl => {
   return GEN.chords6(lvl);
 };
 
+/* ---------- Pivot chords: a chord that belongs to both keys ---------- */
+(function () {
+  const base = GEN.modul;
+  GEN.modul = lvl => {
+    if (typeof PAPER_OPT !== "undefined" && PAPER_OPT) return base(lvl);
+    if (Math.random() < .25) {
+      for (let t = 0; t < 40; t++) {
+        const minor = Math.random() < .35, K = pick(g6Keys(3, minor ? "minor" : "major"));
+        const K2 = minor ? K6(K.maj[0], false) : K6(nm(degLA(K, 5).l, degLA(K, 5).a), false);
+        if (!MAJ.find(k => k[0] === K2.name) || MAJ.find(k => k[0] === K2.name)[1] > 5) continue;
+        const sig = (KK, d) => tonesOf(KK, { deg: d, inv: 0, sev: 0 }).map(x => x.l + ":" + x.a).sort().join();
+        const d1 = pick([1, 2, 4, 6].filter(d => okInKey(K, RN[d - 1])));
+        const s1 = sig(K, d1), d2 = [1, 2, 3, 4, 5, 6, 7].find(d => sig(K2, d) === s1);
+        if (!d2 || d2 === 7 || d2 === 3) continue;
+        const notes = tonesOf(K, { deg: d1, inv: 0, sev: 0 }).map(x => nm(x.l, x.a)).join("–");
+        return mk("modul", `A passage moves from ${K.label} to ${K2.label}. Chord ${RN[d1 - 1]} in ${K.label} (${notes}) is the pivot. What is it called in ${K2.name}?`, RN[d2 - 1], ["I", "II", "IV", "V", "VI"].filter(x => x !== RN[d2 - 1]),
+          `${notes} is built on ${notes.split("–")[0]}, which is degree ${d2} of ${K2.label}, so it is chord ${RN[d2 - 1]} there. A chord that belongs to both keys makes a smooth pivot for a modulation.`,
+          { hint: `Find the root (${notes.split("–")[0]}) in the scale of ${K2.label}.` });
+      }
+    }
+    return base(lvl);
+  };
+})();
+
+/* ================= Grade 6 reference book (printable) ================= */
+function ref6HTML() {
+  const sec = (t, body, intro) => `<section class="ref-sec"><h3>${t}</h3>${intro ? `<p class="meta">${intro}</p>` : ""}${body}</section>`;
+  const tbl = (head, rows) => `<table class="ref-t"><thead><tr>${head.map(h => `<th>${h}</th>`).join("")}</tr></thead><tbody>${rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+  const prog = (title, keyName, minor, labs) => {
+    const K = K6(keyName, minor), ch = labs.map(CH), V = realize(K, ch);
+    if (!V) return "";
+    return `<figure><div class="stave">${Eng.grand(Object.assign({ z: .72 }, satbSpec(K, ch, V, { figures: true, labels: true })))}</div><figcaption>${title} (${K.label})</figcaption></figure>`;
+  };
+  const out = [];
+
+  /* 1. Figured bass */
+  out.push(sec("1. Figured bass: what the figures mean", tbl(["Figure", "Short for", "Chord position", "Example in C (bass → chord)"], [
+    ["(none)", "5/3", "root position (a)", "C → C–E–G"], ["6", "6/3", "first inversion (b)", "E → C–E–G"], ["6/4", "6/4", "second inversion (c)", "G → C–E–G"],
+    ["7", "7/5/3", "7th chord, root position", "G → G–B–D–F"], ["6/5", "6/5/3", "7th chord, first inversion", "B → G–B–D–F"], ["4/3", "6/4/3", "7th chord, second inversion", "D → G–B–D–F"], ["4/2 (or 2)", "6/4/2", "7th chord, third inversion", "F → G–B–D–F"],
+    ["♯ or ♮ alone", "raised 3rd", "the 3rd above the bass is raised", "in A minor, E with ♯ → E–G♯–B"], ["♯6, ♮6 …", "raised 6th", "that note is raised", "in A minor, B with ♯6 → G♯ above"]]),
+    "Count up from the bass in letter names, inside the key signature. A dash after a figure means hold that note into the next chord."));
+
+  /* 2. Chords in a major and a minor key */
+  const triads = (name, minor) => { const K = K6(name, minor); return [1, 2, 3, 4, 5, 6, 7].map(d => { const c = { deg: d, inv: 0, sev: 0 }, T = tonesOf(K, c), s = midi(14 + T[1].l, T[1].a) - midi(14 + T[0].l, T[0].a), s2 = midi(14 + T[2].l, T[2].a) - midi(14 + T[0].l, T[0].a);
+    const iv = x => ((x % 12) + 12) % 12, q = iv(s) === 4 && iv(s2) === 7 ? "major" : iv(s) === 3 && iv(s2) === 7 ? "minor" : iv(s) === 3 && iv(s2) === 6 ? "diminished" : "augmented";
+    return [RN[d - 1], T.map(t => nm(t.l, t.a)).join("–"), q]; }); };
+  const cm = triads("C", false), am = triads("A", true);
+  out.push(sec("2. The chords of a key", tbl(["", "C major", "quality", "A minor (harmonic)", "quality"], cm.map((r, i) => [r[0], r[1], r[2], am[i][1], am[i][2]])),
+    "In minor, use the harmonic minor for chords: V and VII have the raised leading note. II is diminished in minor, so use IIb. VIIb is a diminished chord used in first inversion (like V7 without its root). III is rarely used at Grade 6."));
+
+  /* 3. Progressions to learn */
+  out.push(sec("3. Progressions to know by heart", `<div class="ref-grid g2">${[
+    prog("Cadential 6/4: Ic–V–I", "C", false, ["I", "IV", "Ic", "V", "I"]),
+    prog("II7b – V7 – I", "G", false, ["I", "VI", "II7b", "V7", "I"]),
+    prog("Passing 6/4: I – Vc – Ib", "F", false, ["I", "Vc", "Ib", "IV", "V", "I"]),
+    prog("Interrupted cadence V – VI", "A", true, ["I", "IV", "V", "VI"]),
+    prog("Imperfect cadence: IIb – V", "D", false, ["I", "IV", "IIb", "V"]),
+    prog("V7 inversions resolving", "B♭", false, ["I", "V7d", "Ib", "V7b", "I"]),
+  ].join("")}</div>`, "Models made by the app's harmony engine: complete chords, smooth parts, no consecutive 5ths or octaves."));
+  const NEXT = [["I", "any chord: IV, II, V, VI, Ib …"], ["Ib", "IV, II, V"], ["II, IIb, II7b", "V, V7 or Ic (then V)"], ["IV", "V, Ic, II, I"], ["V, V7", "I, or VI (interrupted)"], ["VI", "IV, II, V"], ["VIIb", "I or Ib"], ["Ic", "V or V7 over the same bass (cadential 6/4)"]];
+  out.push(sec("Which chord comes next?", tbl(["From", "Good next chords"], NEXT), "Avoid V → IV. Strong root movements: up a 4th or down a 5th (V–I, II–V, VI–II)."));
+
+  /* 4. Part-writing rules */
+  out.push(sec("4. The part-writing checklist", `<ol class="ref-list">${[
+    "Every chord complete: root and 3rd always; 5th may go in root-position V7 or a final I.",
+    "Doubling: double the root in root position; in a 6/4 double the bass; in first inversion double the root or 5th (IIb: double the bass). Never double the leading note or a 7th.",
+    "Ranges: soprano C4–G5, alto G3–D5, tenor C3–G4, bass E2–D4. Keep soprano–alto and alto–tenor within an octave.",
+    "No parts crossing or overlapping.",
+    "No consecutive 5ths or octaves between any pair of parts (check all six pairs). No hidden octaves in the outer parts on a leap.",
+    "The leading note rises to the tonic (in an inner part at a cadence it may fall to the 5th).",
+    "The 7th of a 7th chord falls by step.",
+    "In minor: write the raised leading note's accidental every time; avoid the augmented 2nd (6th to raised 7th) in a part.",
+    "6/4 chords only as cadential (Ic–V), passing (I–Vc–Ib) or auxiliary/pedal (I–IVc–I).",
+    "Keep common notes in the same part; move other parts to the nearest note.",
+  ].map(x => `<li>${esc(x)}</li>`).join("")}</ol>`));
+
+  /* 5. Cadences */
+  out.push(sec("5. Cadences", tbl(["Cadence", "Chords", "Notes"], [["Perfect", "V–I or V7–I (both root position)", "Ic–V–I is the strongest; melody 2–1 or 7–8"], ["Imperfect", "I, Ib, II, IIb, IV or Ic → V", "ends on V: sounds unfinished"], ["Plagal", "IV–I", "the 'Amen' cadence"], ["Interrupted", "V–VI", "the surprise; in minor double the 3rd of VI"]])));
+
+  /* 6. Notes outside the chord */
+  const nc = (t, notes) => `<figure>${stave({ clef: "treble", notes: notes.map(([n, d, l, tie]) => Object.assign({ n, dur: d }, l ? { lbl: l } : {}, tie ? { tie: true } : {})), minW: 170, sp: 34 }, .7)}<figcaption>${t}</figcaption></figure>`;
+  out.push(sec("6. Notes outside the chord", `<div class="ref-grid g3">${[
+    nc("Passing note: steps between two chord notes", [["C5", "q"], ["D5", "q", "x"], ["E5", "h"]]),
+    nc("Auxiliary note: steps away and back", [["E5", "q"], ["F5", "q", "x"], ["E5", "h"]]),
+    nc("Appoggiatura: a clash ON the beat, often leapt to, resolving by step", [["G4", "q"], ["D5", "q", "x"], ["C5", "h"]]),
+    nc("Suspension: held over, clashes, falls by step (4–3, 7–6, 9–8)", [["F5", "h", null, 1], ["F5", "q", "x"], ["E5", "q"]]),
+    nc("Anticipation: the next chord's note, sounded early", [["D5", "h"], ["C5", "q", "x"], ["C5", "q"]]),
+    nc("Changing notes: step above and below (or below and above), then the chord note", [["C5", "q"], ["D5", "e", "x"], ["B4", "e", "x"], ["C5", "h"]]),
+  ].join("")}</div>`, "x marks the note outside the chord. Passing and auxiliary notes are usually off the beat; appoggiaturas and suspensions fall on the beat."));
+
+  /* 7. Related keys and modulation */
+  const CIRC = ["G♭", "D♭", "A♭", "E♭", "B♭", "F", "C", "G", "D", "A", "E", "B", "F♯"];
+  const rel = ["C", "G", "D", "A", "E", "F", "B♭", "E♭", "A♭"].map(k => { const i = CIRC.indexOf(k); return [k + " major", MIN[k] + " minor", CIRC[i + 1] + " major (and " + MIN[CIRC[i + 1]] + " minor)", CIRC[i - 1] + " major (and " + MIN[CIRC[i - 1]] + " minor)"]; });
+  out.push(sec("7. Related keys and modulation", tbl(["Key", "Relative minor", "Dominant", "Subdominant"], rel),
+    "A major key most often modulates to its dominant (new sharp or lost flat: the raised 4th). A minor key most often goes to its relative major (the raised 7th is cancelled). A pivot chord belongs to both keys: in C → G, A minor is VI in C and II in G."));
+
+  /* 8. Devices */
+  out.push(sec("8. Musical devices", tbl(["Device", "What to look for"], DEVICES.filter(d => DEV_WHY[d]).map(d => [d.replace(/^an? /, ""), DEV_WHY[d]]))));
+
+  /* 9. Orchestra */
+  out.push(sec("9. The orchestra", tbl(["Family (score order)", "Instruments, top to bottom", "Clef", "Sounds"], [
+    ["Woodwind", "piccolo", "treble", "an octave higher than written"], ["", "flute, oboe", "treble", "as written"], ["", "cor anglais", "treble", "a 5th lower"], ["", "clarinet in B♭ / A", "treble", "a major 2nd / minor 3rd lower"], ["", "bassoon", "bass (tenor high)", "as written"],
+    ["Brass", "horn in F", "treble (often no key signature)", "a 5th lower"], ["", "trumpet in B♭", "treble", "a major 2nd lower"], ["", "trombone", "tenor or bass", "as written"], ["", "tuba", "bass", "as written"],
+    ["Percussion", "timpani", "bass", "as written"], ["Strings", "violin I, violin II", "treble", "as written"], ["", "viola", "alto", "as written"], ["", "cello", "bass (tenor high)", "as written"], ["", "double bass", "bass", "an octave lower"]]),
+    "String terms: arco, pizzicato, con sordino, sul ponticello, divisi, tremolo, double stopping. Brass/wind: tongued, a 2 (both players), 1. (first player only)."));
+
+  /* 10. Composing */
+  out.push(sec("10. Composing a melody: the examiner's checklist", `<ol class="ref-list">${CHECKS.map(c => `<li>${esc(c)}</li>`).join("")}</ol>`,
+    "Plan before writing: bars 1–4 end on an imperfect cadence (degree 2, 5 or 7); bars 5–8 modulate and come back; the last bar ends on the tonic. Sing it in your head as you write."));
+
+  /* 11. Terms */
+  const grp = {}; TERMS.forEach(t => { (grp[t[0]] = grp[t[0]] || []).push(t); });
+  out.push(sec("11. Terms", Object.keys(grp).sort().map(g => `<h4>Grade ${g}</h4><div class="ref-terms">${grp[g].map(t => `<span><i>${esc(t[1])}</i>: ${esc(t[2])}</span>`).join("")}</div>`).join("")));
+  return out.join("");
+}
+function openRef() {
+  const el = $("teach");
+  el.innerHTML = `<div class="teach-in ws ref">
+    <div class="teach-top no-print"><button class="btn" type="button" data-act="tclose">← Close</button><span class="spacer"></span><button class="btn primary" type="button" data-act="wsprint">Print</button></div>
+    <header class="ws-head"><h2>Grade 6 reference book</h2><p class="meta">Figured bass, the chords of a key, progressions, the part-writing checklist, cadences, notes outside the chord, modulation, devices, the orchestra, composing and terms.</p></header>
+    ${ref6HTML()}
+  </div>`;
+  el.hidden = false; document.documentElement.classList.add("teach-open"); el.scrollTop = 0;
+}
+document.addEventListener("click", e => { const a = e.target.closest("[data-act]"); if (a && a.dataset.act === "ref") openRef(); });
+
 /* ---------- Drill catalogue ---------- */
 const DR = {
   chords6:   { name: "Name the chord",      icon: { clef: "treble", notes: [{ n: ["E4", "G4", "C5"], dur: "w", lbl: "Ib" }], minW: 90, end: false }, unlock: 0 },
@@ -5435,7 +5572,7 @@ function compBrief(o) {
   const K = openingK(o), dom = domOf(K), rel = relOf(K);
   return `Continue this opening for ${o.inst} to make a melody of 8 bars. ${K.minor ? `It may modulate to the relative major (${rel.label})${dom ? ` or the dominant minor (${dom.label})` : ""}` : `It should modulate to the dominant (${dom ? dom.label : "the dominant key"})`}, then return to ${K.label}. Add a tempo marking, dynamics, phrasing and other performance directions.`;
 }
-GEN.comp = lvl => { const k = rnd(OPENINGS.length); return { kind: "comp", prompt: "Composition: " + compBrief(OPENINGS[k]), comp: { k }, explain: "" }; };
+GEN.comp = lvl => { const k = rnd(typeof PAPER_OPT !== "undefined" && PAPER_OPT ? 10 : OPENINGS.length); return { kind: "comp", prompt: "Composition: " + compBrief(OPENINGS[k]), comp: { k }, explain: "" }; };
 function compQUI(q) {
   const o = OPENINGS[q.comp.k];
   return `<div class="compbox">${stave(openingSpec(o), big(1.2))}<p class="meta">${o.inst[0].toUpperCase() + o.inst.slice(1)} range: ${esc(o.range)}.</p><p>Write your melody on paper. When you've finished, get it marked in the <b>Compose a melody</b> game, or with the checklist in the lesson pack.</p></div>`;
@@ -5566,6 +5703,42 @@ wsAnswer = function (q) {
   return _wsAnswer(q);
 };
 const modelHTML = q => q.satb ? `<div class="stave">${Eng.grand(Object.assign({ z: .85 }, satbSpec(satbK(q), satbChords(q), q.satb.model, { figures: true, labels: true, kb: q.satb.kb })))}</div>` : q.harm ? `<div class="stave">${Eng.grand(Object.assign({ z: .85 }, satbSpec(harmK(q), harmChords(q, q.harm.model), q.harm.modelV, { figures: true, labels: harmLabels(q) })))}</div>` : q.comp ? `<ol class="clist">${CHECKS.map(c => `<li>${esc(c)}</li>`).join("")}</ol><p class="meta">One model answer:</p>${modelHTMLc(q.comp.k)}` : "";
+
+/* ---------- More composition openings (Oct 8): 10 more, each with a model answer ---------- */
+OPENINGS.push(
+  { inst: "viola", clef: "alto", key: "C", minor: false, time: [4, 4], range: "C3 upwards (comfortably up to about E5)", notes: [["C4", "q"], ["E4", "q"], ["G4", "h"], "|", ["A4", "q"], ["G4", "q"], ["F4", "q"], ["E4", "q"]] },
+  { inst: "bassoon", clef: "bass", key: "A", minor: true, time: [3, 4], range: "B♭1 to about E4 (tenor clef for high notes)", notes: [["A2", "q"], ["C3", "q"], ["E3", "q"], "|", ["A3", "h"], ["G#3", "q"]] },
+  { inst: "flute", clef: "treble", key: "D", minor: false, time: [6, 8], range: "C4 to about C7", notes: [["A5", "q"], ["F#5", "e"], ["D5", "q"], ["E5", "e"], "|", ["F#5", "q", 1], ["A5", "q", 1]] },
+  { inst: "violin", clef: "treble", key: "B♭", minor: false, time: [2, 4], range: "G3 upwards (comfortably up to about E6)", notes: [["F5", "e"], ["D5", "e"], ["Bb4", "q"], "|", ["C5", "e"], ["D5", "e"], ["Eb5", "e"], ["C5", "e"]] },
+  { inst: "cello", clef: "bass", key: "C", minor: true, time: [4, 4], range: "C2 upwards (tenor clef for high notes)", notes: [["C3", "q"], ["Eb3", "q"], ["G3", "q"], ["C4", "q"], "|", ["Bb3", "q"], ["Ab3", "q"], ["G3", "h"]] },
+  { inst: "oboe", clef: "treble", key: "B", minor: true, time: [3, 4], range: "B♭3 to about F6", notes: [["B4", "q"], ["D5", "q"], ["F#5", "q"], "|", ["E5", "q", 1], ["D5", "e"], ["C#5", "q"]] },
+  { inst: "violin", clef: "treble", key: "F", minor: false, time: [3, 8], range: "G3 upwards (comfortably up to about E6)", notes: [["C5", "e"], ["F5", "e"], ["A5", "e"], "|", ["G5", "e"], ["F5", "e"], ["E5", "e"]] },
+  { inst: "flute", clef: "treble", key: "G", minor: true, time: [4, 4], range: "C4 to about C7", notes: [["D5", "q"], ["G5", "q"], ["Bb5", "q"], ["A5", "e"], ["G5", "e"], "|", ["F#5", "h"], ["D5", "h"]] },
+  { inst: "cello", clef: "bass", key: "A", minor: false, time: [6, 8], range: "C2 upwards (tenor clef for high notes)", notes: [["A2", "q"], ["C#3", "e"], ["E3", "q"], ["A3", "e"], "|", ["G#3", "q"], ["F#3", "e"], ["E3", "q", 1]] },
+  { inst: "oboe", clef: "treble", key: "F♯", minor: true, time: [3, 4], range: "B♭3 to about F6", notes: [["C#5", "q"], ["F#5", "q"], ["A5", "q"], "|", ["G#5", "q"], ["F#5", "q"], ["E#5", "q"]] },
+);
+MODELS.push(
+  { tempo: "Moderato", bars: [[["D4", "q"], ["F4", "q"], ["A4", "h"]], [["G4", "w"]], [["C5", "q"], ["B4", "q"], ["A4", "q"], ["F#4", "q"]], [["G4", "w"]], [["F4", "q"], ["E4", "q"], ["D4", "q"], ["B3", "q"]], [["C4", "w"]]], dyn: { 0: "mp", 1: "f", 2: "p" },
+    notes: ["Bars 3–4 copy the rising shape of bar 1 a step higher, then hold G, the dominant: an imperfect cadence.", "Bar 5 starts on the high point (C5) and uses F♯, the leading note of G major; bar 6 lands on G: a cadence in the dominant.", "Bar 7 brings back F♮ and steps down to B, the leading note.", "Bar 8: C, the tonic, for the whole bar."] },
+  { tempo: "Andante", bars: [[["A3", "q"], ["F3", "q"], ["D3", "q"]], [["E3", "h", 1]], [["E3", "q"], ["G3", "q"], ["B3", "q"]], [["C4", "h", 1]], [["D4", "q"], ["B3", "q"], ["G#3", "q"]], [["A3", "h", 1]]], dyn: { 0: "p", 1: "mf", 2: "p" },
+    notes: ["Bars 3–4 fall through chord IV and hold E, the dominant: an imperfect cadence.", "Bars 5–6 use G♮ instead of G♯ and climb to C4, the high point: a cadence in C major, the relative major.", "Bar 7 outlines the dominant 7th with G♯ to return to A minor.", "Bar 8: A, the tonic, held for the whole bar."] },
+  { tempo: "Allegretto grazioso", bars: [[["B5", "q"], ["A5", "e"], ["G5", "q"], ["E5", "e"]], [["A5", "h", 1]], [["E6", "q"], ["C#6", "e"], ["B5", "q"], ["G#5", "e"]], [["A5", "q", 1], ["E5", "q", 1]], [["G5", "q"], ["F#5", "e"], ["E5", "q"], ["C#5", "e"]], [["D5", "h", 1]]], dyn: { 0: "p", 1: "f", 2: "mp" },
+    notes: ["Bars 3–4 reuse the opening's crotchet–quaver rhythm and hold A, the dominant.", "Bar 5 leaps to the high point (E6) and uses G♯: a cadence in A major, the dominant, on the downbeat of bar 6.", "Bar 7 brings back G♮ and falls through the dominant 7th of D.", "Bar 8: D, the tonic, for the whole bar."] },
+  { tempo: "Allegro", bars: [[["D5", "e"], ["Eb5", "e"], ["F5", "e"], ["G5", "e"]], [["F5", "h"]], [["C6", "e"], ["Bb5", "e"], ["A5", "e"], ["E5", "e"]], [["F5", "h"]], [["Eb5", "e"], ["D5", "e"], ["C5", "e"], ["A4", "e"]], [["Bb4", "h"]]], dyn: { 0: "mf", 1: "f", 2: "p" },
+    notes: ["Bars 3–4 run up by step and hold F, the dominant: an imperfect cadence.", "Bar 5 starts on the high point (C6) and uses E♮, the leading note of F major: bar 6 cadences in the dominant.", "Bar 7 brings back E♭ and steps down to A, the leading note.", "Bar 8: B♭, the tonic."] },
+  { tempo: "Largo", bars: [[["Eb3", "q"], ["F3", "q"], ["G3", "q"], ["Ab3", "q"]], [["G3", "h"], ["B3", "h"]], [["C4", "q"], ["Bb3", "q"], ["Ab3", "q"], ["F3", "q"]], [["Eb3", "w"]], [["F3", "q"], ["Eb3", "q"], ["D3", "q"], ["B2", "q"]], [["C3", "w"]]], dyn: { 0: "p", 1: "mf", 2: "pp" },
+    notes: ["Bars 3–4 climb by step, then G rises to B♮, the leading note, over chord V: an imperfect cadence.", "Bar 5 starts on the high point (C4) and uses B♭ instead of B♮: bar 6 cadences on E♭, the relative major.", "Bar 7 brings back B♮ to return to C minor.", "Bar 8: C, the tonic, for the whole bar."] },
+  { tempo: "Andante con moto", bars: [[["D5", "q"], ["B4", "q"], ["G5", "q"]], [["F#5", "h", 1]], [["A5", "q"], ["B5", "q"], ["C#6", "q"]], [["D6", "h", 1]], [["C#6", "q"], ["B5", "q"], ["A#5", "q"]], [["B5", "h", 1]]], dyn: { 0: "p", 1: "f", 2: "p" },
+    notes: ["Bars 3–4 leap up to G and hold F♯, the dominant: an imperfect cadence.", "Bars 5–6 use A♮ instead of A♯ and climb by step to the high point, D6: a cadence in D major, the relative major.", "Bar 7 steps down from C♯6 to A♯, the leading note, to return to B minor.", "Bar 8: B, the tonic."] },
+  { tempo: "Vivace", bars: [[["D5", "e"], ["F5", "e"], ["Bb5", "e"]], [["G5", "q", 1]], [["A5", "e"], ["B5", "e"], ["C6", "e"]], [["C6", "q", 1]], [["Bb5", "e"], ["G5", "e"], ["E5", "e"]], [["F5", "q", 1]]], dyn: { 0: "mf", 1: "f", 2: "p" },
+    notes: ["Bars 3–4 answer the opening and hold G, degree 2: an imperfect cadence.", "Bar 5 climbs through B♮, the leading note of C major, to the high point C6 in bar 6: the dominant.", "Bar 7 brings back B♭ and falls through the dominant 7th.", "Bar 8: F, the tonic."] },
+  { tempo: "Andante", bars: [[["Eb5", "q"], ["D5", "q"], ["C5", "q"], ["Bb4", "q"]], [["A4", "w"]], [["D5", "q"], ["F5", "q"], ["A5", "q"], ["C6", "q"]], [["Bb5", "w"]], [["G5", "q"], ["Eb5", "q"], ["D5", "q"], ["F#5", "q"]], [["G5", "w"]]], dyn: { 0: "p", 1: "mf", 2: "p" },
+    notes: ["Bars 3–4 step down to A, the 5th of chord V: an imperfect cadence.", "Bar 5 climbs through F♮ (not F♯) to the high point C6, falling to B♭ on the downbeat of bar 6: the relative major.", "Bar 7 brings back F♯, the leading note.", "Bar 8: G, the tonic, for the whole bar."] },
+  { tempo: "Allegro moderato", bars: [[["F#3", "q"], ["A3", "e"], ["D4", "q"], ["C#4", "e"]], [["B3", "h", 1]], [["E4", "q"], ["D#4", "e"], ["C#4", "q"], ["D#4", "e"]], [["E4", "h", 1]], [["D4", "q"], ["C#4", "e"], ["B3", "q"], ["G#3", "e"]], [["A3", "h", 1]]], dyn: { 0: "mp", 1: "f", 2: "p" },
+    notes: ["Bars 3–4 reuse the opening's rhythm and hold B, degree 2, over chord V: an imperfect cadence.", "Bar 5 starts on the high point (E4) and uses D♯, the leading note of E major: bar 6 cadences in the dominant.", "Bar 7 brings back D♮ and falls to G♯, the leading note.", "Bar 8: A, the tonic."] },
+  { tempo: "Adagio", bars: [[["F#5", "q"], ["D5", "q"], ["B4", "q"]], [["C#5", "h", 1]], [["E5", "q"], ["G#5", "q"], ["B5", "q"]], [["A5", "h", 1]], [["A5", "q"], ["G#5", "q"], ["E#5", "q"]], [["F#5", "h", 1]]], dyn: { 0: "p", 1: "mf", 2: "pp" },
+    notes: ["Bars 3–4 fall through chord IV and hold C♯, the dominant: an imperfect cadence.", "Bar 5 uses E♮ (not E♯) and climbs to the high point B5: bar 6 cadences on A, the relative major.", "Bar 7 brings back E♯, the leading note.", "Bar 8: F♯, the tonic, for the whole bar."] },
+);
 
 setView(view);
 applyColour();
