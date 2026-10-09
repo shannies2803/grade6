@@ -4199,6 +4199,37 @@ GEN.check = lvl => {
   };
 })();
 
+/* ---------- Spot the mistake in a chord progression (written as Roman numerals) ---------- */
+(function () {
+  const base = GEN.err6;
+  GEN.err6 = lvl => {
+    if ((typeof PAPER_OPT !== "undefined" && PAPER_OPT) || Math.random() > .25) return base(lvl);
+    const o = SATB_LEVEL(), minor = o.minor && Math.random() < .4, K = pick(g6Keys(3, minor ? "minor" : "major"));
+    const allow = ["I", "IV", "V", "VI", "II", "Ib", "IIb", "IVb", "Vb"].concat(o.c64 ? ["Ic"] : [], o.v7 ? ["V7"] : []);
+    const good = [];
+    for (let t = 0; t < 60 && good.length < 3; t++) { const pr = randomProg(K, 5 + rnd(2), pick(["perfect", "imperfect"]), { only: allow }); if (!pr) continue; const s = pr.map(chLabel).join(" – "); if (!good.includes(s)) good.push(s); }
+    if (good.length < 3) return base(lvl);
+    /* the faulty one: break one rule */
+    const faults = [
+      ["V – IV", "V going to IV goes backwards; after V use I or VI.", L => { const i = 1 + rnd(L.length - 3); L[i] = "V"; L[i + 1] = "IV"; return L; }],
+    ].concat(o.c64 ? [["Ic not followed by V", "A cadential Ic must be followed by V over the same bass note.", L => { const i = 1 + rnd(L.length - 3); L[i] = "Ic"; L[i + 1] = pick(["IV", "VI", "II"]); return L; }]] : [],
+      minor ? [["II in root position in a minor key", "In a minor key II is diminished, so it should be used as IIb.", L => { const i = 1 + rnd(L.length - 3); L[i] = "II"; L[i + 1] = "V"; return L; }]] : []);
+    const errsOf = L => { const e = []; L.forEach((c, i) => { const n = L[i + 1];
+      if (minor && c === "II") e.push("In a minor key II is diminished, so it should be used as IIb.");
+      if (!n) { if (c === "Ic") e.push("A cadential Ic must be followed by V (or V7) over the same bass note."); return; }
+      if ((TR6[c] || []).includes(n)) return;
+      if (/^V7?$/.test(c) && /^IV/.test(n)) e.push("V going to IV goes backwards; after V use I or VI.");
+      else if (c === "Ic") e.push("A cadential Ic must be followed by V (or V7) over the same bass note.");
+      else e.push("x"); }); return e; };
+    if (good.some(g => errsOf(g.split(" – ")).length)) return base(lvl);
+    let bad = null, why = "";
+    for (let t = 0; t < 20 && !bad; t++) { const [, , f] = pick(faults), L = f(pick(good).split(" – ")), e = errsOf(L); if (e.length === 1 && e[0] !== "x" && !good.includes(L.join(" – "))) { bad = L.join(" – "); why = e[0]; } }
+    if (!bad) return base(lvl);
+    return mk("err6", `Three of these progressions in ${K.label} work. Which one breaks a rule?`, bad, good,
+      `${bad}: ${why}`, { hint: "Check each pair of chords: is the move allowed? Does every Ic go to V? Does V ever go to IV?" });
+  };
+})();
+
 /* ================= Grade 6 reference book (printable) ================= */
 function ref6HTML() {
   const sec = (t, body, intro) => `<section class="ref-sec"><h3>${t}</h3>${intro ? `<p class="meta">${intro}</p>` : ""}${body}</section>`;
