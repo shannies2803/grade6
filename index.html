@@ -4154,7 +4154,7 @@ GEN.score6 = lvl => {
     qz.orn.kind === "tr" ? "tr is a trill: alternate quickly with the note above." : "The sideways S is a turn: the note above, the note, the note below, the note.", sc([at(0, qz.orn.i, "Z")])); }
   if (t === "pizz") return mk("score6", `What does "pizz." in the cello part tell the player, and what cancels it?`, "pluck the strings; arco means use the bow again", ["use the bow; pizz. cancels it", "play with a mute; senza sord. cancels it", "play near the bridge; ord. cancels it"], "pizz. (pizzicato): pluck. arco: back to the bow.", sc([]));
   const loud = ["pp", "p", "mp", "mf", "f", "ff"], hi = loud.indexOf(qz.dyn2) > loud.indexOf(qz.dyn1);
-  return mk("score6", `How does the dynamic change at D?`, hi ? `it gets louder (${qz.dyn1} to ${qz.dyn2})` : `it gets quieter (${qz.dyn1} to ${qz.dyn2})`, [hi ? `it gets quieter (${qz.dyn1} to ${qz.dyn2})` : `it gets louder (${qz.dyn1} to ${qz.dyn2})`, "it stays the same", "it gradually gets louder"],
+  return mk("score6", `How does the dynamic change at D?`, hi ? `it gets louder (${qz.dyn1} to ${qz.dyn2})` : `it gets quieter (${qz.dyn1} to ${qz.dyn2})`, [hi ? "it gets quieter" : "it gets louder", "it stays the same", hi ? "it gradually gets quieter" : "it gradually gets louder"],
     `It starts ${qz.dyn1} and changes to ${qz.dyn2} at D.`, sc([[0, qz.cols[0][qz.barK], "D", "above"]]));
 };
 
@@ -4203,7 +4203,7 @@ const DEV_WHY = {
   "a rising sequence": "The same shape is repeated, starting a step higher each time.",
   "a falling sequence": "The same shape is repeated, starting a step lower each time.",
   "imitation": "One part plays a phrase, then another part copies it while the first carries on.",
-  "inversion": "The second phrase turns the first upside down: where it went up, it now goes down by the same steps.",
+  "inversion": "The second phrase turns the first upside down: each move up becomes the same move down, and each move down becomes the same move up.",
   "augmentation": "The second phrase repeats the first with the note values doubled.",
   "syncopation": "The accents fall off the beat: notes start between beats and are held across them.",
   "a tonic pedal": "The bass holds (or repeats) the tonic while the harmony above changes.",
@@ -5100,7 +5100,7 @@ GEN.score7 = lvl => {
         `The last two chords are ${chLabel(a)}–${chLabel(b)}: ${art(cad)} cadence.`, wrap([]));
     }
     const ans = chLabel(chords[i]);
-    return mk("score7", `The music sounds in ${keyLab(K)}. Name the chord at X (solo and piano together; remember the solo transposes).`, ans, shuffle(G7_NAMES.filter(l => l !== ans && okInKey(K, l))).slice(0, 6),
+    return mk("score7", `The music sounds in ${keyLab(K)}. Name the chord at X (solo and piano together${so.q ? "; remember the solo transposes" : ""}).`, ans, shuffle(G7_NAMES.filter(l => l !== ans && okInKey(K, l))).slice(0, 6),
       `Sounding notes: ${["b", "t", "a", "s"].map(v => pname(V[i][v])).join(", ")}: ${tonesOf(K, chords[i]).map(t => nm(t.l, t.a)).join("–")} with ${pname(V[i].b)} in the bass, so ${ans}.`, Object.assign(wrap([at(2, i, "X")]), { hint: "Read the piano, then add the solo's SOUNDING note." }));
   }
   return GEN.orch6(lvl);
@@ -5400,10 +5400,12 @@ GEN.trio8 = lvl => {
     const ph = trioPhrase(); if (!ph) break;
     const { K, chords, V } = ph, n = V.length, i = 2 + rnd(n - 3), c = chords[i], T = tonesOf(K, c), v = V[i], pv = V[i - 1];
     const tag = (s, a) => `violin I ${pnameO(s)}, violin II ${pnameO(a)}`, right = tag(v.s, v.a);
-    const par = (s, a) => { const prs = [[pv.s, s], [pv.a, a], [pv.b, v.b]], pairs = [[0, 1], [0, 2], [1, 2]]; return pairs.some(([x, y]) => { const i1 = ((prs[x][0].m - prs[y][0].m) % 12 + 12) % 12, i2 = ((prs[x][1].m - prs[y][1].m) % 12 + 12) % 12; return (prs[x][0].m !== prs[x][1].m || prs[y][0].m !== prs[y][1].m) && (i1 === 7 || i1 === 0) && i1 === i2; }); };
+    const PN = ["violin I", "violin II", "the bass"];
+    const parWhy = (s, a) => { const prs = [[pv.s, s], [pv.a, a], [pv.b, v.b]], pairs = [[0, 1], [0, 2], [1, 2]]; for (const [x, y] of pairs) { const i1 = ((prs[x][0].m - prs[y][0].m) % 12 + 12) % 12, i2 = ((prs[x][1].m - prs[y][1].m) % 12 + 12) % 12; if ((prs[x][0].m !== prs[x][1].m || prs[y][0].m !== prs[y][1].m) && (i1 === 7 || i1 === 0) && i1 === i2) return `${PN[x]} and ${PN[y]} move in consecutive ${i1 === 7 ? "5ths" : "octaves"} (${pname(prs[x][0])} over ${pname(prs[y][0])} to ${pname(prs[x][1])} over ${pname(prs[y][1])})`; } return null; };
+    const par = (s, a) => !!parWhy(s, a);
     const wrongs = [];
     /* a chord note that makes consecutive 5ths or octaves */
-    for (const x of ["a", "s"]) for (let dd = -4; dd <= 4 && wrongs.length < 1; dd++) { const p = v[x], d = p.d + dd; const tt = T.find(z => z.l === m7(d)); if (!tt || dd === 0) continue; const np = P6(d, tt.a); const s = x === "s" ? np : v.s, a = x === "a" ? np : v.a; if (par(s, a) && Math.abs(np.m - p.m) <= 9) wrongs.push([tag(s, a), `${tag(s, a)} makes consecutive 5ths or octaves with the part before.`]); }
+    for (const x of ["a", "s"]) for (let dd = -4; dd <= 4 && wrongs.length < 1; dd++) { const p = v[x], d = p.d + dd; const tt = T.find(z => z.l === m7(d)); if (!tt || dd === 0) continue; const np = P6(d, tt.a); const s = x === "s" ? np : v.s, a = x === "a" ? np : v.a; if (par(s, a) && Math.abs(np.m - p.m) <= 9) wrongs.push([tag(s, a), `With ${tag(s, a)}, ${parWhy(s, a)}.`]); }
     /* a note outside the chord on the beat */
     shuffle([["a", 1], ["a", -1], ["s", 1], ["s", -1]]).forEach(([x, dd]) => { if (wrongs.filter(w => w[2]).length >= 2) return; const d = v[x].d + dd, np = P6(d, sigOf(K, m7(d))); if (T.some(z => z.l === m7(d))) return; const s = x === "s" ? np : v.s, a = x === "a" ? np : v.a; if (s.m <= a.m) return; wrongs.push([tag(s, a), `${pnameO(np)} isn't in the chord the figures show (${T.map(z => nm(z.l, z.a)).join("–")}).`, 1]); });
     /* leaving out the 3rd */
@@ -5865,7 +5867,7 @@ const ENS8 = {
   quartet: { name: "string quartet", parts: [["Violin I", "treble", v => v.s, 0], ["Violin II", "treble", v => v.a, 0], ["Viola", "alto", v => v.t, 0], ["Cello", "bass", v => v.b, 0]] },
   quintet: { name: "wind quintet", parts: [["Flute", "treble", v => P6(v.s.d + 7, v.s.a), 0], ["Oboe", "treble", v => v.a, 0], ["Clarinet in B♭", "treble", v => trans7(v.t, "M", 2), 2],
     ["Horn in F", "treble", v => trans7(P6(v.b.d + 7, v.b.a), "P", 5), "none"], ["Bassoon", "bass", v => v.b, 0]] },
-  pianoQ: { name: "piano quintet", parts: [["Violin I", "treble", v => v.s, 0], ["Violin II", "treble", v => v.a, 0], ["Viola", "alto", v => v.t, 0], ["Cello", "bass", v => v.b, 0], ["Double bass", "bass", v => v.b, 0]] },
+  pianoQ: { name: "string quintet", parts: [["Violin I", "treble", v => v.s, 0], ["Violin II", "treble", v => v.a, 0], ["Viola", "alto", v => v.t, 0], ["Cello", "bass", v => v.b, 0], ["Double bass", "bass", v => v.b, 0]] },
 };
 /* the sounding part each staff carries, to say who plays what */
 const ENS8_VOICE = { quartet: ["s", "a", "t", "b"], quintet: ["s", "a", "t", "b", "b"], pianoQ: ["s", "a", "t", "b", "b"] };
