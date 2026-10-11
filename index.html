@@ -684,7 +684,7 @@
     <div class="stats">
       <div class="stat"><b id="st-days">–</b><span id="st-days-l">days to the exam</span></div>
       <div class="stat"><b id="st-done">–</b><span>days done</span><span class="pill" id="st-pace">–</span></div>
-      <div class="stat"><b id="st-green">–</b><span>of 12 strands green</span></div>
+      <div class="stat"><b id="st-green">–</b><span id="st-green-of">of the strands green</span></div>
       <div class="stat"><b id="st-stars">–</b><span id="st-stars-l">stars</span><span class="pill bad" id="st-gap" hidden></span></div>
       <div class="stat"><b id="st-next">–</b><span>next practice paper</span></div>
     </div>
@@ -904,6 +904,7 @@ const Eng = (function(){
         if(nt.bar==='repR'){ body+='<circle cx="'+x+'" cy="45" r="1.7" fill="currentColor"/><circle cx="'+x+'" cy="55" r="1.7" fill="currentColor"/>'
           +'<path d="M'+(x+4)+' 30L'+(x+4)+' 70" '+S+' stroke-width="1.2"/>'
           +'<rect x="'+(x+7)+'" y="30" width="3.2" height="40" fill="currentColor"/>'; placed.push(null); x+=20; return; }
+        if(spec.padBar){ const lp=placed.filter(Boolean).pop(); if(lp) x=Math.max(x, lp.x+(lp.dur==='e'||lp.dur==='s'?26:lp.dot?20:16)); }
         body+='<path d="M'+x+' 30L'+x+' 70" '+S+' stroke-width="1.5"/>'; placed.push(null); x+=16; return; }
       const dur=nt.dur||'q';
       if(nt.n==='r'||nt.r){ const rx=spec.prop? x+13+7 : x+6; body+=restG(dur,rx); placed.push({x:rx, rest:true, dur:dur, dot:!!nt.dot, midis:[]}); x+=spec.prop? adv(nt) : sp; return; }
@@ -1258,6 +1259,48 @@ const S = [
  ["G7 Papers", 5, "fig7", "Grade 7 practice paper 2 (full, 3 hours)", "Practice paper 2 in one sitting, timed at 3 hours. Treat it as the real exam.", "Practice paper 2, exam conditions.", "Mark it with the key.", "A proper break.", "Score recorded."],
  ["G7 Papers", 5, "sus7", "Grade 7 practice paper 3 (full, 3 hours)", "Practice paper 3, timed at 3 hours, in exam conditions.", "Practice paper 3.", "Mark it, then fix the weakest question.", "A proper break.", "Score recorded. About 75 or more: book the exam."],
  ["G7 Papers", 5, "terms7", "Grade 7 exam technique and final review", "Suggested timing: question 1 (15 marks) 25 min, question 2 (15) 25 min, question 3 (20) 35 min, questions 4 and 5 (25 each) 35 min each, then 25 min to check.|Check every figure for accidentals, every suspension for preparation and resolution, and the composition for performance directions.|More practice: the Grade 7 question bank in the Papers list.", "A light mixed review: 10 questions.", "Word cards and Match pairs.", "Finish on something he's good at.", "Ready. Rest the day before the exam."],
+ ["G8 Chords", 5, "chords8", "Grade 8: what's new", "Grade 8 is 3 hours on paper, out of 100 (pass 66, merit 80, distinction 90).|Question 1 (15): continue the two upper parts of a Baroque trio sonata over a figured bass. Question 2 (15): complete a keyboard piece in the style of Haydn or later, carrying on its accompaniment pattern. Question 3 (20): continue an opening to make a melody of at least 12 bars for an instrument. Question 4 (25): questions on a score of up to 5 staves. Question 5 (25): questions on a full orchestral score of up to 24 staves.|New chords: secondary dominants (V of V and friends), diminished 7ths on other degrees, and the Italian, French and German augmented 6ths.", "Look at the Grade 8 section of the reference book together. Play V7/V–V–I and an augmented 6th going to V.", "Today's practice: Grade 8 chords (a first look).", "Colour quiz: you play a plain IV–V and then V7/V–V; he says which one 'leans' harder towards V.", "He can say what each of the five questions asks."],
+ ["G8 Chords", 5, "chords8", "Secondary dominants: V of V", "A secondary dominant is the dominant (or dominant 7th) of a chord other than I. The most common is V of V: in C major D–F♯–A (V/V) or D–F♯–A–C (V7/V).|The F♯ is the leading note of G major, so it rises to G; the 7th (C) falls to B.|V7/V goes to V (or to Ic then V). In first inversion (V7b/V, F♯ in the bass, figured 6/5 with ♯) the bass rises a semitone to the dominant.|Figures: V7/V in C is 7 with ♯ (for the F♯).", "Write V7/V–V–I in C, G, D and F major, then V7b/V–V–I.", "Grade 8 chords practice.", "Find the extra sharp: you play V7/V–V–I; he sings the note that rises.", "He can spell V7/V in any major key and resolve it."],
+ ["G8 Chords", 5, "chords8", "More secondary dominants: V7 of IV, II and VI", "Any major or minor chord can have its own dominant. V7/IV in C is C–E–G–B♭ (the B♭ falls to A). V7/II is A–C♯–E–G (to D minor). V7/VI is E–G♯–B–D (to A minor).|Spot them by the accidental: a sharp that rises a semitone (a new leading note) or a flat that falls (a new 7th).|In minor keys, V7/IV and V7/V are the most common.", "Write each secondary dominant in G major, resolving it. Then find them in a hymn or Bach chorale.", "Grade 8 chords practice.", "Name the target: you play a secondary dominant and stop; he sings the chord it wants to go to.", "He can say which chord any secondary dominant goes to."],
+ ["G8 Chords", 5, "chords8", "Diminished 7ths on other degrees", "Just as V7/V is the dominant 7th of V, VII7/V is the diminished 7th of V: in C major F♯–A–C–E♭.|Its root (F♯) is the leading note of G, so it rises to G; the 7th (E♭) falls to D.|Any diminished 7th can be read as the leading-note chord of a new key, so it is a useful pivot for modulating.", "Write VII7/V–V–I in C and in F, then in A minor (D♯–F♯–A–C).", "Grade 8 chords practice.", "Tension game: VII7 then I, VII7/V then V; he says which key the chord points to.", "He can spell VII7/V in three keys."],
+ ["G8 Chords", 5, "chords8", "The Italian augmented 6th", "Augmented 6th chords are built on the flattened 6th in the bass. Above it: the tonic and the sharpened 4th. In C minor: A♭–C–F♯ (Italian 6th).|The interval A♭ up to F♯ is an augmented 6th. It opens out to an octave on the dominant: A♭ falls to G, F♯ rises to G.|Figured ♯6. Double the tonic (C), never the A♭ or F♯.|In a major key the bass is flattened too: in C major A♭–C–F♯.", "Write It6–V–I in C minor, G minor and A minor. Play them.", "Grade 8 chords practice.", "Out-and-out: play It6 to V; he hears the two outer notes spread to the octave.", "He can find the augmented 6th in any It6 and say where both notes go."],
+ ["G8 Chords", 5, "chords8", "French and German augmented 6ths", "French 6th: add the supertonic. In C minor A♭–C–D–F♯ (figured ♯6/4/3).|German 6th: add the flattened 3rd instead. In C minor A♭–C–E♭–F♯ (figured ♯6/5). It sounds like a dominant 7th, but the F♯ is spelt as a sharp.|The German 6th going straight to V makes consecutive 5ths (A♭–E♭ to G–D), so it usually goes to Ic first: Ger6–Ic–V.|All three resolve to V; the French sounds the most 'spicy', the German the fullest.", "Write It6, Fr6 and Ger6 in G minor, each resolving to V (Ger6 via Ic).", "Grade 8 chords practice.", "Which nation? You play It6, Fr6 or Ger6; he names it from how full it sounds.", "He can tell the three augmented 6ths apart on paper."],
+ ["G8 Chords", 5, "terms8", "Grade 8 terms and directions", "Grade 8 scores use Italian, French and German directions. Italian: sotto voce, mezza voce, a piacere, l'istesso tempo, incalzando, lontano, piangevole. French: pressez, en animant, à volonté, cuivré, sur la touche. German: Hauptstimme, Nebenstimme, ausdrucksvoll, kräftig, gedämpft, langsamer, lebhaft, nicht zu schnell, innig.|Learn them in groups: speed changes, moods, playing techniques.", "Sort the Grade 8 terms into speed, mood and technique groups.", "Grade 8 terms practice.", "Word cards and Match pairs with the Grade 8 terms.", "He knows 25 of the 32 new terms."],
+ ["G8 Chords", 5, "chords8", "Review: Grade 8 chords (Days 89–95)", "Go back over Days 89–95: secondary dominants, diminished 7ths on other degrees, the three augmented 6ths and the new terms.", "Name and resolve the chords in two passages from the lesson pack.", "Grade 8 chords practice.", "Chord detective: play eight chords in a row; he shouts at the chromatic one.", "Above 80% on the Grade 8 chords drill."],
+ ["G8 Trio", 5, "trio8", "Question 1: the Baroque trio sonata", "A trio sonata (about 1650–1750) has two treble instruments (often violins) and a continuo bass, played by a cello with a harpsichord realising the figures.|In question 1, the bass and figures are given all the way through, with the opening of both upper parts. You continue the two upper parts to the end.|Think in three real parts: the two violins and the bass together must make each chord. The harpsichord fills in, so you don't need four parts.", "Look at a real trio sonata movement (Corelli or Handel) together and point out the figures.", "Trio sonata practice.", "Follow the bass: play a figured bass slowly; he sings the top of each chord.", "He can explain what the three parts of a trio sonata are."],
+ ["G8 Trio", 5, "trio8", "Reading the figures in a trio", "Each figure tells you the chord. No figure means 5/3. 6 means a first inversion. 7, 6/5, 4/3 and 4/2 are the 7th chord positions. ♯ or ♮ alone raises the 3rd above the bass.|Write the chord's letter names above each bass note in pencil before you write any violin notes.|Watch for accidentals in the figures: in minor keys they show the raised leading note.", "Pencil the chord notes above every bass note of two given basses.", "Trio sonata practice.", "Figure flash: show a bass note with figures; he says the three notes fast.", "He can spell the chord for any figure in under 5 seconds."],
+ ["G8 Trio", 5, "trio8", "Three parts: which notes to keep", "With only three parts, every chord needs its 3rd (the 3rd says major or minor). In a 7th chord keep the 3rd and the 7th; the 5th can go.|Don't double the leading note or a 7th. In a 6 chord, doubling the bass is fine in a trio if the 3rd is there.|No consecutive 5ths or octaves between any two of the three parts, including violin and bass. Check each pair.", "Take a four-part passage and cut it to three parts, keeping the right notes.", "Trio sonata practice.", "Missing 3rd hunt: you play two-note chords with a bass; he says when the 3rd is missing.", "He chooses the right notes for three parts every time."],
+ ["G8 Trio", 5, "trio8", "Making the violins move: passing notes, imitation, sequence", "The violins should sound like two independent tunes. Take turns to move: when one holds, the other moves in quavers.|Fill leaps of a 3rd with passing notes. Use contrary motion between the violins and against the bass.|Imitation: violin II copies violin I's figure a beat or a bar later. Sequence: repeat a figure a step lower when the bass moves in a sequence.|The violins may cross briefly; keep them within about an octave.", "Add passing notes and one bit of imitation to a plain two-violin version.", "Trio sonata practice.", "Echo: he plays a short violin figure; you answer it a step lower (sequence).", "His violin parts take turns and include one imitation."],
+ ["G8 Trio", 5, "trio8", "Suspensions and cadences in a trio", "Figures like 7 6, 4 3 and 9 8 show suspensions: prepare the note, tie it over, resolve down a step.|Chains of 7–6 suspensions over a falling bass are very Baroque: one violin holds while the other moves.|Cadences: the leading note rises, the 7th of V7 falls. A 4–3 suspension over V at the final cadence is the classic ending.|A cadential trill on the leading note is stylish (tr above the note).", "Write a 7–6 chain over a falling bass and a 4–3 cadence.", "Trio sonata practice.", "Tie and fall: you play the bass, he sings the suspension and its resolution.", "He writes a correct 4–3 suspension at a cadence."],
+ ["G8 Trio", 5, "trio8", "A full question 1, step by step", "Method: 1. Find the key and any modulations (accidentals in figures). 2. Pencil each chord's notes. 3. Plan the cadences. 4. Write violin I as a tune, then violin II against it. 5. Add movement: passing notes, a suspension, imitation. 6. Check: 3rds present, no consecutives, leading notes and 7ths resolved.|About 25 minutes in the exam.", "Do one question 1 together, talking through each step.", "Write a trio (the tile in Philip's corner): one passage, then compare with the model.", "Spot the error: you show his own passage with one planted mistake.", "He completes a passage with no consecutives and all 3rds present."],
+ ["G8 Trio", 5, "trio8", "Review: trio sonata (Days 97–102)", "Go back over Days 97–102: the trio texture, reading figures, three-part rules, movement and imitation, suspensions and cadences.", "An exam-style question 1 from the lesson pack, timed at 25 minutes.", "Trio sonata practice.", "His choice.", "Question 1 scored 11/15 or more."],
+ ["G8 Keyboard", 5, "kb8", "Question 2: completing a keyboard outline", "Question 2 gives a keyboard piece from about Haydn's time onwards. The opening bar or two are complete; after that you get the melody and the bass, sometimes with chord symbols.|You continue the accompaniment pattern (Alberti bass, broken chords, a waltz bass…) to fit each chord, and add any missing inner notes.|First work out the chord under every melody note: bass + melody + key.", "Look at a Haydn or Mozart sonata slow movement together and name its left-hand pattern.", "Keyboard patterns practice.", "Pattern names: you play Alberti, broken chord, waltz bass and rocking quavers; he names each.", "He can name the common accompaniment patterns."],
+ ["G8 Keyboard", 5, "kb8", "Alberti and broken-chord patterns", "Alberti bass: lowest–highest–middle–highest (C–G–E–G). Broken chord: lowest–middle–highest–middle (C–E–G–E).|Keep the same shape and rhythm all the way through; only the notes change with the chord.|Use the bass note given as the first note of each group, then the chord notes just above it. Keep the left hand below the melody.", "Continue an Alberti bass through I–IV–V7–I in C and in G.", "Keyboard patterns practice.", "Shape check: he plays the first bar; you change the chord; he keeps the shape.", "He keeps the pattern exactly through a whole passage."],
+ ["G8 Keyboard", 5, "kb8", "Waltz and 6/8 patterns", "Waltz bass (3/4): bass note on beat 1, the two upper chord notes together on beats 2 and 3 ('oom-pah-pah').|6/8 rocking quavers: bass–5th–3rd, bass–5th–3rd, or similar, keeping the lilt.|When the chord changes in the middle of a bar, change the notes at that point but keep the pattern.", "Write a waltz accompaniment for an 8-bar tune in F, and a 6/8 pattern in D.", "Keyboard patterns practice.", "Oom-pah: you play the bass, he claps the 'pah' beats.", "He writes a waltz bass with every chord right."],
+ ["G8 Keyboard", 5, "kb8", "Chromatic chords in a keyboard texture", "Grade 8 outlines often include secondary dominants and augmented 6ths. The melody or bass will show the accidental: F♯ in C major often means V7/V; A♭ in the bass going to G means an augmented 6th.|Spell the chromatic note exactly as the chord needs it (F♯ not G♭) and resolve it the right way, even inside the pattern.|Don't add accidentals the chord doesn't need.", "Find and label the chromatic chords in two given outlines, then complete them.", "Keyboard patterns practice.", "Sharp or flat? He says whether each chromatic note should rise or fall.", "He spells and resolves chromatic notes correctly in the pattern."],
+ ["G8 Keyboard", 5, "kb8", "Keeping the melody alive", "If the right hand has gaps, carry on its style: passing notes, appoggiaturas and a turn or two (as in the given bars).|Keep consecutive octaves and 5ths out between the melody and the bass: check every beat where the bass moves.|Finish with a clear cadence and a full tonic chord.", "Complete a keyboard piece together, then check melody against bass for consecutives.", "Complete a keyboard piece (the tile in Philip's corner), then compare.", "Mirror: you play a bar; he copies its pattern on the next chord.", "He completes a full outline in 25 minutes."],
+ ["G8 Keyboard", 5, "kb8", "Review: keyboard outlines (Days 104–108)", "Go back over Days 104–108: reading the outline, Alberti and broken chords, waltz and 6/8 patterns, chromatic chords and the melody.", "A question 2 from the lesson pack, timed at 25 minutes.", "Keyboard patterns practice.", "His choice.", "Question 2 scored 11/15 or more."],
+ ["G8 Compose", 5, "terms8", "Question 3: planning a 12-bar melody", "Question 3 gives an opening (usually 2 bars) for an instrument. Continue it to make at least 12 bars, with performance directions.|Plan before writing: three 4-bar phrases is a good shape. Bars 1–4 end on an imperfect cadence; bars 5–8 modulate (to the dominant or relative); bars 9–12 come home and end on the tonic.|Mark the high point (usually in the second half) and the cadences in pencil first.", "Plan the 12 bars of a melody together: phrases, keys, cadences, high point.", "Compose (Grade 8): look at one task and its model.", "Hum the plan: he hums where each phrase ends.", "He can draw a plan for a 12-bar melody."],
+ ["G8 Compose", 5, "chords8", "Modulating in a melody", "A melody shows its key by its accidentals and cadences. To reach the dominant, use the sharpened 4th (F♯ in C) and cadence on the new tonic. To reach the relative major from minor, cancel the raised leading note (G♮ instead of G♯ in A minor) and cadence on C.|Then cancel the new accidental to come home.|Keep the modulation clear: put the new accidental near the cadence, and land on the new tonic on a strong beat.", "Write the middle 4 bars of a melody that modulate to the dominant and back.", "Grade 8 chords practice.", "Key change ears: you play a melody; he puts his hand up when it modulates.", "He can modulate to the dominant and relative and return."],
+ ["G8 Compose", 5, "terms8", "Developing the opening", "The best answers grow from the opening. Ways to develop it: sequence (repeat it higher or lower), inversion (turn the shape upside down), new rhythm (keep the notes, change the rhythm), extension (add a bar), fragmentation (use just part of it).|Use the opening rhythm at the start of phrase 2 and phrase 3, changed.|Balance steps and leaps; after a big leap, step back the other way.", "Take the opening of a task and write three different developments of it.", "Compose (Grade 8): write the next 4 bars of one task.", "Copy-cat: you play two bars; he plays them as a sequence.", "He uses the opening idea in at least two later phrases."],
+ ["G8 Compose", 5, "terms8", "Writing for strings and wind", "Strings: slurs show bowing (not too many notes per bow); double stops and pizzicato are possible but not needed. Ranges: violin from G3, viola from C3 (alto clef), cello from C2 (tenor clef high up).|Wind: phrases need breathing places (a rest or a long note every 2–4 bars). Flute from C4, oboe from B♭3, clarinet from E3, bassoon from B♭1.|Keep well inside the range and avoid awkward big leaps.", "Check two of his melodies for range and breathing or bowing.", "Compose (Grade 8): choose a different instrument.", "Breathe! You play a wind melody; he marks where a player would breathe.", "He states the range of five instruments."],
+ ["G8 Compose", 5, "terms8", "Performance directions that earn marks", "Marks are given for a tempo marking, dynamics (with changes: cresc., dim., hairpins), phrasing (slurs) and articulation (staccato, accents, tenuto).|Match them to the music: crescendo to the high point, diminuendo to the end, accents for rhythmic energy, slurs over stepwise lines.|Use some Grade 8 terms if they fit (mezza voce, con slancio).", "Add directions to one of his finished melodies together.", "Compose (Grade 8): a full task, with directions.", "Conductor: he conducts the dynamics while you play.", "His melody has tempo, dynamics, phrasing and articulation."],
+ ["G8 Compose", 5, "chords8", "Review: composing (Days 110–114)", "Go back over Days 110–114: planning, modulating, developing the opening, writing for the instrument and directions.", "A full question 3 from the lesson pack, timed at 35 minutes, marked with the checklist.", "Grade 8 chords practice.", "His choice.", "Question 3 scored 14/20 or more."],
+ ["G8 Scores", 5, "score8", "Question 4: chamber scores", "Question 4 is a score of up to 5 staves: a string quartet, a wind quintet, a piano quintet, a voice with instruments.|Questions ask about chords (now including chromatic chords), keys and modulations, intervals (often compound), cadences, ornaments, instruments, terms and features (sequence, imitation, pedal).|Work out each instrument's sounding notes first.", "Look at a string quartet score together (Haydn or Mozart); name the instruments and clefs.", "Chamber score practice.", "Who's playing? You point to a stave; he names the instrument and clef.", "He can read all four parts of a string quartet."],
+ ["G8 Scores", 5, "score8", "Chromatic chords in a score", "To name a chord in a score, collect every sounding note at that point (all staves), then find the root.|An accidental that isn't the leading note is a clue: a sharp that rises a semitone = a secondary dominant's leading note; ♭6 in the bass with ♯4 above = an augmented 6th.|Questions may ask which instrument plays a particular note (the 7th, the ♯4).", "Name every chord in two bars of a quartet together.", "Chamber score practice.", "Point to it: you name a chord; he points to the instrument with its 3rd.", "He names chromatic chords in a 4-stave score."],
+ ["G8 Scores", 5, "score8", "Transposition and clefs, again", "Clarinet in B♭: sounds a major 2nd lower. Clarinet in A: a minor 3rd lower. Horn in F: a perfect 5th lower. Cor anglais: a perfect 5th lower.|Alto clef (viola): middle C on the middle line. Tenor clef (cello, bassoon, trombone): middle C on the 4th line.|Questions may ask you to write a few notes at concert pitch or for a different instrument.", "Transpose four bars of a horn part to concert pitch together.", "Chamber score practice.", "Flash cards: a written note and an instrument; he says the sound.", "He transposes any note for B♭ and A clarinet, horn in F and cor anglais."],
+ ["G8 Scores", 5, "orch8", "Question 5: the full orchestra", "Question 5 is a full score of up to 24 staves. Order: woodwind (piccolo, flutes, oboes, cor anglais, clarinets, bassoons), brass (horns, trumpets, trombones, tuba), percussion (timpani first), harp, strings.|Read the chord from the strings, which don't transpose (except the double bass, an octave).|Questions: instruments, transposition, clefs, chords, terms, how instruments double each other.", "Count and name every stave of a full score together.", "Big orchestra practice.", "Score order race: shuffle instrument cards; he puts them in order.", "He knows score order without looking."],
+ ["G8 Scores", 5, "orch8", "Brass in old keys: horns in E♭, trumpets in D", "Before valves, brass players changed crooks for each key, so scores have horns and trumpets in many keys. The rule: a horn or trumpet 'in X' sounds the note X when it plays a written C.|Horn in E♭: written C sounds the E♭ a major 6th below. Horn in D: a minor 7th below.|Trumpet in D: written C sounds the D a major 2nd ABOVE. Trumpet in B♭: a major 2nd below. Trumpet in F: a perfect 4th above.|Classical horns and trumpets usually have no key signature: accidentals are written in.", "Work out the sounding notes of a horn in E♭ and trumpet in D part together.", "Big orchestra practice.", "Crook quiz: he names the sounding note of written C for horns in F, E♭, D and trumpets in B♭, D, F.", "He works out any brass instrument 'in X'."],
+ ["G8 Scores", 5, "orch8", "Cor anglais, clarinet in A, piccolo and trombones", "Cor anglais (in F): sounds a perfect 5th lower; written with a key signature one sharp more than the concert key.|Clarinet in A: sounds a minor 3rd lower; written three sharps more (or three flats fewer).|Piccolo: sounds an octave higher than written. Double bass and contrabassoon: an octave lower.|Trombones: tenor clef for trombone I and II high parts, bass clef for the bass trombone; they don't transpose.", "Spot every transposing part in a full score and say how it sounds.", "Big orchestra practice.", "Higher or lower? You name an instrument; he says if it sounds higher or lower than written, and by how much.", "He knows every transposition in the Grade 8 list."],
+ ["G8 Scores", 5, "orch8", "Reading a full score quickly", "Exam method for question 5: 1. Read all the questions first. 2. Find the key from the strings. 3. For transposing parts, work out a single note before answering. 4. Count bars carefully; bar numbers are often given.|Doublings: flutes often double violin I an octave higher; bassoons double cellos; horns hold the harmony.|Leave about 35 minutes for question 5.", "Do a full question 5 together, timed.", "Big orchestra practice.", "Doubling detective: he finds two instruments playing the same notes.", "Question 5 scored 18/25 or more."],
+ ["G8 Scores", 5, "score8", "Review: score questions (Days 116–122)", "Go back over Days 116–122: chamber scores, chromatic chords in scores, transposition and clefs, full score order, brass in old keys and fast score reading.", "Questions 4 and 5 from the lesson pack, timed at 35 minutes each.", "Grade 8 scores practice.", "His choice.", "Above 80% on the score drills."],
+ ["G8 Papers", 5, "trio8", "Grade 8 practice paper 1: questions 1–3", "Our own Grade 8 practice paper (in the lesson pack). Today: questions 1 to 3, the writing questions, timed at about 1 hour 25 minutes.|Exam conditions: quiet room, no help.", "Do questions 1–3 of practice paper 1.", "Check questions 1–3 with the checklists and models.", "A treat afterwards.", "Mark it next time."],
+ ["G8 Papers", 5, "score8", "Grade 8 practice paper 1: questions 4–5", "Questions 4 and 5 of practice paper 1, about 1 hour 15 minutes.", "Do questions 4–5 of practice paper 1, or on screen.", "Mark the paper with the marking key, then record the marks.", "His choice.", "Marks recorded. 75 or more out of 100: on track. Below 66: spend extra days on the weakest question."],
+ ["G8 Papers", 5, "chords8", "Mark paper 1 and fix the weakest question", "Go through every lost mark and find the day that teaches it.|Redo every wrong answer.", "Mark together and log every mistake by question.", "Practice on the weakest strand.", "His choice.", "He can explain every mistake."],
+ ["G8 Papers", 5, "kb8", "Grade 8 practice paper 2 (full, 3 hours)", "Practice paper 2 in one sitting, timed at 3 hours. Treat it as the real exam.", "Practice paper 2, exam conditions.", "Mark it with the key.", "A proper break.", "Score recorded."],
+ ["G8 Papers", 5, "orch8", "Grade 8 practice paper 3 (full, 3 hours)", "Practice paper 3, timed at 3 hours, in exam conditions.", "Practice paper 3.", "Mark it, then fix the weakest question.", "A proper break.", "Score recorded. About 75 or more: book the exam."],
+ ["G8 Papers", 5, "chords8", "Mark papers 2 and 3 and fix the gaps", "Compare papers 2 and 3 question by question. Reteach the question that lost the most marks, using its days in the plan.", "Redo the weakest question from each paper.", "Practice on the weakest strand.", "His choice.", "Every question averages at least two-thirds of its marks."],
+ ["G8 Papers", 5, "terms8", "Grade 8 exam technique and final review", "Suggested timing: question 1 (15 marks) 25 min, question 2 (15) 25 min, question 3 (20) 35 min, questions 4 and 5 (25 each) 35 min each, then 25 min to check.|Check the trio for 3rds and consecutives, the keyboard piece for the pattern and accidentals, the melody for directions, and every transposition twice.|More practice: the Grade 8 question bank in the Papers list.", "A light mixed review: 10 questions.", "Word cards and Match pairs.", "Finish on something he's good at.", "Ready. Rest the day before the exam."],
 ];
 const PLAN_DEFAULT = { exam: "", days: [1, 3, 5, 6], trips: [["2026-11-19", "2026-11-28", "London"], ["2026-12-07", "2026-12-15", "Vietnam"]] };
 const PAPERS = new Set(S.map((s, i) => /[Pp]ractice paper/.test(s[3]) ? i : -1).filter(i => i >= 0));
@@ -1274,10 +1317,16 @@ const PHASES = [
   { k: "G7 Compose", label: "Grade 7: composing", cls: "c-g4", color: "var(--g4)" },
   { k: "G7 Scores", label: "Grade 7: scores", cls: "c-g5", color: "var(--g5)" },
   { k: "G7 Papers", label: "Grade 7: practice papers", cls: "c-gp", color: "var(--gp)" },
+  { k: "G8 Chords", label: "Grade 8: chromatic chords", cls: "c-g4", color: "var(--g4)" },
+  { k: "G8 Trio", label: "Grade 8: the trio sonata", cls: "c-g5", color: "var(--g5)" },
+  { k: "G8 Keyboard", label: "Grade 8: keyboard outlines", cls: "c-g3", color: "var(--g3)" },
+  { k: "G8 Compose", label: "Grade 8: composing", cls: "c-g4", color: "var(--g4)" },
+  { k: "G8 Scores", label: "Grade 8: scores", cls: "c-g5", color: "var(--g5)" },
+  { k: "G8 Papers", label: "Grade 8: practice papers", cls: "c-gp", color: "var(--gp)" },
   { k: "rev", label: "Revision days", cls: "c-rev" },
   { k: "exam", label: "Exam", cls: "c-ex" },
 ];
-const chipColor = t => ({ Harmony: "var(--g4)", Melody: "var(--g5)", Compose: "var(--g3)", Scores: "var(--g4)", Papers: "var(--gp)", "G7 Chords": "var(--g4)", "G7 Figuring": "var(--g5)", "G7 Decoration": "var(--g3)", "G7 Compose": "var(--g4)", "G7 Scores": "var(--g5)", "G7 Papers": "var(--gp)" })[t] || "var(--g3)";
+const chipColor = t => ({ Harmony: "var(--g4)", Melody: "var(--g5)", Compose: "var(--g3)", Scores: "var(--g4)", Papers: "var(--gp)", "G7 Chords": "var(--g4)", "G7 Figuring": "var(--g5)", "G7 Decoration": "var(--g3)", "G7 Compose": "var(--g4)", "G7 Scores": "var(--g5)", "G7 Papers": "var(--gp)", "G8 Chords": "var(--g4)", "G8 Trio": "var(--g5)", "G8 Keyboard": "var(--g3)", "G8 Compose": "var(--g4)", "G8 Scores": "var(--g5)", "G8 Papers": "var(--gp)" })[t] || "var(--g3)";
 const phaseOf = t => t;
 
 const STRANDS = [
@@ -1295,6 +1344,11 @@ const STRANDS = [
   ["fig7", "Figuring a bass", "Grade 7 question 1: figures for a given melody and bass"],
   ["sus7", "Suspensions and decoration", "Grade 7 question 2: 4–3, 7–6, 9–8, 2–3 and melodic decoration"],
   ["score7", "Grade 7 scores", "Transposing solos with piano, C clefs, full orchestral scores, Grade 7 terms"],
+  ["chords8", "Grade 8 chords", "Secondary dominants, diminished 7ths on other degrees, Italian, French and German augmented 6ths"],
+  ["trio8", "Trio sonata", "Grade 8 question 1: two violin parts over a figured bass"],
+  ["kb8", "Keyboard outlines", "Grade 8 question 2: continuing an accompaniment pattern through a progression"],
+  ["compose8", "Grade 8 composing", "Question 3: a melody of at least 12 bars for an instrument"],
+  ["score8", "Grade 8 scores", "Chamber scores, full scores of up to 24 staves, old-style transposing brass, Grade 8 terms"],
 ];
 
 /* ---------- Dates ---------- */
@@ -2973,9 +3027,18 @@ const PAPER_DEF = {
   g7a: { title: "Grade 7 practice paper 1", minutes: 180, seed: 7101, day: 83, g7: true },
   g7b: { title: "Grade 7 practice paper 2", minutes: 180, seed: 7207, day: 86, g7: true },
   g7c: { title: "Grade 7 practice paper 3", minutes: 180, seed: 7311, day: 87, g7: true },
+  g8a: { title: "Grade 8 practice paper 1", minutes: 180, seed: 8101, day: 124, g8: true },
+  g8b: { title: "Grade 8 practice paper 2", minutes: 180, seed: 8207, day: 127, g8: true },
+  g8c: { title: "Grade 8 practice paper 3", minutes: 180, seed: 8311, day: 128, g8: true },
 };
-const PAPER_OF_DAY = { 41: "g6a", 42: "g6a", 43: "g6a", 44: "g6b", 45: "g6b", 46: "g6c", 47: "g6c", 83: "g7a", 84: "g7a", 85: "g7a", 86: "g7b", 87: "g7c" };
-const PAPER_SECTIONS = P0 => P0 && P0.g7 ? [
+const PAPER_OF_DAY = { 41: "g6a", 42: "g6a", 43: "g6a", 44: "g6b", 45: "g6b", 46: "g6c", 47: "g6c", 83: "g7a", 84: "g7a", 85: "g7a", 86: "g7b", 87: "g7c", 124: "g8a", 125: "g8a", 126: "g8a", 127: "g8b", 128: "g8c" };
+const PAPER_SECTIONS = P0 => P0 && P0.g8 ? [
+  ["1", "A trio sonata", [["trio8w", 15]]],
+  ["2", "Completing a keyboard piece", [["kb8w", 15]]],
+  ["3", "Composition", [["mel8", 20]]],
+  ["4", "A chamber score", [["score8", 3], ["score8", 3], ["score8", 3], ["score8", 3], ["chords8", 3], ["chords8", 3], ["terms8", 3], ["score8", 4]]],
+  ["5", "An orchestral score", [["orch8", 3], ["orch8", 3], ["orch8", 3], ["orch8", 3], ["chords8", 3], ["terms8", 3], ["terms8", 3], ["orch8", 4]]],
+] : P0 && P0.g7 ? [
   ["1", "Figuring a bass", [["fig7", 15]]],
   ["2", "Suspensions and decoration", [["decor7", 15]]],
   ["3", "Composition", [["comp7", 20]]],
@@ -2998,7 +3061,7 @@ function buildPaper(k) {
       const seen = new Set();
       items.forEach(([kind, marks], j) => {
         let q;
-        for (let t = 0; t < 120; t++) { q = seeded(P0.seed * 1000 + si * 50 + j * 7 + t, () => GEN[kind](5)); if (!seen.has(qKey(q)) && !(q.satb && (q.satb.write.length < 3 || q.satb.ch.length < 7)) && !(q.harm && q.harm.mel.length < 7) && !(q.fig && q.fig.b.length < 6) && !(q.decor && q.decor.V.length < 6) && !(P0.g7 && kind === "decor7" && !q.decor)) break; }
+        for (let t = 0; t < 120; t++) { q = seeded(P0.seed * 1000 + si * 50 + j * 7 + t, () => GEN[kind](5)); if (!seen.has(qKey(q)) && !(q.satb && (q.satb.write.length < 3 || q.satb.ch.length < 7)) && !(q.harm && q.harm.mel.length < 7) && !(q.fig && q.fig.b.length < 6) && !(q.decor && q.decor.V.length < 6) && !(P0.g7 && kind === "decor7" && !q.decor) && !(P0.g8 && (q.kind !== kind || (kind === "trio8w" && q.trio.V.length < 10)))) break; }
         seen.add(qKey(q)); q._marks = marks; qs.push(q); sect.push([n, name]);
       });
     });
@@ -3023,7 +3086,7 @@ function openPaper(k) {
   el.innerHTML = `<div class="teach-in ws">
     <div class="teach-top no-print"><button class="btn" type="button" data-act="tclose">← Close</button><span class="spacer"></span><button class="btn" type="button" data-act="paperscreen" data-k="${k}">Philip does it on screen</button><button class="btn primary" type="button" data-act="wsprint">Print</button></div>
     <header class="ws-head"><h2>${esc(d.title)}</h2><p>Time allowed: 3 hours · ${paperTotal(p)} marks · pass 66, merit 80, distinction 90</p><p class="ws-line">Name ____________________ &nbsp; Date ____________ &nbsp; Score ____ / ${paperTotal(p)}</p>
-    <p class="meta">${d.g7 ? "Our own paper in the style of the ABRSM Grade 7 exam, not an ABRSM paper. Answer every question. Suggested timing: questions 1 and 2, 25 minutes each; question 3, 35 minutes; questions 4 and 5, 35 minutes each; 25 minutes to check." : `Our own paper in the style of the ABRSM Grade 6 exam, not an ABRSM paper. Answer every question. Suggested timing: questions 1 and 2, 25 minutes each (in question 1 you may write in four parts or keyboard style; this paper practises ${d.kb ? "keyboard style" : "four parts"}); question 3, 35 minutes; questions 4 and 5, 35 minutes each; 25 minutes to check.`}</p></header>
+    <p class="meta">${d.g8 ? "Our own paper in the style of the ABRSM Grade 8 exam, not an ABRSM paper. Answer every question. Suggested timing: questions 1 and 2, 25 minutes each; question 3, 35 minutes; questions 4 and 5, 35 minutes each; 25 minutes to check." : d.g7 ? "Our own paper in the style of the ABRSM Grade 7 exam, not an ABRSM paper. Answer every question. Suggested timing: questions 1 and 2, 25 minutes each; question 3, 35 minutes; questions 4 and 5, 35 minutes each; 25 minutes to check." : `Our own paper in the style of the ABRSM Grade 6 exam, not an ABRSM paper. Answer every question. Suggested timing: questions 1 and 2, 25 minutes each (in question 1 you may write in four parts or keyboard style; this paper practises ${d.kb ? "keyboard style" : "four parts"}); question 3, 35 minutes; questions 4 and 5, 35 minutes each; 25 minutes to check.`}</p></header>
     ${body}
     <section class="ws-key"><h3>Marking key (for Mum)</h3><ol>${p.qs.map((q, i) => `<li><span class="meta">Q${p.sect[i][0]} · ${q._marks}m</span> <b>${esc(wsAnswer(q))}</b>. ${esc(q.explain || "")}${modelHTML(q)}${g7KeyHTML(q)}${q.satb || q.harm ? `<p class="meta">Marking: start from ${q._marks}. Take off 2 for each real mistake (a wrong chord or note, a missing 3rd, consecutive 5ths or octaves, a doubled leading note, an unresolved 7th or leading note). Take off 1 for weaker points (an awkward leap, a doubled 3rd).</p>` : ""}</li>`).join("")}</ol>
     <div class="pp-score no-print"><h3>Record his marks</h3><div class="pp-grid">${Object.keys(mx).map(s => `<label>Question ${s} <input type="number" min="0" max="${mx[s]}" inputmode="numeric" data-psec="${s}" value="${saved && saved.sections ? saved.sections[+s - 1] ?? "" : ""}"> / ${mx[s]}</label>`).join("")}</div>
@@ -3047,7 +3110,7 @@ function papersHTML() {
   const ps = state.papers || {};
   return `<div class="pp-list">${Object.keys(PAPER_DEF).map(k => `<div class="pp-row"><b>${esc(PAPER_DEF[k].title)}</b><span class="meta">${PAPER_DEF[k].day === "extra" ? "Extra (after Day 48)" : "Day " + PAPER_DEF[k].day}${ps[k] ? ` · ${ps[k].score}/100 on ${short(ps[k].date)}` : ""}</span><span class="spacer"></span><button class="btn small" type="button" data-act="paper" data-k="${k}">Open / print</button><button class="btn small" type="button" data-act="paperscreen" data-k="${k}">On screen</button></div>`).join("")}</div>
   <p style="margin-top:12px"><a href="downloads.html" target="_blank" rel="noopener">All the PDFs to download (lesson packs, papers, question banks)</a></p><p class="meta" style="margin-top:12px">Question bank: about 100 extra Grade 6 questions with answers, sorted by topic, including figured basses and melodies to harmonise with model answers.</p>
-  <div class="row-btns"><button class="btn small" type="button" data-act="bank" data-k="6">Grade 6 question bank</button><button class="btn small" type="button" data-act="bank" data-k="7">Grade 7 question bank</button><button class="btn small" type="button" data-act="ref">Grade 6–7 reference book</button></div>`;
+  <div class="row-btns"><button class="btn small" type="button" data-act="bank" data-k="6">Grade 6 question bank</button><button class="btn small" type="button" data-act="bank" data-k="7">Grade 7 question bank</button><button class="btn small" type="button" data-act="bank" data-k="8">Grade 8 question bank</button><button class="btn small" type="button" data-act="ref">Grade 6–8 reference book</button></div>`;
 }
 
 /* ---------- Lesson pack: everything for one day ---------- */
@@ -3073,6 +3136,7 @@ function openPack(i) {
       ${L ? `<h4>Show him these cards</h4><div class="mini-cards">${L.kid.map(([t, sp], k) => `<div class="mini-card"><span class="how-n">${k + 1}</span><p>${esc(t)}</p>${sp ? (sp.top ? `<div class="stave">${Eng.grand(Object.assign({ z: .8 }, sp))}</div>` : stave(sp, .85)) : ""}</div>`).join("")}</div>` : ""}</section>
     <section class="pk-sec"><h3>3 · Do together (10 min)</h3>${list(tog)}
       ${pk ? `<p><button class="btn small no-print" type="button" data-act="paper" data-k="${pk}">Open ${esc(PAPER_DEF[pk].title)}</button></p>` : `<h4>Four questions to work through together</h4>${together.map((q, k) => wsQ(q, k, ansP(q))).join("")}`}</section>
+    ${typeof g8PackHTML === "function" ? g8PackHTML(i, tag) : ""}
     ${tag === "G7 Compose" ? (() => { const k = (i - 69) % COMP7.length, t = COMP7[k]; return `<section class="pk-sec"><h3>Today's composition task</h3><p>${esc("Write a melody for " + t.inst + " over this chord plan. The first bar is given; continue to the end of bar 8.")}</p>${[0, 1].map(h => `<div class="stave">${Eng.grand(Object.assign({ z: .9 }, comp7Spec(k, false, h)))}</div>`).join("")}<p class="meta">${esc(t.inst)} range: ${esc(t.range)}.</p><h4>Checklist</h4><ol class="clist">${C7_CHECKS.map(c => `<li>${esc(c)}</li>`).join("")}</ol><h4>One model answer (for Mum)</h4>${[0, 1].map(h => `<div class="stave">${Eng.grand(Object.assign({ z: .8 }, comp7Spec(k, true, h)))}</div>`).join("")}</section>`; })() : ""}
     ${tag === "Compose" ? (() => { const k = (i - 24 + OPENINGS.length) % OPENINGS.length, o = OPENINGS[k]; return `<section class="pk-sec"><h3>Today's composition opening</h3><p>${esc(compBrief(o))}</p>${stave(openingSpec(o, 6), .95)}<p class="meta">${esc(o.inst)} range: ${esc(o.range)}.</p><h4>Plan it together</h4>${compPlan(k)}<h4>The checklist</h4><ol class="clist">${CHECKS.map(c => `<li>${esc(c)}</li>`).join("")}</ol></section><div class="pk-break"></div><section class="pk-sec"><h3>Model answer (show it after he has written his own)</h3>${modelHTMLc(k)}</section>`; })() : ""}
     <section class="pk-sec"><h3>4 · On his own (12 min)</h3>${list(alone)}${pk ? "" : `<p class="meta">His worksheet is on the next page (answers at the end).</p>`}</section>
@@ -3099,15 +3163,17 @@ const BANK_STRANDS = [["Figured bass (question 1)", ["satb"], 4], ["Chords for a
   ["Notes outside the chord", ["nonchord"], 8], ["Keys and modulation", ["modul"], 8], ["Score questions and devices", ["score6", "dev6", "int6"], 14], ["The orchestra and transposing", ["orch", "orch6"], 12], ["Terms", ["terms6"], 12], ["Mark my answer", ["check"], 8]];
 const BANK7_STRANDS = [["Figuring a bass (question 1)", ["fig7"], 4], ["Rewriting with suspensions (question 2)", ["decor7"], 3], ["Composing over chords (question 3)", ["comp7"], 3], ["Grade 7 chords", ["chords7"], 14], ["Suspensions and decoration", ["sus7"], 12],
   ["Solo instrument and piano (question 4)", ["score7"], 12], ["Full score (question 5)", ["orch7"], 12], ["Grade 7 terms", ["terms7"], 12]];
+const BANK8_STRANDS = [["Trio sonata (question 1)", ["trio8w"], 3], ["Trio sonata: choosing notes", ["trio8"], 10], ["Keyboard outline (question 2)", ["kb8w"], 3], ["Keyboard patterns", ["kb8"], 8], ["Composing a melody (question 3)", ["mel8"], 3],
+  ["Grade 8 chords", ["chords8"], 14], ["Chamber score (question 4)", ["score8"], 12], ["Full score (question 5)", ["orch8"], 12], ["Grade 8 terms", ["terms8"], 12]];
 const BANK_CACHES = {};
 function buildBank(g) {
-  g = g === 7 ? 7 : 6; if (BANK_CACHES[g]) return BANK_CACHES[g];
-  const STR = g === 7 ? BANK7_STRANDS : BANK_STRANDS, base = g === 7 ? 700013 : 600011;
+  g = g === 8 ? 8 : g === 7 ? 7 : 6; if (BANK_CACHES[g]) return BANK_CACHES[g];
+  const STR = g === 8 ? BANK8_STRANDS : g === 7 ? BANK7_STRANDS : BANK_STRANDS, base = g === 8 ? 800017 : g === 7 ? 700013 : 600011;
   const out = []; GATE = 999;
   try {
     STR.forEach(([name, kinds, n], si) => {
       const seen = new Set(), qs = [];
-      for (let t = 0; qs.length < n && t < n * 12; t++) { const q = seeded(base + si * 977 + t, () => GEN[kinds[t % kinds.length]](5)); if (!q || q.listen || seen.has(qKey(q)) || (q.satb && q.satb.ch.length < 6) || (q.harm && q.harm.mel.length < 6)) continue; seen.add(qKey(q)); qs.push(q); }
+      for (let t = 0; qs.length < n && t < n * 12; t++) { const q = seeded(base + si * 977 + t, () => GEN[kinds[t % kinds.length]](5)); if (!q || q.listen || seen.has(qKey(q)) || (q.satb && q.satb.ch.length < 6) || (q.harm && q.harm.mel.length < 6) || (g === 8 && q.kind !== kinds[t % kinds.length])) continue; seen.add(qKey(q)); qs.push(q); }
       out.push([name, qs]);
     });
   } finally { GATE = null; }
@@ -3116,11 +3182,11 @@ function buildBank(g) {
 function openBank(g) {
   const B = buildBank(g); let n = 0, m = 0;
   const body = B.map(([name, qs]) => `<h3 class="pp-sec">${esc(name)}</h3>` + qs.map(q => wsQ(q, n++)).join("")).join("");
-  const key = B.map(([name, qs]) => `<h4>${esc(name)}</h4><ol start="${m + 1}">${qs.map(q => { m++; return `<li><b>${esc(wsAnswer(q))}</b>. ${esc(q.explain || "")}${q.satb || q.harm ? modelHTML(q) : (q.fig || q.decor || q.c7) ? g7KeyHTML(q) : ""}</li>`; }).join("")}</ol>`).join("");
+  const key = B.map(([name, qs]) => `<h4>${esc(name)}</h4><ol start="${m + 1}">${qs.map(q => { m++; return `<li><b>${esc(wsAnswer(q))}</b>. ${esc(q.explain || "")}${q.satb || q.harm ? modelHTML(q) : (q.fig || q.decor || q.c7 || q.trio || q.kb || q.m8) ? g7KeyHTML(q) : ""}</li>`; }).join("")}</ol>`).join("");
   const el = $("teach");
   el.innerHTML = `<div class="teach-in ws">
     <div class="teach-top no-print"><button class="btn" type="button" data-act="tclose">← Close</button><span class="spacer"></span><button class="btn primary" type="button" data-act="wsprint">Print</button></div>
-    <header class="ws-head"><h2>Grade ${g === 7 ? 7 : 6} question bank</h2><p class="ws-line">Name ____________________ &nbsp; Date ____________</p>
+    <header class="ws-head"><h2>Grade ${g} question bank</h2><p class="ws-line">Name ____________________ &nbsp; Date ____________</p>
     <p class="meta">Extra practice by topic, ${n} questions. Use a section after the matching day, or the strands that are weakest on the progress chart.</p></header>
     ${body}
     <section class="ws-key"><h3>Answers (for Mum)</h3>${key}</section>
@@ -3483,11 +3549,20 @@ const pname = p => nm(m7(p.d), p.a);
 const pnameO = p => nm(m7(p.d), p.a) + Math.floor(p.d / 7);
 
 /* chords: {deg, inv, sev} */
-const CH = s => { if (s === "N6") return { deg: 2, sev: 0, inv: 1, nea: 1 }; const m = /^(VII|VI|IV|V|III|II|I)(7?)([bcd]?)$/.exec(s); return { deg: RN.indexOf(m[1]) + 1, sev: m[2] ? 7 : 0, inv: m[3] ? " bcd".indexOf(m[3]) : 0 }; };
-const chLabel = c => c.nea ? "N6" : RN[c.deg - 1] + (c.sev ? "7" : "") + INV[c.inv];
+const AUG6 = { It6: "It", Fr6: "Fr", Ger6: "Ger" };
+const CH = s => { if (s === "N6") return { deg: 2, sev: 0, inv: 1, nea: 1 }; if (AUG6[s]) return { deg: 6, sev: 0, inv: 0, aug: AUG6[s] };
+  if (s.includes("/")) { const [a, b] = s.split("/"); return Object.assign(CH(a), { sec: RN.indexOf(b) + 1 }); } const m = /^(VII|VI|IV|V|III|II|I)(7?)([bcd]?)$/.exec(s); return { deg: RN.indexOf(m[1]) + 1, sev: m[2] ? 7 : 0, inv: m[3] ? " bcd".indexOf(m[3]) : 0 }; };
+const chLabel = c => c.nea ? "N6" : c.aug ? c.aug + "6" : RN[c.deg - 1] + (c.sev ? "7" : "") + INV[c.inv] + (c.sec ? "/" + RN[c.sec - 1] : "");
+/* the key a secondary dominant borrows: V/V in C is V of G */
+function secKey(K, c) { const t = degLA(K, c.sec), n = nm(t.l, t.a); return MAJ.find(k => k[0] === n) ? K6(n, false) : Object.values(MIN).includes(n) ? K6(n, true) : K6(n.replace("♯", "").replace("♭", ""), false); }
+const keyFor = (K, c) => c.sec ? secKey(K, c) : (c.K || K);
 function tonesOf(K, c) { K = c.K || K;
   /* Neapolitan: the major chord on the flattened supertonic (in C: D♭–F–A♭) */
   if (c.nea) { const r = degLA(K, 2), f = degLA(K, 6); return [{ l: r.l, a: r.a - 1 }, degLA(K, 4), { l: f.l, a: K.minor ? f.a : f.a - 1 }]; }
+  if (c.sec) return tonesOf(secKey(K, c), Object.assign({}, c, { sec: 0 }));
+  /* augmented 6ths, on the flattened 6th: It ♭6–1–♯4, Fr ♭6–1–2–♯4, Ger ♭6–1–♭3–♯4 */
+  if (c.aug) { const f6 = degLA(K, 6), b6 = { l: f6.l, a: K.minor ? f6.a : f6.a - 1 }, t = degLA(K, 1), s4 = degLA(K, 4), x = { l: s4.l, a: s4.a + 1 }, d2 = degLA(K, 2), m3 = degLA(K, 3);
+    return c.aug === "It" ? [b6, t, x] : c.aug === "Fr" ? [b6, t, d2, x] : [b6, t, { l: m3.l, a: K.minor ? m3.a : m3.a - 1 }, x]; }
   return (c.sev ? [0, 2, 4, 6] : [0, 2, 4]).map(i => degLA(K, ((c.deg - 1 + i) % 7) + 1)); }
 const bassTone = (K, c) => tonesOf(K, c)[c.inv];
 const isDom = c => c.deg === 5 || (c.deg === 7 && !c.sev);
@@ -3496,7 +3571,8 @@ const triadName = (K, c) => tonesOf(K, c).map(t => nm(t.l, t.a)).join("–");
 
 /* figured bass: the usual short forms, with accidentals where a note differs from the key signature */
 function figureOf(K, c) {
-  K = c.K || K; const T = tonesOf(K, c), b = T[c.inv];
+  K = c.K || K;
+  if (c.aug) { const f = { It: ["♯6"], Fr: ["♯6", "4", "3"], Ger: ["♯6", "5"] }[c.aug], m3 = degLA(K, 3); return (K.minor ? f : c.aug === "Ger" ? ["♯6", "♭5", "♭3"] : f).join("/"); } const T = tonesOf(K, c), b = T[c.inv];
   const ivs = T.map((t, i) => i === c.inv ? null : { n: ((t.l - b.l + 7) % 7) + 1, alt: t.a !== sigOf(K, t.l) ? t.a : null }).filter(Boolean);
   const base = c.sev ? [["7", "5", "3"], ["6", "5", "3"], ["6", "4", "3"], ["6", "4", "2"]][c.inv] : [["5", "3"], ["6", "3"], ["6", "4"]][c.inv];
   const shown = c.sev ? [["7"], ["6", "5"], ["4", "3"], ["4", "2"]][c.inv] : [[], ["6"], ["6", "4"]][c.inv];
@@ -3523,8 +3599,9 @@ function voicings(K, c, fix) {
 /* ---------- checking ---------- */
 function toneIdx(K, c, p) { return tonesOf(K, c).findIndex(t => t.l === m7(p.d)); }
 function checkChord(K, c, v, i, prev, next) {
+  if (c.sec) return checkChord(secKey(K, c), Object.assign({}, c, { sec: 0, lab: chLabel(c) }), v, i, prev, next);
   K = c.K || K; const iss = [], T = tonesOf(K, c), L = leadLA(K), add = (sev, type, msg) => iss.push({ sev, type, i, msg });
-  const where = `Chord ${i + 1} (${chLabel(c)})`;
+  const where = `Chord ${i + 1} (${c.lab || chLabel(c)})`;
   VOICES.forEach(x => {
     const p = v[x]; if (!p) return;
     const k = toneIdx(K, c, p);
@@ -3540,6 +3617,7 @@ function checkChord(K, c, v, i, prev, next) {
   if (v.a.m - v.t.m > 12) add("err", "gap", `${where}: more than an octave between alto and tenor.`); }
   if (toneIdx(K, c, v.b) !== c.inv) add("err", "bass", `${where}: the bass should be ${nm(T[c.inv].l, T[c.inv].a)} for ${chLabel(c)}.`);
   const idx = VOICES.map(x => toneIdx(K, c, v[x])), cnt = T.map((_, k) => idx.filter(z => z === k).length);
+  if (c.aug) T.forEach((t, k) => { if (k && !cnt[k]) add("err", "missAug", `${where}: the ${nm(t.l, t.a)} is missing; an augmented 6th needs all its notes.`); });
   if (!cnt[1]) add("err", "miss3", `${where}: the 3rd (${nm(T[1].l, T[1].a)}) is missing.`);
   if (!cnt[0]) add("err", "missR", `${where}: the root (${nm(T[0].l, T[0].a)}) is missing.`);
   if (c.sev && !cnt[3]) add("err", "miss7", `${where}: the 7th (${nm(T[3].l, T[3].a)}) is missing.`);
@@ -3552,7 +3630,7 @@ function checkChord(K, c, v, i, prev, next) {
 }
 function stepTo(p, q) { return Math.abs(q.d - p.d) === 1 && Math.abs(q.m - p.m) <= 2; }
 function checkMove(K, c1, c2, v1, v2, i) {
-  const iss = [], add = (sev, type, msg) => iss.push({ sev, type, i, msg }), L = leadLA(c1.K || K), w = `Chords ${i + 1}–${i + 2}`;
+  const iss = [], add = (sev, type, msg) => iss.push({ sev, type, i, msg }), L = leadLA(keyFor(K, c1)), w = `Chords ${i + 1}–${i + 2}`;
   if (!VOICES.every(x => v1[x] && v2[x])) return iss;
   PAIRS.forEach(([x, y]) => {
     const a1 = v1[x].m - v1[y].m, a2 = v2[x].m - v2[y].m, moved = v1[x].m !== v2[x].m || v1[y].m !== v2[y].m;
@@ -3573,7 +3651,12 @@ function checkMove(K, c1, c2, v1, v2, i) {
     else if (ld === 3 && iv === 6 && x !== "b") add("warn", "tritone", `${w}: the ${VNAME[x]} leaps an augmented 4th.`);
   });
   /* leading note and 7ths */
-  const resolving = isDom(c1) && ((c2.deg === 1 && c2.inv < 2) || c2.deg === 6);
+  const resolving = isDom(c1) && (c1.sec ? (c2.deg === c1.sec && !c2.sec && !c2.aug && c2.inv < 2) : ((c2.deg === 1 && c2.inv < 2) || c2.deg === 6));
+  /* an augmented 6th opens out: ♯4 rises a semitone and ♭6 falls a semitone, both to the dominant */
+  if (c1.aug) VOICES.forEach(x => { const p = v1[x], q = v2[x], k = toneIdx(K, c1, p), T = tonesOf(K, c1);
+    if (k === T.length - 1 && q.m !== p.m + 1) add("err", "aug6", `${w}: the augmented 6th's sharpened 4th (${pname(p)}) in the ${VNAME[x]} should rise a semitone.`);
+    if (k === 0 && q.m !== p.m - 1 && x !== "b") add("err", "aug6", `${w}: the augmented 6th's flattened 6th (${pname(p)}) in the ${VNAME[x]} should fall a semitone.`);
+    if (k === 0 && x === "b" && q.m !== p.m - 1 && q.m !== p.m - 13) add("err", "aug6", `${w}: the bass of the augmented 6th should fall a semitone to the dominant.`); });
   VOICES.forEach(x => {
     const p = v1[x], q = v2[x];
     if (resolving && m7(p.d) === L.l && p.a === L.a) {
@@ -3605,7 +3688,7 @@ function checkProg(K, chords) {
       if (passing || bassSame) return;
       iss.push({ sev: "err", type: "64", i, msg: `Chord ${i + 1} (${lab}): a 6/4 chord needs a reason. Use Ic going to V (cadential), or a passing or pedal 6/4.` });
     }
-    if (prev && isDom(prev) && prev.inv === 0 && c.deg === 4 && c.inv === 0) iss.push({ sev: "warn", type: "VIV", i, msg: `Chords ${i}–${i + 1}: V going back to IV sounds weak. Go to I or VI instead.` });
+    if (prev && isDom(prev) && !prev.sec && prev.inv === 0 && c.deg === 4 && c.inv === 0) iss.push({ sev: "warn", type: "VIV", i, msg: `Chords ${i}–${i + 1}: V going back to IV sounds weak. Go to I or VI instead.` });
     if ((c.K || K).minor && c.deg === 2 && c.inv === 0 && !c.sev) iss.push({ sev: "err", type: "IIdim", i, msg: `Chord ${i + 1}: in a minor key, II is diminished. Use IIb instead.` });
   });
   return iss;
@@ -4637,8 +4720,8 @@ function openRef() {
   const el = $("teach");
   el.innerHTML = `<div class="teach-in ws ref">
     <div class="teach-top no-print"><button class="btn" type="button" data-act="tclose">← Close</button><span class="spacer"></span><button class="btn primary" type="button" data-act="wsprint">Print</button></div>
-    <header class="ws-head"><h2>Grade 6–7 reference book</h2><p class="meta">Figured bass, the chords of a key, progressions, the part-writing checklist, cadences, notes outside the chord, modulation, devices, the orchestra, composing and terms.</p></header>
-    ${ref6HTML()}${typeof ref7HTML === "function" ? ref7HTML() : ""}
+    <header class="ws-head"><h2>Grade 6–8 reference book</h2><p class="meta">Figured bass, the chords of a key, progressions, the part-writing checklist, cadences, notes outside the chord, modulation, devices, the orchestra, composing and terms; then the Grade 7 and Grade 8 chords, writing questions and transposing instruments.</p></header>
+    ${ref6HTML()}${typeof ref7HTML === "function" ? ref7HTML() : ""}${typeof ref8HTML === "function" ? ref8HTML() : ""}
   </div>`;
   el.hidden = false; document.documentElement.classList.add("teach-open"); el.scrollTop = 0;
 }
@@ -5068,6 +5151,469 @@ GEN.orch7 = lvl => {
   return GEN.orch6(lvl);
 };
 
+/* ================= Grade 8: chromatic harmony (secondary dominants, augmented 6ths) and chord drills ================= */
+const G8 = 88;   /* index of Day 89, the first Grade 8 day */
+const P8 = [
+  { m: false, labs: ["I", "V7/V", "V", "I"], focus: "V7/V" },
+  { m: false, labs: ["I", "IV", "V7b/V", "V", "I"], focus: "V7b/V" },
+  { m: false, labs: ["I", "VI", "V/V", "V", "I"], focus: "V/V" },
+  { m: false, labs: ["I", "V7/IV", "IV", "V", "I"], focus: "V7/IV" },
+  { m: false, labs: ["I", "V7/II", "II", "V", "I"], focus: "V7/II" },
+  { m: false, labs: ["I", "V7/VI", "VI", "IV", "V", "I"], focus: "V7/VI" },
+  { m: false, labs: ["I", "VII7/V", "V", "I"], focus: "VII7/V" },
+  { m: false, labs: ["I", "IV", "V7d/V", "Vb", "I"], focus: "V7d/V" },
+  { m: true, labs: ["I", "IV", "It6", "V", "I"], focus: "It6" },
+  { m: true, labs: ["I", "VI", "It6", "V", "I"], focus: "It6" },
+  { m: true, labs: ["I", "IV", "Fr6", "V", "I"], focus: "Fr6" },
+  { m: true, labs: ["I", "VI", "Fr6", "V", "I"], focus: "Fr6" },
+  { m: true, labs: ["I", "IV", "Ger6", "Ic", "V", "I"], focus: "Ger6" },
+  { m: true, labs: ["I", "VI", "Ger6", "Ic", "V7", "I"], focus: "Ger6" },
+  { m: true, labs: ["I", "V7/IV", "IV", "V", "I"], focus: "V7/IV" },
+  { m: true, labs: ["I", "IVb", "V7/V", "V", "I"], focus: "V7/V" },
+];
+const G8_LABS = ["V/V", "V7/V", "V7b/V", "V7d/V", "V/IV", "V7/IV", "V7/II", "V7/VI", "VII7/V", "It6", "Fr6", "Ger6"];
+const chordType8 = (K, c) => c.aug ? (c.aug === "It" ? "an Italian" : c.aug === "Fr" ? "a French" : "a German") + " augmented 6th" : c.sec ? `a secondary dominant (${c.sev ? "dominant 7th" : "dominant"} of ${RN[c.sec - 1]})` : chordType7(K, c);
+function phrase8(want) {
+  for (let t = 0; t < 80; t++) {
+    const pool = P8.filter(p => !want || want(p)), p = pick(pool);
+    const K = pick(g6Keys(3, p.m ? "minor" : "major")), chords = p.labs.map(CH);
+    if (chords.some(c => tonesOf(K, c).some(x => Math.abs(x.a) > 1))) continue;
+    const V = realize(K, chords, null, { noise: 1.5 });
+    if (V) return { K, chords, V, focus: p.labs.indexOf(p.focus), pat: p };
+  }
+  return null;
+}
+const G8_NAMES = () => G7_NAMES.concat(G8_LABS);
+GEN.chords8 = lvl => {
+  const ph = phrase8(); if (!ph) return GEN.chords7(lvl);
+  const { K, chords, V, focus } = ph, c = chords[focus], ans = chLabel(c), r = Math.random();
+  const spec = satbSpec(K, chords, V, { hl: focus, labels: chords.map((_, i) => i === focus ? "X" : "") });
+  const tones = tonesOf(K, c).map(t => nm(t.l, t.a)).join("–");
+  if (r < .45) {
+    const near = G8_NAMES().filter(l => l !== ans && (okInKey(K, l.split("/")[0]) || l.includes("/") || l.endsWith("6")) && (l.includes("/") === ans.includes("/") || /6$/.test(l) === /6$/.test(ans) || Math.random() < .3));
+    return mk("chords8", `This passage is in ${keyLab(K)}. Name the chord marked X.`, ans, shuffle(near),
+      `X is ${tones}: ${ans}, ${chordType8(K, c)}. ${c.aug ? "Its augmented 6th (between the bass and the ♯4) opens out to the octave on the dominant." : c.sec ? `It is V${c.sev ? "7" : ""} of the key of ${RN[c.sec - 1]}, so its leading note (${nm(leadLA(secKey(K, c)).l, leadLA(secKey(K, c)).a)}) rises to the root of ${RN[c.sec - 1]}.` : ""}`,
+      { grand: spec, play: playOf(V), hint: "An accidental that isn't the leading note is a clue: it's often the leading note of ANOTHER key (a secondary dominant), or the ♯4 of an augmented 6th." });
+  }
+  if (r < .7) {
+    const types = ["an Italian augmented 6th", "a French augmented 6th", "a German augmented 6th", "a secondary dominant (dominant 7th of V)", "a secondary dominant (dominant 7th of IV)", "a Neapolitan 6th", "a diminished 7th"], right = chordType8(K, c);
+    return mk("chords8", `This passage is in ${keyLab(K)}. What kind of chord is X?`, right, types.filter(x => x !== right).concat(right.startsWith("a secondary") ? [] : ["a secondary dominant (dominant of V)"]),
+      `X is ${tones} (${ans}): ${right}.${c.aug ? " Italian: 3 notes (♭6, 1, ♯4). French adds the 2nd. German adds the ♭3." : ""}`,
+      { grand: spec, play: playOf(V), hint: "Count the notes and look at the accidentals. Augmented 6ths are built on the ♭6 in the bass." });
+  }
+  /* what does it resolve to? */
+  const nx = chords[focus + 1], nxl = chLabel(nx);
+  return mk("chords8", `In ${keyLab(K)}, ${ans} (${tones}) usually goes to which chord?`, c.aug ? (c.aug === "Ger" ? "Ic, then V" : "V") : RN[c.sec - 1],
+    c.aug ? ["V", "Ic, then V", "I", "IV", "VI"] : ["I", "IV", "V", "II", "VI"].concat([RN[c.sec - 1]]),
+    c.aug ? `Augmented 6ths resolve to the dominant${c.aug === "Ger" ? "; the German is usually followed by Ic first, to avoid consecutive 5ths" : ""}. Here it goes to ${nxl}.` : `A secondary dominant resolves to the chord it is the dominant of: ${RN[c.sec - 1]}. Here it goes to ${nxl}.`,
+    { grand: spec, play: playOf(V) });
+};
+
+/* ---------- Grade 8 terms ---------- */
+const TERMS8 = [
+  [8, "sotto voce", "in an undertone, quietly"], [8, "mezza voce", "at half voice, restrained"], [8, "a piacere", "freely, at the performer's pleasure"], [8, "l'istesso tempo", "at the same speed (the beat stays the same)"],
+  [8, "tempo rubato", "with some freedom of time"], [8, "mesto", "sad"], [8, "elegiaco", "mournful, like an elegy"], [8, "lamentoso", "lamenting"], [8, "con slancio", "with dash, impetuously"], [8, "affrettando", "hurrying"],
+  [8, "allargando", "broadening, getting slower and fuller"], [8, "stringendo", "pressing on, getting faster"], [8, "incalzando", "getting quicker and louder"], [8, "piangevole", "plaintive, tearful"], [8, "lontano", "distant"],
+  [8, "laissez vibrer", "let it vibrate (don't damp the sound)"], [8, "pressez", "hurry (French)"], [8, "en animant", "getting livelier (French)"], [8, "à volonté", "freely, at will (French)"], [8, "cuivré", "brassy, a forced brass tone (French)"], [8, "sur la touche", "bow over the fingerboard (French)"],
+  [8, "Hauptstimme", "the main part: bring it out (German)"], [8, "Nebenstimme", "a secondary part (German)"], [8, "ausdrucksvoll", "expressively (German)"], [8, "kräftig", "strong, vigorous (German)"], [8, "zögernd", "hesitating, slowing (German)"], [8, "gedämpft", "muted (German)"],
+  [8, "langsamer", "slower (German)"], [8, "lebhaft", "lively (German)"], [8, "nicht zu schnell", "not too fast (German)"], [8, "innig", "heartfelt, intimate (German)"], [8, "markiert", "marked, accented (German)"],
+];
+GEN.terms8 = lvl => {
+  const all = TERMS7.concat(TERMS8), t = pick(TERMS8.concat(TERMS8, TERMS7)), pool = all.filter(x => x !== t && x[2] !== t[2]);
+  if (Math.random() < .6) return mk("terms8", "What does this mean?", t[2], shuffle(pool).map(x => x[2]), `${t[1]} means "${t[2]}".`, { big: t[1], italic: true });
+  return mk("terms8", `Which term means "${t[2]}"?`, t[1], shuffle(pool).map(x => x[1]), `${t[1]} means "${t[2]}".`);
+};
+
+/* ================= Grade 8 question 1: a Baroque trio sonata (two violins over a figured bass) ================= */
+/* three real parts: each chord needs its 3rd (and 7th) among violin I, violin II and bass; no unisons. Lifts the violins an octave when they are low. */
+function trioFit(K, chords, V) {
+  /* repair: when the tenor holds the only 3rd (or 7th), give that note to violin II instead of the alto's */
+  const need = (i, v) => { const T = tonesOf(K, chords[i]), c = chords[i], L = [v.s, v.a, v.b].map(p => m7(p.d)); return c.aug ? !L.includes(T[T.length - 1].l) : !L.includes(T[1].l) || (c.sev && !L.includes(T[3].l)); };
+  let fixed = false;
+  V = V.map((v, i) => { if (!need(i, v) || v.t.m >= v.s.m || need(i, Object.assign({}, v, { a: v.t }))) return v; fixed = true; return Object.assign({}, v, { a: v.t, t: v.a }); });
+  if (fixed) { const pr = [["s", "a"], ["s", "b"], ["a", "b"]];
+    for (let i = 1; i < V.length; i++) { if (Math.abs(V[i].a.m - V[i - 1].a.m) > 9) return null;
+      /* a 7th in violin II must fall by step (or stay); a leading note on V must rise (or fall to the 5th) */
+      const pc = chords[i - 1], pa = V[i - 1].a, T = tonesOf(K, pc), dd = V[i].a.d - pa.d;
+      if (pc.sev && m7(pa.d) === T[3].l && !(dd === -1 || dd === 0)) return null;
+      if (!pc.sec && !pc.aug && pc.deg === 5 && m7(pa.d) === T[1].l && !(dd === 1 || dd === -2 || dd === 0)) return null;
+      for (const [x, y] of pr) { const i1 = ((V[i - 1][x].m - V[i - 1][y].m) % 12 + 12) % 12, i2 = ((V[i][x].m - V[i][y].m) % 12 + 12) % 12, mv = V[i][x].m !== V[i - 1][x].m || V[i][y].m !== V[i - 1][y].m;
+        if (mv && (i1 === 7 || i1 === 0) && i1 === i2) return null; } } }
+  const ok3 = V.every((v, i) => { const T = tonesOf(K, chords[i]), L = [v.s, v.a, v.b].map(p => m7(p.d)), c = chords[i];
+    if (v.s.m === v.a.m) return false; if (c.aug) return L.includes(T[T.length - 1].l); return L.includes(T[1].l) && (!c.sev || L.includes(T[3].l)); });
+  if (!ok3) return null;
+  if (Math.max(...V.map(v => v.s.m)) <= 72) V = V.map(v => Object.assign({}, v, { s: P6(v.s.d + 7, v.s.a), a: P6(v.a.d + 7, v.a.a) }));
+  if (V.some(v => v.s.m > 86 || v.a.m < 57)) return null;
+  return V;
+}
+function trioPhrase(long) {
+  for (let t = 0; t < 200; t++) {
+    let ph;
+    if (!long && Math.random() < .3) { ph = phrase8(p => !p.labs.some(l => /6$/.test(l))); }
+    else { const K = pick(g6Keys(3)); ph = phrase(K, long ? 10 + rnd(3) : 7 + rnd(3), pick(["perfect", "perfect", "imperfect", "interrupted"]), { p64: Math.random() < .3 }); }
+    if (!ph || ph.V.length < (long ? 10 : 6)) continue;
+    const V = trioFit(ph.K, ph.chords, ph.V); if (!V) continue;
+    return { K: ph.K, chords: ph.chords, V };
+  }
+  return null;
+}
+/* a passing note between two notes a 3rd apart (melodic minor: raised 6th and 7th going up) */
+function passNote(K, p, q) {
+  const d = (p.d + q.d) / 2, l = m7(d); let a = sigOf(K, l);
+  /* minor, going up: 5–♯6–♯7 when heading for the leading note; 6–7–8 stays natural unless the 6th was raised */
+  const raised = z => z.a > sigOf(K, m7(z.d));
+  if (K.minor && q.d > p.d && ((l === degLA(K, 6).l && raised(q)) || (l === degLA(K, 7).l && raised(p)))) a += 1;
+  return P6(d, a);
+}
+/* the model: violin I = soprano, violin II = alto; quaver passing notes fill 3rds, taking turns between the violins */
+function trioLines(K, V) {
+  const lines = { s: [], a: [] }; let turn = 0;
+  V.forEach((v, i) => ["s", "a"].forEach(x => {
+    const p = v[x], q = V[i + 1] && V[i + 1][x], dec = q && Math.abs(q.d - p.d) === 2 && (turn % 2 === (x === "s" ? 0 : 1)) && i < V.length - 2;
+    if (dec) { lines[x].push([[p, "e"], [passNote(K, p, q), "e"]]); }
+    else lines[x].push([[p, null]]);
+    if (x === "a") turn++;
+  }));
+  return lines;
+}
+function trioSpec(q, mode, upto) {
+  const K = trioK(q), V = q.trio.V, ch = q.trio.ch.map(CH), n = V.length, rh = chordRhythm(n, 4), lines = trioLines(K, V);
+  const firstBar = rh.findIndex((r, i) => i > 0 && r.barBefore), bars2 = rh.map((r, i) => r.barBefore ? i : -1).filter(i => i > 0), shown = mode === "model" ? n : mode === "upto" ? upto : (firstBar < 3 && bars2[1] ? bars2[1] : Math.max(1, firstBar));
+  const staves = [["Violin I", "s"], ["Violin II", "a"]].map(([name, x]) => { const notes = []; let bs = {};
+    lines[x].forEach((seg, i) => { if (rh[i].barBefore) { notes.push({ bar: 1 }); bs = {}; } const d = durObj(rh[i].dur);
+      if (i >= shown) { notes.push(Object.assign({ sk: 1 }, d)); return; }
+      if (seg.length === 2 && rh[i].dur === "q") seg.forEach(([p], j) => notes.push({ n: noteStr(p), acc: accFor(K, p, bs), dur: "e", b: x + i }));
+      else notes.push(Object.assign({ n: noteStr(seg[0][0]), acc: accFor(K, seg[0][0], bs) }, d)); });
+    return { name, clef: "treble", key: K.key, notes }; });
+  const bn = [], labels = []; let bs = {};
+  V.forEach((v, i) => { if (rh[i].barBefore) { bn.push({ bar: 1 }); bs = {}; } const f = figureOf(K, ch[i]), prevIc = i && ch[i - 1].deg === 1 && ch[i - 1].inv === 2 && ch[i].deg === 5 && !ch[i].sec;
+    if (f || prevIc) labels.push([2, bn.length, prevIc ? "5/" + (/[♯♮♭]/.test(f) ? f : "3") : f]);
+    bn.push(Object.assign({ n: noteStr(v.b), acc: accFor(K, v.b, bs) }, durObj(rh[i].dur))); });
+  return { score: { staves: staves.concat([{ name: "Continuo", clef: "bass", key: K.key, notes: bn }]), time: [4, 4], sp: 40, labels, fin: true, gap: 80 } };
+}
+const trioK = q => K6(q.trio.key, q.trio.minor);
+/* practice: which pair of notes fits the next beat? */
+GEN.trio8 = lvl => {
+  for (let t = 0; t < 30; t++) {
+    const ph = trioPhrase(); if (!ph) break;
+    const { K, chords, V } = ph, n = V.length, i = 2 + rnd(n - 3), c = chords[i], T = tonesOf(K, c), v = V[i], pv = V[i - 1];
+    const tag = (s, a) => `violin I ${pnameO(s)}, violin II ${pnameO(a)}`, right = tag(v.s, v.a);
+    const par = (s, a) => { const prs = [[pv.s, s], [pv.a, a], [pv.b, v.b]], pairs = [[0, 1], [0, 2], [1, 2]]; return pairs.some(([x, y]) => { const i1 = ((prs[x][0].m - prs[y][0].m) % 12 + 12) % 12, i2 = ((prs[x][1].m - prs[y][1].m) % 12 + 12) % 12; return (prs[x][0].m !== prs[x][1].m || prs[y][0].m !== prs[y][1].m) && (i1 === 7 || i1 === 0) && i1 === i2; }); };
+    const wrongs = [];
+    /* a chord note that makes consecutive 5ths or octaves */
+    for (const x of ["a", "s"]) for (let dd = -4; dd <= 4 && wrongs.length < 1; dd++) { const p = v[x], d = p.d + dd; const tt = T.find(z => z.l === m7(d)); if (!tt || dd === 0) continue; const np = P6(d, tt.a); const s = x === "s" ? np : v.s, a = x === "a" ? np : v.a; if (par(s, a) && Math.abs(np.m - p.m) <= 9) wrongs.push([tag(s, a), `${tag(s, a)} makes consecutive 5ths or octaves with the part before.`]); }
+    /* a note outside the chord on the beat */
+    shuffle([["a", 1], ["a", -1], ["s", 1], ["s", -1]]).forEach(([x, dd]) => { if (wrongs.filter(w => w[2]).length >= 2) return; const d = v[x].d + dd, np = P6(d, sigOf(K, m7(d))); if (T.some(z => z.l === m7(d))) return; const s = x === "s" ? np : v.s, a = x === "a" ? np : v.a; if (s.m <= a.m) return; wrongs.push([tag(s, a), `${pnameO(np)} isn't in the chord the figures show (${T.map(z => nm(z.l, z.a)).join("–")}).`, 1]); });
+    /* leaving out the 3rd */
+    { const third = T[1], s3 = m7(v.s.d) === third.l, a3 = m7(v.a.d) === third.l, b3 = m7(v.b.d) === third.l;
+      if ((s3 || a3) && !b3) { const x = s3 ? "s" : "a", p = v[x]; const alt = T.filter((z, k) => k !== 1).map(z => { let d = p.d - 3; while (m7(d) !== z.l) d++; return P6(d, z.a); }).filter(np => Math.abs(np.m - p.m) <= 5 && !par(x === "s" ? np : v.s, x === "a" ? np : v.a))[0];
+        if (alt) { const s = x === "s" ? alt : v.s, a = x === "a" ? alt : v.a; wrongs.push([tag(s, a), `${tag(s, a)} leaves out the 3rd (${nm(third.l, third.a)}): with only three parts, the 3rd must be there.`]); } } }
+    { const seen = new Set([right]); for (let k = wrongs.length - 1; k >= 0; k--) { if (seen.has(wrongs[k][0])) wrongs.splice(k, 1); else seen.add(wrongs[k][0]); } }
+    if (wrongs.length < 3) continue; wrongs.length = 3;
+    const q = { trio: { key: K.name, minor: K.minor, ch: chords.map(chLabel), V } };
+    const spec = trioSpec(q, "upto", i);
+    const rh = chordRhythm(n, 4); let col = 0; for (let k = 0; k <= i; k++) { if (rh[k].barBefore) col++; if (k < i) col += 1; }
+    spec.score.labels.push([2, spec.score.staves[2].notes.findIndex((x, k) => !x.bar && spec.score.staves[2].notes.slice(0, k + 1).filter(z => !z.bar).length === i + 1), "?", "above"]);
+    return mk("trio8", `Trio sonata in ${keyLab(K)}. Which pair of notes fits the beat marked ? (read the figures)`, right, wrongs.map(w => w[0]),
+      `${right} is right: both notes belong to ${chLabel(c)} (${T.map(z => nm(z.l, z.a)).join("–")}), the 3rd is present and there are no consecutives. ${wrongs.map(w => w[1]).join(" ")}`,
+      Object.assign(spec, { hint: "Work out the chord from the bass and its figures, then check: both notes in the chord, the 3rd present, no consecutive 5ths or octaves with the beat before." }));
+  }
+  return GEN.chords8(lvl);
+};
+/* the written task (paper question 1): continue both violins to the end */
+GEN.trio8w = lvl => {
+  const ph = trioPhrase(true); if (!ph) return GEN.trio8(lvl);
+  return { kind: "trio8w", selfMark: true, prompt: `Continue the two violin parts of this trio sonata (${keyLab(ph.K)}) to the end, following the figured bass. Keep the parts independent and write a cadence at the end.`,
+    trio: { key: ph.K.name, minor: ph.K.minor, ch: ph.chords.map(chLabel), V: ph.V }, explain: "" };
+};
+const TRIO_CHECKS = ["Every chord follows the figures, with the 3rd present", "No consecutive 5ths or octaves between any two parts (including the bass)", "The two violins are independent: contrary or oblique motion, some imitation or sequence", "Leading notes rise, 7ths fall, suspensions are prepared and resolve down", "The violins stay mostly within an octave of each other (they may cross)", "Some quaver movement for life; a clear cadence at the end"];
+function trioUI(q) {
+  return `<div class="compbox"><div class="stave">${Eng.score(Object.assign({ z: big(.95) }, trioSpec(q, "question").score))}</div><p>Copy it onto manuscript paper and continue both violins. Then compare with the checklist and the model.</p>
+    <details class="deep"><summary>Checklist</summary><ol class="clist">${TRIO_CHECKS.map(c => `<li>${esc(c)}</li>`).join("")}</ol></details>
+    <details class="deep"><summary>One model answer</summary><div class="stave">${Eng.score(Object.assign({ z: big(.95) }, trioSpec(q, "model").score))}</div></details></div>`;
+}
+
+/* ================= Grade 8 question 2: completing a keyboard outline ================= */
+/* accompaniment patterns, built from the chord's notes above its bass */
+const KB_PATTERNS = {
+  alberti: { time: [4, 4], per: 2, name: "Alberti bass", make: (b, x, y) => [[b, "e"], [y, "e"], [x, "e"], [y, "e"]] },
+  arpeggio: { time: [4, 4], per: 2, name: "broken chord", make: (b, x, y) => [[b, "e"], [x, "e"], [y, "e"], [x, "e"]] },
+  waltz: { time: [3, 4], per: 1, name: "waltz bass", make: (b, x, y) => [[b, "q"], [[x, y], "q"], [[x, y], "q"]] },
+  rocking: { time: [6, 8], per: 1, name: "rocking quavers", make: (b, x, y) => [[b, "e"], [y, "e"], [x, "e"], [b, "e"], [y, "e"], [x, "e"]] },
+};
+/* the two chord notes just above the bass, in the left hand */
+function kbAbove(K, c, b) {
+  const T = tonesOf(K, c), up = []; let d = b.d + 1;
+  while (up.length < 2 && d < b.d + 12) { const t = T.find(z => z.l === m7(d)); if (t && !(up.length === 0 && m7(d) === m7(b.d))) up.push(P6(d, t.a)); d++; }
+  return up.length === 2 ? up : [P6(b.d + 2, T[1].a), P6(b.d + 4, T[2].a)];
+}
+const KB_PRE = { 2: [["I", "V"], ["I", "V7"]], 3: [["I", "IV", "V"], ["I", "IIb", "V"], ["I", "Ib", "V"]], 4: [["I", "VI", "IV", "V"], ["I", "IV", "Ic", "V"], ["I", "VI", "IIb", "V"], ["I", "Vb", "I", "V"]] };
+function kbPhrase() {
+  for (let t = 0; t < 60; t++) {
+    const pat = pick(Object.keys(KB_PATTERNS)), P = KB_PATTERNS[pat], n = 4 * P.per;
+    let K, chords, V;
+    if (Math.random() < .5) {
+      /* a chromatic progression from the Grade 8 set, with a diatonic lead-in to fill the bars */
+      const ph = phrase8(p => p.labs.length <= n && (n - p.labs.length === 0 || KB_PRE[n - p.labs.length])); if (!ph) continue;
+      K = ph.K; const k = n - ph.chords.length;
+      chords = k ? pick(KB_PRE[k]).map(CH).concat(ph.chords) : ph.chords;
+      V = k ? realize(K, chords, null, { noise: 1.5 }) : ph.V;
+    } else { K = pick(g6Keys(3)); const ph = phrase(K, n, pick(["perfect", "perfect", "imperfect"]), {}); if (!ph) continue; chords = ph.chords; V = ph.V; }
+    if (!V || chords.length !== n) continue;
+    if (V.some(v => v.b.m > 55 || v.b.m < 36)) continue;
+    /* no melody note repeated more than twice running */
+    if (V.some((v, i) => i > 1 && v.s.m === V[i - 1].s.m && v.s.m === V[i - 2].s.m)) continue;
+    return { K, chords, V, pat };
+  }
+  return null;
+}
+/* the right-hand melody: one note per chord, with a passing note where it moves by a 3rd */
+function kbRH(K, V, i, pat) {
+  const P = KB_PATTERNS[pat], p = V[i].s, q = V[i + 1] && V[i + 1].s, pas = q && Math.abs(q.d - p.d) === 2 && i < V.length - 2;
+  const mid = pas ? passNote(K, p, q) : null;
+  if (P.time[0] === 4) return pas ? [[p, "q"], [mid, "q"]] : [[p, "h"]];
+  if (P.time[0] === 3) return pas ? [[p, "h"], [mid, "q"]] : [[p, "h", 1]];
+  return pas ? [[p, "q", 1], [mid, "q", 1]] : [[p, "h", 1]];
+}
+function kbLH(K, chords, V, pat, i) {
+  const P = KB_PATTERNS[pat], b = V[i].b, [x, y] = kbAbove(K, chords[i], b);
+  return P.make(b, x, y);
+}
+function kbSpec(q, mode, opt) {
+  opt = opt || {};
+  const K = kbK(q), ch = q.kb.ch.map(CH), V = q.kb.V, P = KB_PATTERNS[q.kb.pat], n = V.length;
+  const top = [], bot = []; let tb = {}, bb = {}, labs = [];
+  const pushNote = (arr, ps, dur, bs, extra) => { if (Array.isArray(ps)) arr.push(Object.assign({ n: ps.map(noteStr), acc: ps.map(p => accFor(K, p, bs)), dur }, extra || {})); else arr.push(Object.assign({ n: noteStr(ps), acc: accFor(K, ps, bs), dur }, extra || {})); };
+  const chordDur = "h", dot = P.time[0] === 3 || P.time[1] === 8;
+  for (let i = 0; i < n; i++) {
+    if (i && i % P.per === 0) { top.push({ bar: 1 }); bot.push({ bar: 1 }); tb = {}; bb = {}; }
+    const bar = Math.floor(i / P.per);
+    /* right hand: the melody (soprano) in one long note per chord */
+    kbRH(K, V, i, q.kb.pat).forEach(([p, d, dt]) => pushNote(top, p, d, tb, dt ? { dot: 1 } : {}));
+    const full = mode === "model" || bar === 0 || (opt.show && opt.show.includes(bar));
+    if (full) kbLH(K, ch, V, q.kb.pat, i).forEach(([p, d], k) => pushNote(bot, p, d, bb, P.time[1] === 8 || d === "e" ? { b: "k" + i + "_" + (k < (P.time[1] === 8 ? 3 : 4) ? 0 : 1) } : {}));
+    else if (mode === "outline") pushNote(bot, V[i].b, chordDur, bb, dot ? { dot: 1 } : {});
+    else bot.push({ sk: 1, dur: chordDur, dot: dot ? 1 : 0 });
+    if (opt.labels) labs.push([bot.length - 1, chLabel(ch[i])]);
+  }
+  return { top: { clef: "treble", notes: top }, bottom: { clef: "bass", notes: bot }, key: K.key, time: P.time, prop: true, sp: 34, gap: 90, fin: true, labels: opt.labels ? null : null };
+}
+const kbK = q => K6(q.kb.key, q.kb.minor);
+/* practice: which bar continues the accompaniment correctly? */
+GEN.kb8 = lvl => {
+  for (let t = 0; t < 30; t++) {
+    const ph = kbPhrase(); if (!ph) break;
+    const { K, chords, V, pat } = ph, P = KB_PATTERNS[pat], bar = 1 + rnd(3), i0 = bar * P.per;
+    const q = { kb: { key: K.name, minor: K.minor, ch: chords.map(chLabel), V, pat } };
+    const barSpec = idxs => { const notes = []; let bs = {}; idxs.forEach(([ci, mk]) => mk(ci).forEach(([p, d], k) => { const ex = d === "e" ? { b: "o" + ci } : {}; if (Array.isArray(p)) notes.push(Object.assign({ n: p.map(noteStr), acc: p.map(z => accFor(K, z, bs)), dur: d }, ex)); else notes.push(Object.assign({ n: noteStr(p), acc: accFor(K, p, bs), dur: d }, ex)); })); return { clef: "bass", key: K.key, notes, minW: 150, sp: 26, end: false }; };
+    const cis = []; for (let k = 0; k < P.per; k++) cis.push(i0 + k);
+    const right = barSpec(cis.map(ci => [ci, c => kbLH(K, chords, V, pat, c)]));
+    const stale = barSpec(cis.map(ci => [ci, c => kbLH(K, chords, V, pat, i0 - 1)]));
+    const otherPat = pick(Object.keys(KB_PATTERNS).filter(x => x !== pat && KB_PATTERNS[x].time.join() === P.time.join()));
+    const shape = otherPat ? barSpec(cis.map(ci => [ci, c => KB_PATTERNS[otherPat].make(V[c].b, ...kbAbove(K, chords[c], V[c].b))])) : barSpec(cis.map(ci => [ci, c => P.make(V[c].b, ...kbAbove(K, chords[c], V[c].b).reverse())]));
+    const wrongCh = (() => { const alt = CH(chords[i0].deg === 5 ? "IV" : "V"); return barSpec(cis.map(ci => [ci, c => P.make(V[c].b, ...kbAbove(K, ci === i0 ? alt : chords[c], V[c].b))])); })();
+    const opts = [right, stale, shape, wrongCh].map((sp, k) => ({ spec: sp, label: ["the right chords and pattern", "last bar's chord again", "a different pattern", "the wrong chord"][k] }));
+    if (new Set(opts.map(o => JSON.stringify(o.spec.notes))).size < 4) continue;
+    const spec = kbSpec(q, "question", { show: [0].concat(Array.from({ length: bar - 1 }, (_, k) => k + 1)) });
+    /* hide everything from the asked bar on in the left hand */
+    return Object.assign(mk("kb8", `This keyboard piece (${keyLab(K)}) has a left-hand pattern (${P.name}). Which left hand continues bar ${bar + 1} correctly?`, opts[0], opts.slice(1),
+      `Bar ${bar + 1} has ${cis.map(ci => chLabel(chords[ci])).join(" then ")} under the melody, so the ${P.name} uses ${cis.map(ci => tonesOf(K, chords[ci]).map(z => nm(z.l, z.a)).join("–")).join(", then ")}, keeping the same shape as bar 1.`,
+      { hint: "Keep the pattern's shape from bar 1; change the notes to fit the chord under each part of the bar (look at the melody notes)." }), { grand: spec, bigOpts: true });
+  }
+  return GEN.chords8(lvl);
+};
+/* the written task (paper question 2): complete the outline */
+GEN.kb8w = lvl => {
+  const ph = kbPhrase(); if (!ph) return GEN.kb8(lvl);
+  return { kind: "kb8w", selfMark: true, prompt: `Complete this keyboard outline (${keyLab(ph.K)}). Bar 1 is complete; in the other bars the melody and bass are given. Continue the left-hand ${KB_PATTERNS[ph.pat].name} to the end, fitting each chord.`,
+    kb: { key: ph.K.name, minor: ph.K.minor, ch: ph.chords.map(chLabel), V: ph.V, pat: ph.pat }, explain: "" };
+};
+const KB_CHECKS = ["The pattern from bar 1 is kept exactly in shape and rhythm", "Every bar fits the harmony implied by the melody and bass", "Chromatic notes (secondary dominants, augmented 6ths) are spelled correctly", "No consecutive octaves or 5ths between the melody and the bass", "The cadence is clear, ending on a full tonic chord", "The texture suits the piano: comfortable for the hands"];
+function kbUI(q) {
+  return `<div class="compbox"><div class="stave">${Eng.grand(Object.assign({ z: big(1) }, kbSpec(q, "outline")))}</div><p>Complete it on paper, then compare with the checklist and the model.</p>
+    <details class="deep"><summary>Checklist</summary><ol class="clist">${KB_CHECKS.map(c => `<li>${esc(c)}</li>`).join("")}</ol></details>
+    <details class="deep"><summary>One model answer</summary><div class="stave">${Eng.grand(Object.assign({ z: big(1) }, kbSpec(q, "model")))}</div><p class="meta">Chords: ${esc(q.kb.ch.join(" – "))}</p></details></div>`;
+}
+
+/* ================= Grade 8 question 3: continuing a melody to at least 12 bars ================= */
+const MEL8 = [
+  { inst: "violin", clef: "treble", key: "D", minor: false, time: [4, 4], tempo: "Allegro con brio", range: "G3 upwards (comfortably up to about E6)",
+    bars: [[["D5", "q"], ["F#5", "e"], ["A5", "e"], ["D6", "h"]], [["C#6", "q"], ["B5", "q"], ["A5", "h"]],
+      [["B5", "q"], ["A5", "q"], ["G5", "q"], ["F#5", "q"]], [["E5", "q"], ["F#5", "q"], ["E5", "h"]], [["D5", "q"], ["F#5", "e"], ["A5", "e"], ["D6", "h"]], [["C#6", "q"], ["B5", "q"], ["G#5", "q"], ["A5", "q"]],
+      [["B5", "q"], ["C#6", "e"], ["D6", "e"], ["E6", "h"]], [["C#6", "q"], ["B5", "q"], ["A5", "h"]], [["G5", "q"], ["F#5", "q"], ["E5", "q"], ["D5", "q"]], [["B4", "q"], ["C#5", "q"], ["D5", "q"], ["E5", "q"]],
+      [["F#5", "q"], ["A5", "q"], ["G5", "q"], ["E5", "q"]], [["D5", "w"]]],
+    notes: ["Bars 1–4: the opening and an answer that falls to E over the dominant (an imperfect cadence).", "Bars 5–8: the opening returns, then G♯ takes the music to A major (the dominant), with the high point E6 in bar 7 and a cadence on A in bar 8.", "Bars 9–12: G♮ brings us home; the line falls, climbs again and ends on D, the tonic."] },
+  { inst: "flute", clef: "treble", key: "G", minor: true, time: [3, 4], tempo: "Andante espressivo", range: "C4 to about C7",
+    bars: [[["G5", "q"], ["Bb5", "q"], ["D6", "q"]], [["C6", "q", 1], ["Bb5", "e"], ["A5", "q"]],
+      [["Bb5", "q"], ["G5", "q"], ["Eb5", "q"]], [["D5", "h", 1]], [["F5", "q"], ["A5", "q"], ["C6", "q"]], [["Bb5", "h", 1]],
+      [["D6", "q"], ["C6", "q"], ["Bb5", "q"]], [["A5", "q"], ["G5", "q"], ["F5", "q"]], [["Eb5", "q"], ["G5", "q"], ["Bb5", "q"]], [["A5", "h"], ["F#5", "q"]],
+      [["G5", "q"], ["A5", "q"], ["F#5", "q"]], [["G5", "h", 1]]],
+    notes: ["Bars 1–4: the opening, then a fall to D, the dominant (an imperfect cadence).", "Bars 5–6: F♮ instead of F♯ and a rise to B♭: a cadence in B♭ major, the relative major.", "Bars 7–10: a falling sequence, then F♯ returns to point back to G minor.", "Bars 11–12: the leading note F♯ rises to the tonic G."] },
+  { inst: "cello", clef: "bass", key: "C", minor: false, time: [4, 4], tempo: "Moderato cantabile", range: "C2 upwards (tenor clef for high notes)",
+    bars: [[["C3", "q"], ["E3", "q"], ["G3", "q"], ["C4", "q"]], [["B3", "q"], ["A3", "q"], ["G3", "h"]],
+      [["A3", "q"], ["F3", "q"], ["D3", "q"], ["F3", "q"]], [["E3", "q"], ["D3", "q"], ["G2", "h"]], [["C3", "q"], ["E3", "q"], ["G3", "q"], ["C4", "q"]], [["D4", "q"], ["C4", "q"], ["B3", "q"], ["F#3", "q"]],
+      [["G3", "q"], ["A3", "q"], ["B3", "q"], ["C4", "q"]], [["A3", "q"], ["F#3", "q"], ["G3", "h"]], [["F3", "q"], ["A3", "q"], ["C4", "q"], ["A3", "q"]], [["G3", "q"], ["E3", "q"], ["C3", "h"]],
+      [["F3", "q"], ["D3", "q"], ["G3", "h"]], [["C3", "w"]]],
+    notes: ["Bars 1–4: the arpeggio opening and an answer falling to G, the dominant.", "Bars 5–8: the opening again; F♯ takes the music to G major, with a cadence in bar 8.", "Bars 9–12: F♮ returns to C major; the last phrase ends with a falling 5th, G to C."] },
+  { inst: "oboe", clef: "treble", key: "A", minor: false, time: [6, 8], tempo: "Allegretto grazioso", range: "B♭3 to about F6",
+    bars: [[["E5", "q"], ["A5", "e"], ["C#6", "q"], ["B5", "e"]], [["A5", "q", 1], ["E5", "q", 1]],
+      [["F#5", "q"], ["A5", "e"], ["D6", "q"], ["C#6", "e"]], [["B5", "q", 1], ["E5", "q", 1]], [["C#6", "q"], ["B5", "e"], ["A5", "q"], ["F#5", "e"]], [["G#5", "q"], ["A5", "e"], ["B5", "q"], ["D#5", "e"]],
+      [["E5", "q"], ["G#5", "e"], ["B5", "q"], ["A5", "e"]], [["G#5", "q"], ["F#5", "e"], ["E5", "q", 1]], [["D5", "q"], ["E5", "e"], ["F#5", "q"], ["D5", "e"]], [["C#5", "q"], ["E5", "e"], ["A5", "q", 1]],
+      [["F#5", "q"], ["E5", "e"], ["D5", "q"], ["B4", "e"]], [["A4", "h", 1]]],
+    notes: ["Bars 1–4: the lilting opening, a sequence a step higher, and a pause on E over the dominant.", "Bars 5–8: D♯ takes the music to E major (the dominant), cadencing in bar 8.", "Bars 9–12: D♮ returns to A major; the melody winds down to the tonic."] },
+  { inst: "viola", clef: "alto", key: "E", minor: true, time: [4, 4], tempo: "Adagio", range: "C3 upwards (comfortably up to about E5)",
+    bars: [[["E4", "q"], ["G4", "q"], ["B4", "h"]], [["A4", "q"], ["G4", "q"], ["F#4", "q"], ["D#4", "q"]],
+      [["E4", "q"], ["F#4", "e"], ["G4", "e"], ["A4", "q"], ["B4", "q"]], [["C5", "q"], ["A4", "q"], ["B4", "h"]], [["G4", "q"], ["B4", "q"], ["D5", "h"]], [["C5", "q"], ["A4", "q"], ["F#4", "q"], ["A4", "q"]],
+      [["G4", "h"], ["B4", "q"], ["D5", "q"]], [["C5", "q"], ["B4", "q"], ["A4", "q"], ["C5", "q"]], [["B4", "q"], ["G4", "q"], ["E4", "q"], ["G4", "q"]], [["F#4", "q"], ["D#4", "q"], ["E4", "q"], ["A4", "q"]],
+      [["B4", "q"], ["C5", "q"], ["B4", "q"], ["D#4", "q"]], [["E4", "w"]]],
+    notes: ["Bars 1–4: the opening and a rise to B over the dominant (an imperfect cadence).", "Bars 5–8: D♮ instead of D♯ points to G major, the relative major, with a cadence on G in bar 7.", "Bars 9–12: D♯ returns; the last phrase climbs to C, then the leading note rises to E."] },
+  { inst: "violin", clef: "treble", key: "B♭", minor: false, time: [2, 4], tempo: "Vivace", range: "G3 upwards (comfortably up to about E6)",
+    bars: [[["F5", "e"], ["D5", "e"], ["Bb4", "e"], ["D5", "e"]], [["F5", "q"], ["Bb5", "q"]],
+      [["A5", "e"], ["G5", "e"], ["F5", "e"], ["Eb5", "e"]], [["D5", "q"], ["C5", "q"]], [["F5", "e"], ["D5", "e"], ["Bb4", "e"], ["D5", "e"]], [["G5", "q"], ["E5", "q"]],
+      [["F5", "e"], ["A5", "e"], ["C6", "e"], ["A5", "e"]], [["F5", "h"]], [["Eb5", "e"], ["D5", "e"], ["C5", "e"], ["Bb4", "e"]], [["A4", "e"], ["C5", "e"], ["F5", "q"]],
+      [["D5", "e"], ["Eb5", "e"], ["F5", "e"], ["A4", "e"]], [["Bb4", "h"]]],
+    notes: ["Bars 1–4: the lively opening and a scale falling to C (an imperfect cadence).", "Bars 5–8: E♮ takes the music to F major, the dominant, cadencing on F in bar 8.", "Bars 9–12: E♭ returns; the last phrase ends with A, the leading note, rising to B♭."] },
+];
+const mel8K = t => K6(t.key, t.minor);
+function mel8Spec(k, withModel, row) {
+  const t = MEL8[k], K = mel8K(t), notes = []; let bs = {}, first = true;
+  const beats = t.time[0] * 4 / t.time[1], full = ({ 4: ["w", 0], 3: ["h", 1], 2: ["h", 0] })[beats];
+  t.bars.forEach((bar, b) => {
+    if (Math.floor(b / 4) !== row) return;
+    if (!first) notes.push({ bar: 1 }); first = false; bs = {};
+    const D = { w: 4, h: 2, q: 1, e: .5, s: .25 }, beat = t.time[1] === 8 ? 1.5 : 1; let pos = 0;
+    if (b < 2 || withModel) bar.forEach(x => { const p = Eng.parse(x[0]), l = LET.indexOf(p.ltr), a = ({ "#": 1, b: -1, "": 0 })[p.acc] || 0, len = D[x[1]] * (x[2] ? 1.5 : 1);
+      notes.push(Object.assign({ n: x[0], dur: x[1], dot: x[2] || 0, acc: accFor(K, P6(p.oct * 7 + l, a), bs) }, x[1] === "e" || x[1] === "s" ? { b: "m" + b + "_" + Math.floor(pos / beat + 1e-9) } : {})); pos += len; });
+    else notes.push({ sk: 1, dur: full[0], dot: full[1] });
+  });
+  return { clef: t.clef, key: K.key, time: row === 0 ? t.time : null, notes, prop: true, padBar: true, sp: Math.round(128 / beats), fin: row === 2, end: true };
+}
+GEN.mel8 = lvl => { const k = rnd(MEL8.length), t = MEL8[k];
+  return { kind: "mel8", selfMark: true, prompt: `Composition: continue this opening for ${t.inst} (${keyLab(mel8K(t))}) to make a melody of at least 12 bars. Modulate to a related key and come back, and add performance directions.`, m8: { k }, explain: "" }; };
+const MEL8_CHECKS = ["At least 12 bars, every bar the right length", "Clear phrases (often 4 + 4 + 4) with cadences at the ends", "The opening idea comes back, varied or developed (sequence, inversion, new rhythm)", "A modulation to a related key with the right accidental, then a clear return", "One high point, a good balance of steps and leaps, a strong ending on the tonic", "Written for the instrument: range, breathing or bowing, idiomatic figures", "Tempo, dynamics with changes, phrasing and articulation"];
+function mel8UI(q) {
+  const k = q.m8.k, t = MEL8[k];
+  return `<div class="compbox">${[0, 1, 2].map(r => stave(mel8Spec(k, false, r), big(1))).join("")}<p class="meta">${esc(t.inst[0].toUpperCase() + t.inst.slice(1))} range: ${esc(t.range)}.</p><p>Write it on paper first, then compare.</p>
+    <details class="deep"><summary>Checklist</summary><ol class="clist">${MEL8_CHECKS.map(c => `<li>${esc(c)}</li>`).join("")}</ol></details>
+    <details class="deep"><summary>One model answer</summary><p class="tempo">${esc(t.tempo)}</p>${[0, 1, 2].map(r => stave(mel8Spec(k, true, r), big(1))).join("")}<ol class="clist">${t.notes.map(n => `<li>${esc(n)}</li>`).join("")}</ol></details></div>`;
+}
+
+/* ================= Grade 8 questions 4 and 5: a chamber score (up to 5 staves) and a full orchestral score ================= */
+/* written pitch for an instrument that SOUNDS higher than written (e.g. trumpet in D): the written note is below the sound */
+function transDown8(p, q, n) { const d = p.d - (n - 1); for (const a of [0, -1, 1, -2, 2]) { const r = P6(d, a); if (trans7(r, q, n).m === p.m) return r; } return P6(d, 0); }
+const ENS8 = {
+  quartet: { name: "string quartet", parts: [["Violin I", "treble", v => v.s, 0], ["Violin II", "treble", v => v.a, 0], ["Viola", "alto", v => v.t, 0], ["Cello", "bass", v => v.b, 0]] },
+  quintet: { name: "wind quintet", parts: [["Flute", "treble", v => P6(v.s.d + 7, v.s.a), 0], ["Oboe", "treble", v => v.a, 0], ["Clarinet in B♭", "treble", v => trans7(v.t, "M", 2), 2],
+    ["Horn in F", "treble", v => trans7(P6(v.b.d + 7, v.b.a), "P", 5), "none"], ["Bassoon", "bass", v => v.b, 0]] },
+  pianoQ: { name: "piano quintet", parts: [["Violin I", "treble", v => v.s, 0], ["Violin II", "treble", v => v.a, 0], ["Viola", "alto", v => v.t, 0], ["Cello", "bass", v => v.b, 0], ["Double bass", "bass", v => P6(v.b.d + 7, v.b.a), 0]] },
+};
+/* the sounding part each staff carries, to say who plays what */
+const ENS8_VOICE = { quartet: ["s", "a", "t", "b"], quintet: ["s", "a", "t", "b", "b"], pianoQ: ["s", "a", "t", "b", "b"] };
+function buildScore8(K, ph, parts) {
+  const { chords, V } = ph, n = chords.length, rh = chordRhythm(n, 4), cols = [];
+  const staves = parts.map(([name, clef, f, dk]) => {
+    const kk = dk === "none" ? 0 : K.key + dk, KK = sigK7(name === "Timpani" ? 0 : kk), notes = [], colOf = []; let bs = {};
+    chords.forEach((c, k) => { if (rh[k].barBefore) { notes.push({ bar: 1 }); bs = {}; } colOf.push(notes.length);
+      const p = f(V[k], c, k); if (!p) { notes.push(Object.assign({ n: "r" }, durObj(rh[k].dur))); return; }
+      notes.push(Object.assign({ n: noteStr(p), acc: accFor(KK, p, bs) }, durObj(rh[k].dur))); });
+    cols.push(colOf);
+    return { name, clef, key: name === "Timpani" ? 0 : kk, notes };
+  });
+  return { staves, cols };
+}
+const NOTE_ROLE8 = (K, c, p) => { const T = tonesOf(K, c), k = T.findIndex(z => z.l === m7(p.d)); if (c.aug) return k === T.length - 1 ? "the sharpened 4th (it rises a semitone to the dominant)" : k === 0 ? "the flattened 6th (it falls a semitone to the dominant)" : null;
+  if (c.sec) return k === 1 ? "the leading note of the new key (it rises a semitone)" : k === 3 ? "the 7th (it falls by step)" : null; return null; };
+
+/* ---------- Question 4: a chamber score ---------- */
+GEN.score8 = lvl => {
+  for (let t0 = 0; t0 < 50; t0++) {
+    const ens = pick(Object.keys(ENS8)), E = ENS8[ens];
+    const ph = Math.random() < .7 ? phrase8() : phrase7(); if (!ph) continue;
+    if (ph.V.some(v => ["s", "a", "t", "b"].some(x => Math.abs(v[x].a) > 1))) continue;
+    const K = ph.K, sc = buildScore8(K, ph, E.parts); if (sc.staves.some(s => Math.abs(s.key) > 6)) continue;
+    const { chords, V } = ph, n = chords.length, f = ph.focus >= 0 && ph.focus !== undefined ? ph.focus : 1 + rnd(n - 2), c = chords[f], at = (si, k, txt) => [si, sc.cols[si][k], txt];
+    const wrap = labels => ({ score: { staves: sc.staves, time: [4, 4], sp: 40, labels, fin: true, gap: 74, nameW: 110 } });
+    const ans = chLabel(c), tones = tonesOf(K, c).map(t => nm(t.l, t.a)).join("–");
+    const types = ["chord", "chord", "type", "interval", "cadence"].concat(c.aug || c.sec ? ["who", "who"] : []).concat(ens === "quintet" ? ["sound", "sound"] : ["clef", "clef"]);
+    const t = pick(types);
+    if (t === "chord") return mk("score8", `This ${E.name} sounds in ${keyLab(K)}. Name the chord at X.`, ans, shuffle(G8_NAMES().filter(l => l !== ans && (okInKey(K, l.split("/")[0]) || /6$|\//.test(l)))).slice(0, 6),
+      `Sounding notes at X: ${["b", "t", "a", "s"].map(v => pname(V[f][v])).join(", ")}: ${tones}, so ${ans}${c.aug || c.sec ? `, ${chordType8(K, c)}` : ""}.`,
+      Object.assign(wrap([at(0, f, "X")]), { hint: ens === "quintet" ? "Find each instrument's SOUNDING note first: the clarinet and horn transpose." : "Read the viola in the alto clef: middle C is the middle line." }));
+    if (t === "type") { const right = c.aug || c.sec ? chordType8(K, c) : chordType7(K, c);
+      const pool = ["an Italian augmented 6th", "a French augmented 6th", "a German augmented 6th", "a secondary dominant (dominant 7th of V)", "a Neapolitan 6th", "a diminished 7th", "a dominant 7th"].filter(x => x !== right);
+      return mk("score8", `This ${E.name} is in ${keyLab(K)}. What kind of chord is heard at X?`, right, pool, `At X the notes are ${tones}: ${right}.`, Object.assign(wrap([at(0, f, "X")]), { hint: "Collect the sounding notes, then look at the accidentals." })); }
+    if (t === "who") { const vs = ENS8_VOICE[ens]; let found = null;
+      for (let si = 0; si < vs.length && !found; si++) { const p = V[f][vs[si]], r = NOTE_ROLE8(K, c, p); if (r) found = [si, r, p]; }
+      if (!found) continue; const [si, role, p] = found, nameS = E.parts[si][0];
+      return mk("score8", `At X (${ans} in ${keyLab(K)}), which instrument plays ${role.replace(/ \(.*/, "")}?`, nameS, E.parts.map(x => x[0]).filter(x => x !== nameS),
+        `${nameS} has ${pname(p)}: ${role}.`, Object.assign(wrap([at(0, f, "X")]), { hint: `The notes of ${ans} are ${tones}.` })); }
+    if (t === "sound") { const si = pick([2, 3]), p = si === 2 ? V[f].t : P6(V[f].b.d + 7, V[f].b.a), wr = si === 2 ? trans7(p, "M", 2) : trans7(p, "P", 5);
+      const near = [-1, 1, 2, -2].map(k => pname(P6(p.d + k, sigOf(K, m7(p.d + k)))));
+      return mk("score8", `The ${lc(E.parts[si][0])} plays the written note at X. Which note actually sounds?`, pname(p), near.concat([pname(wr)]),
+        `The ${lc(E.parts[si][0])} sounds ${si === 2 ? "a major 2nd" : "a perfect 5th"} lower than written: written ${pname(wr)} sounds as ${pname(p)}.`, Object.assign(wrap([at(si, f, "X")]), { hint: si === 2 ? "B♭ clarinet: a tone lower." : "Horn in F: a perfect 5th lower." })); }
+    if (t === "clef") { const p = V[f].t;
+      return mk("score8", `Name the viola's note at X, with its octave (middle C is C4).`, pnameO(p), [-1, 1, -7, 2].map(k => pnameO(P6(p.d + k, sigOf(K, m7(p.d + k))))),
+        `In the alto clef middle C is on the middle line, so X is ${pnameO(p)}.`, Object.assign(wrap([at(2, f, "X")]), { hint: "Alto clef: middle C is the middle line." })); }
+    if (t === "interval") { const lo = V[f].b, hi = ens === "quintet" ? P6(V[f].s.d + 7, V[f].s.a) : V[f].s, iv = intervalName(lo.d, lo.a, hi.d, hi.a); if (!iv) continue;
+      const Q = { M: "major", m: "minor", P: "perfect", A: "augmented", d: "diminished" }, simple = iv.n > 15 ? iv.n - 14 : iv.n > 8 ? iv.n - 7 : iv.n, pre = iv.n > 8 ? "compound " : "", nm2 = `${pre}${Q[iv.q]} ${ORD(simple)}`;
+      const pool = ["major", "minor", "perfect", "augmented", "diminished"].filter(qq => qq !== Q[iv.q]).map(qq => `${pre}${qq} ${ORD(simple)}`).concat(iv.n > 8 ? [`${Q[iv.q]} ${ORD(simple)}`] : [`compound ${Q[iv.q]} ${ORD(simple)}`]);
+      const lowS = E.parts.length - 1;
+      return mk("score8", `Name the interval between the SOUNDING notes at X (${lc(E.parts[0][0])}) and Y (${lc(E.parts[lowS][0])}).`, nm2, pool,
+        `The ${lc(E.parts[0][0])} sounds ${pnameO(hi)}; the ${lc(E.parts[lowS][0])} sounds ${pnameO(lo)}${ens === "pianoQ" ? " (the double bass sounds an octave below its written note)" : ""}. That's ${iv.n} letter names apart: ${art(nm2)}.`,
+        Object.assign(wrap([at(0, f, "X"), at(lowS, f, "Y")]), { hint: "Count the letter names from the lower note, then take away 7 (or 14) for a compound interval." })); }
+    const a = chords[n - 2], b = chords[n - 1], cad = isDom(a) && b.deg === 1 ? "perfect" : b.deg === 5 && b.inv === 0 && !b.sec ? "imperfect" : isDom(a) && b.deg === 6 ? "interrupted" : a.deg === 4 && b.deg === 1 ? "plagal" : null;
+    if (!cad) continue;
+    return mk("score8", `Which cadence ends this extract for ${E.name}? (${keyLab(K)})`, cad, ["perfect", "imperfect", "plagal", "interrupted"],
+      `The last two chords are ${chLabel(a)}–${chLabel(b)}: ${art(cad)} cadence${a.aug ? " (approached by an augmented 6th, the classic way into an imperfect cadence)" : ""}.`, wrap([]));
+  }
+  return GEN.score7(lvl);
+};
+
+/* ---------- Question 5: a full score (16 staves) ---------- */
+const ORCH8_PARTS = K => [
+  ["Piccolo", "treble", v => v.s, 0], ["Flute", "treble", v => P6(v.s.d + 7, v.s.a), 0], ["Oboe", "treble", v => v.s, 0], ["Cor anglais", "treble", v => trans7(v.a, "P", 5), 1],
+  ["Clarinet in A", "treble", v => trans7(v.a, "m", 3), -3], ["Bassoon", "bass", v => v.b, 0],
+  ["Horn in E♭", "treble", v => trans7(v.t, "M", 6), "none"], ["Trumpet in D", "treble", v => transDown8(v.s, "M", 2), "none"],
+  ["Trombone I", "tenor", v => v.t, 0], ["Trombone II", "bass", v => v.b, 0],
+  ["Timpani", "bass", (v, c) => { if (c.sec || c.aug || c.nea || !(c.deg === 1 || c.deg === 5) || c.inv) return null; const t = degLA(K, c.deg); let d = 14 + t.l; if (d < 16) d += 7; return P6(d, t.a); }, 0],
+  ["Violin I", "treble", v => v.s, 0], ["Violin II", "treble", v => v.a, 0], ["Viola", "alto", v => v.t, 0], ["Cello", "bass", v => v.b, 0], ["Double bass", "bass", v => P6(v.b.d + 7, v.b.a), 0]];
+const OI = n => ORCH8_PARTS(K6("C", false)).findIndex(p => p[0] === n);
+GEN.orch8 = lvl => {
+  for (let t0 = 0; t0 < 50; t0++) {
+    const ph = Math.random() < .6 ? phrase8(p => !p.m) : phrase(pick(g6Keys(3, "major").filter(k => Math.abs(k.key) <= 2)), 5 + rnd(2), pick(["perfect", "imperfect"]), {}); if (!ph) continue;
+    const K = ph.K; if (K.minor || Math.abs(K.key) > 3) continue;
+    if (ph.V.some(v => ["s", "a", "t", "b"].some(x => Math.abs(v[x].a) > 1))) continue;
+    const os = buildScore8(K, ph, ORCH8_PARTS(K)); if (os.staves.some(s => Math.abs(s.key) > 6)) continue;
+    const { chords, V } = ph, n = chords.length, i = ph.focus >= 0 ? ph.focus : rnd(n - 1), at = (si, k, txt) => [si, os.cols[si][k], txt];
+    if (os.staves.some(s => s.notes.some(x => x.acc && /[𝄪𝄫]|##|bb/.test(String(x.acc))))) continue;
+    const sc = labels => ({ score: { staves: os.staves, time: [4, 4], sp: 34, labels, fin: true, gap: 74, nameW: 112 } });
+    const near = p => [-1, 1, 2, -2].map(k => pname(P6(p.d + k, sigOf(K, m7(p.d + k)))));
+    const t = pick(["horn", "horn", "tpt", "tpt", "cor", "clA", "picc", "tbn", "count", "timp", "chord", "chord"]);
+    const sound = (name, si, snd, wr, how, hint) => mk("orch8", `The ${lc(name)} plays the written note at X. Which note actually sounds?`, pname(snd), near(snd).concat([pname(wr)]),
+      `The ${lc(name)} sounds ${how} than written: written ${pname(wr)} sounds as ${pname(snd)}.`, Object.assign(sc([at(si, i, "X")]), { hint }));
+    if (t === "horn") return sound("Horn in E♭", OI("Horn in E♭"), V[i].t, trans7(V[i].t, "M", 6), "a major 6th lower", "Horn in E♭: a major 6th lower (E♭ is a major 6th below C).");
+    if (t === "tpt") return sound("Trumpet in D", OI("Trumpet in D"), V[i].s, transDown8(V[i].s, "M", 2), "a major 2nd higher", "Trumpet in D sounds HIGHER than written: a major 2nd (D is a tone above C).");
+    if (t === "cor") return sound("Cor anglais", OI("Cor anglais"), V[i].a, trans7(V[i].a, "P", 5), "a perfect 5th lower", "Cor anglais (in F): a perfect 5th lower.");
+    if (t === "clA") return sound("Clarinet in A", OI("Clarinet in A"), V[i].a, trans7(V[i].a, "m", 3), "a minor 3rd lower", "Clarinet in A: a minor 3rd lower.");
+    if (t === "picc") return mk("orch8", "The piccolo is written an octave lower than the flute here. How do the two sound?", "in unison: the piccolo sounds an octave higher than written",
+      ["the piccolo sounds an octave lower than the flute", "the piccolo sounds two octaves higher than the flute", "the flute sounds an octave lower than written"], "The piccolo sounds an octave higher than written, so its part, written an octave below the flute's, sounds at the same pitch.", sc([]));
+    if (t === "tbn") { const p = V[i].t;
+      return mk("orch8", "Name the note at X in Trombone I (tenor clef), with its octave. Middle C is C4.", pnameO(p), [-1, 1, -7, 2].map(k => pnameO(P6(p.d + k, sigOf(K, m7(p.d + k))))),
+        `In the tenor clef, middle C is on the 4th line up. X is ${pnameO(p)}, the same pitch as the viola.`, Object.assign(sc([at(OI("Trombone I"), i, "X")]), { hint: "Tenor clef: middle C on the 4th line." })); }
+    if (t === "count") return mk("orch8", "How many of these staves are for transposing instruments that do NOT sound at the written pitch or an octave away?", "4", ["2", "3", "6"],
+      "Cor anglais, clarinet in A, horn in E♭ and trumpet in D. (The piccolo and double bass only transpose by an octave.)", sc([]));
+    if (t === "timp") { const t1 = degLA(K, 1), t5 = degLA(K, 5), r = `${nm(t1.l, t1.a)} and ${nm(t5.l, t5.a)}`;
+      const d2 = degLA(K, 4), d3 = degLA(K, 2);
+      return mk("orch8", `The timpani play only on some chords here. Which two notes are they tuned to?`, r, [`${nm(t1.l, t1.a)} and ${nm(d2.l, d2.a)}`, `${nm(t5.l, t5.a)} and ${nm(d3.l, d3.a)}`, `${nm(t1.l, t1.a)} and ${nm(degLA(K, 3).l, degLA(K, 3).a)}`],
+        `Classical timpani are tuned to the tonic and dominant: ${r} in ${keyLab(K)}. They join in on I and V.`, sc([])); }
+    const ans = chLabel(chords[i]);
+    return mk("orch8", `This extract sounds in ${keyLab(K)}. Name the chord at X.`, ans, shuffle(G8_NAMES().filter(l => l !== ans && (okInKey(K, l.split("/")[0]) || /6$|\//.test(l)))).slice(0, 6),
+      `Read the strings (they don't transpose): ${["b", "t", "a", "s"].map(v => pname(V[i][v])).join(", ")}: ${tonesOf(K, chords[i]).map(x => nm(x.l, x.a)).join("–")}, so ${ans}${chords[i].sec || chords[i].aug ? `, ${chordType8(K, chords[i])}` : ""}.`,
+      Object.assign(sc([at(OI("Cello"), i, "X")]), { hint: "Use the strings: they show the real sounds." }));
+  }
+  return GEN.orch7(lvl);
+};
+
 /* ---------- Drill catalogue ---------- */
 const DR = {
   chords6:   { name: "Name the chord",      icon: { clef: "treble", notes: [{ n: ["E4", "G4", "C5"], dur: "w", lbl: "Ib" }], minW: 90, end: false }, unlock: 0 },
@@ -5094,6 +5640,15 @@ const DR = {
   comp7:     { name: "Compose (Grade 7)",   icon: null, glyph: "♪ 7", unlock: 69, special: true },
   score7:    { name: "Solo and piano",      icon: null, glyph: "3 staves", unlock: 75 },
   orch7:     { name: "Full score",          icon: null, glyph: "12 staves", unlock: 78 },
+  chords8:   { name: "Grade 8 chords",      icon: { clef: "treble", key: -3, notes: [{ n: ["Ab4", "C5", "F#5"], dur: "w", acc: ["", "", "#"], lbl: "It6" }], minW: 100, end: false }, unlock: 88 },
+  terms8:    { name: "Grade 8 terms",       icon: null, glyph: "innig", unlock: 94 },
+  trio8:     { name: "Trio sonata",         icon: null, glyph: "2 vlns + b.c.", unlock: 96 },
+  trio8w:    { name: "Write a trio",        icon: null, glyph: "♪♪ 8", unlock: 96, special: true },
+  kb8:       { name: "Keyboard patterns",   icon: { clef: "bass", notes: [{ n: "C3", dur: "e", b: 1 }, { n: "G3", dur: "e", b: 1 }, { n: "E3", dur: "e", b: 1 }, { n: "G3", dur: "e", b: 1 }], minW: 110, sp: 22, end: false }, unlock: 103 },
+  kb8w:      { name: "Complete a keyboard piece", icon: null, glyph: "🎹 8", unlock: 103, special: true },
+  mel8:      { name: "Compose (Grade 8)",   icon: null, glyph: "♪ 12", unlock: 109, special: true },
+  score8:    { name: "Chamber score",       icon: null, glyph: "5 staves", unlock: 115 },
+  orch8:     { name: "Big orchestra",       icon: null, glyph: "16 staves", unlock: 118 },
   cards:     { name: "Word cards",          icon: null, glyph: "Aa", unlock: 0, fun: true, special: true },
   matchp:    { name: "Match pairs",         icon: null, glyph: "⇄", unlock: 0, fun: true, special: true },
 };
@@ -5105,7 +5660,7 @@ const curLvl = () => Math.max(2, S[nextIdx()][1]);
 const unlocked = () => KINDS.filter(k => DR[k].unlock <= nextIdx());
 
 /* ---------- Mistakes and stars ---------- */
-const qKey = q => q.prompt + "|" + (q.sub || "") + "|" + (q.big || "") + "|" + optLabel(q.opts ? q.opts[q.a] : "") + JSON.stringify(q.write ? q.write.target : "") + JSON.stringify(q.spec || q.grand || q.satb || q.harm || q.fig || q.sus || q.score || "");
+const qKey = q => q.prompt + "|" + (q.sub || "") + "|" + (q.big || "") + "|" + optLabel(q.opts ? q.opts[q.a] : "") + JSON.stringify(q.write ? q.write.target : "") + JSON.stringify(q.spec || q.grand || q.satb || q.harm || q.fig || q.sus || q.score || q.trio || q.kb || q.m8 || "");
 function addMistake(q) {
   if (q.kind === "listen") return;
   const k = qKey(q); const clean = JSON.parse(JSON.stringify(q)); delete clean._pick; delete clean._placed; delete clean._tried; delete clean._acc; delete clean._list; delete clean._v; delete clean._cur; delete clean._h; delete clean._f; delete clean._checked; delete clean._bass; delete clean._hint; delete clean._cc; delete clean._hh;
@@ -5141,7 +5696,7 @@ const fixGoal = dd => Math.min(3, (dd.f || 0) + dueNow().length);
 /* today's practice counts for the day he is on now (he may finish one day and start the next) */
 const runFor = i => { const r0 = state.runs[TODAY]; return r0 && (r0.day === undefined || r0.day === i) ? r0 : null; };
 const selfAdvance = () => (state.plan || {}).selfAdvance !== false;
-const curGrade = () => nextIdx() >= 48 ? 7 : 6;
+const curGrade = () => nextIdx() >= 88 ? 8 : nextIdx() >= 48 ? 7 : 6;
 const kidCanFinish = i => S[i] && !/Papers$/.test(S[i][0]) && !PAPERS.has(i) && i < S.length - 1;
 const dailyItems = () => { const dd = state.daily[TODAY] || { g: 0, f: 0 }; const li = nextIdx(); return (lessonFor(li) && !onTrip() ? [["learn", lessonFor(li).recap ? "Remember these cards" : "Learn it first", dd.l === li + 1 || dd.l === true]] : []).concat([["today", "Today's practice", !!runFor(li)], ["words5", "Today's word cards", !!dd.w], ["game", "One game you choose", !!dd.g], ["fix", fixGoal(dd) ? `Fix ${fixGoal(dd)} mistake${fixGoal(dd) > 1 ? "s" : ""}` : "Fix mistakes (none to fix!)", !fixGoal(dd) || dd.f >= fixGoal(dd)]]); };
 function checkDaily() { const dd = daily(); if (!dd.b && dailyItems().every(x => x[2])) { dd.b = 1; starToday(5); Object.keys(state.daily).filter(x => x < iso(new Date(parse(TODAY).getTime() - 30 * 864e5))).forEach(x => delete state.daily[x]); return true; } return false; }
@@ -5183,7 +5738,7 @@ function startRound(opts) {
   if (R.mode === "mock") { R.end = Date.now() + (R.minutes || 40) * 60 * 1000; R.tick = setInterval(mockTick, 1000); }
   renderQ();
 }
-function stave(spec, z) { return `<div class="stave">${spec && spec.top ? Eng.grand(Object.assign({ z: z || 1 }, spec)) : svgOf(spec, z)}</div>`; }
+function stave(spec, z) { return `<div class="stave">${spec && spec.staves ? Eng.score(Object.assign({ z: z || 1 }, spec)) : spec && spec.top ? Eng.grand(Object.assign({ z: z || 1 }, spec)) : svgOf(spec, z)}</div>`; }
 function dotsBar() {
   if (R.speed) return `<span class="dots speed-score"><b>${R.marks.filter(Boolean).length}</b> right</span>`;
   return `<span class="dots" aria-label="${R.marks.filter(Boolean).length} right so far">${R.qs.map((_, k) => `<i class="${R.mode === "mock" ? (R.qs[k]._pick !== undefined || R.qs[k]._placed ? "p" : "") : R.marks[k] === true ? "r" : R.marks[k] === false ? "w" : ""}${k === R.i ? " cur" : ""}"></i>`).join("")}</span>`;
@@ -5210,7 +5765,7 @@ function renderQ() {
   else if (q.satb) body = satbUI(q);
   else if (q.harm) body = harmUI(q);
   else if (q.fig) body = figUI(q);
-  else if (q.selfMark) body = q.decor ? decorUI(q) : comp7UI(q);
+  else if (q.selfMark) body = q.decor ? decorUI(q) : q.trio ? trioUI(q) : q.kb ? kbUI(q) : q.m8 ? mel8UI(q) : q.s8 ? score8UI(q) : comp7UI(q);
   else if (q.comp) body = compQUI(q);
   else if (q.keyboard) body = kbSVG(q);
   else body = `<div class="opts${q.letters ? " letters" : ""}${q.restOpts ? " rests" : ""}${q.twoBig ? " two" : ""}${q.bigOpts ? " staves" : ""}${q.staveOpts ? " wide" : ""}">${q.opts.map((o, k) => `<button type="button" data-o="${k}" class="${R.mode === "mock" && q._pick === k ? "picked" : ""}" ${typeof o === "string" ? "" : `aria-label="${esc(o.label)}"`}>${typeof o === "string" ? esc(o) : svgOf(o.spec, 1.1)}</button>`).join("")}</div>`;
@@ -5389,7 +5944,7 @@ function mockEnd() {
 }
 
 /* ---------- Check-up (diagnostic) ---------- */
-const STRAND_OF = q => ({ chords7: "chords7", fig7: "fig7", sus7: "sus7", decor7: "sus7", comp7: "compose", score7: "score7", orch7: "score7", terms7: "score7", chords6: "chords", harmony: "chords", satb: "fb", err6: "fb", cad6: "cadences", harm: "melody", nonchord: "nonchord", modul: "keys", keys: "keys", compose: "compose", score6: "score", dev6: "score", int6: "score", intervals: "score", orch: "orch", orch6: "orch", transpose: "orch", world: "orch", terms6: "terms", terms: "terms", signs: "terms" })[q.kind] || "chords";
+const STRAND_OF = q => ({ chords8: "chords8", terms8: "score8", trio8: "trio8", trio8w: "trio8", kb8: "kb8", kb8w: "kb8", mel8: "compose8", score8: "score8", orch8: "score8", chords7: "chords7", fig7: "fig7", sus7: "sus7", decor7: "sus7", comp7: "compose", score7: "score7", orch7: "score7", terms7: "score7", chords6: "chords", harmony: "chords", satb: "fb", err6: "fb", cad6: "cadences", harm: "melody", nonchord: "nonchord", modul: "keys", keys: "keys", compose: "compose", score6: "score", dev6: "score", int6: "score", intervals: "score", orch: "orch", orch6: "orch", transpose: "orch", world: "orch", terms6: "terms", terms: "terms", signs: "terms" })[q.kind] || "chords";
 const DIAG_PLAN = [["harmony", 5], ["harmony", 5], ["harmony", 5], ["chords6", 5], ["chords6", 5], ["chords6", 5], ["intervals", 5], ["intervals", 5], ["intervals", 5], ["keys", 5], ["keys", 5], ["modul", 5], ["modul", 5], ["transpose", 5], ["transpose", 5], ["orch", 5], ["terms", 5], ["terms", 5], ["terms6", 5], ["signs", 5], ["cad6", 5], ["cad6", 5], ["nonchord", 5], ["int6", 5]];
 function startDiag(el) {
   let qs = makeRound(DIAG_PLAN, 3);
@@ -5556,10 +6111,12 @@ function startSpeed() {
 const KCOL = [["Blue", "#2D5B8C"], ["Purple", "#6A4CAF"], ["Green", "#2C7A54"], ["Pink", "#B03F77"], ["Orange", "#B4561B"]];
 function applyColour() { let c = null; try { c = localStorage.getItem("philip-colour"); } catch (e) {} const k = $("kid"); if (!k) return; if (c) { k.style.setProperty("--kid", c); k.style.setProperty("--kid-ink", "#FFFFFF"); } else { k.style.removeProperty("--kid"); k.style.removeProperty("--kid-ink"); } }
 function journey() {
-  const ph = [["Bridge", "Start"], ["Harmony", "Harmony"], ["Melody", "Melody"], ["Compose", "Compose"], ["Scores", "Scores"], ["Papers", "Papers"]];
+  const g = curGrade(), ph = g === 8 ? [["G8 Chords", "Chords"], ["G8 Trio", "Trio"], ["G8 Keyboard", "Keyboard"], ["G8 Compose", "Compose"], ["G8 Scores", "Scores"], ["G8 Papers", "Papers"]]
+    : g === 7 ? [["G7 Chords", "Chords"], ["G7 Figuring", "Figuring"], ["G7 Decoration", "Decoration"], ["G7 Compose", "Compose"], ["G7 Scores", "Scores"], ["G7 Papers", "Papers"]]
+    : [["Bridge", "Start"], ["Harmony", "Harmony"], ["Melody", "Melody"], ["Compose", "Compose"], ["Scores", "Scores"], ["Papers", "Papers"]];
   const parts = ph.map(([k, label]) => { const ids = S.map((s, i) => phaseOf(s[0]) === k ? i : -1).filter(i => i >= 0); const d = ids.filter(i => state.done[SID(i)]).length; return { label, d, n: ids.length }; });
   const cur = parts.findIndex(p => p.d < p.n);
-  return `<div class="k-journey" aria-label="Your journey to the exam">${parts.map((p, k) => `<div class="kj${k === cur ? " cur" : ""}${p.d === p.n ? " done" : ""}"><span class="kj-bar"><i style="width:${Math.round(p.d / p.n * 100)}%"></i></span><small>${p.label}</small></div>`).join("")}<div class="kj exam"><span class="kj-flag">${starSVG(18)}</span><small>Exam</small></div></div>`;
+  return `<div class="k-journey" aria-label="Your journey to the Grade ${g} exam">${parts.map((p, k) => `<div class="kj${k === cur ? " cur" : ""}${p.d === p.n ? " done" : ""}"><span class="kj-bar"><i style="width:${Math.round(p.d / p.n * 100)}%"></i></span><small>${p.label}</small></div>`).join("")}<div class="kj exam"><span class="kj-flag">${starSVG(18)}</span><small>Exam</small></div></div>`;
 }
 function todayCard() {
   const it = dailyItems(), all = it.every(x => x[2]);
@@ -5796,7 +6353,7 @@ function renderStatus() {
   $("st-done").textContent = `${doneCount()} / ${S.length}`;
   const f = fitInfo(), p = $("st-pace"), [cls, txt] = projText(f, tgt);
   p.className = "pill " + cls; p.textContent = txt;
-  $("st-green").textContent = STRANDS.filter(s => state.mastery[s[0]] === "g").length;
+  $("st-green").textContent = STRANDS.filter(s => state.mastery[s[0]] === "g").length; if ($("st-green-of")) $("st-green-of").textContent = `of ${STRANDS.length} strands green`;
   const np = [...PAPERS].filter(k => !state.done[SID(k)]).sort((x, y) => x - y)[0];
   $("st-next").textContent = np !== undefined ? `Day ${np + 1}` : "–";
   $("st-stars").textContent = totalStars();
@@ -5953,7 +6510,7 @@ function openWorksheet(i) {
   el.hidden = false; document.documentElement.classList.add("teach-open"); el.scrollTop = 0;
 }
 /* certificates for each finished part of the journey */
-const PH_CERT = [["Harmony", "Four-part harmony"], ["Melody", "Harmonising melodies"], ["Compose", "Melody writing"], ["Scores", "Score reading"], ["Papers", "Grade 6 practice papers"], ["G7 Chords", "Grade 7 chords"], ["G7 Figuring", "Figuring a bass"], ["G7 Decoration", "Suspensions and decoration"], ["G7 Compose", "Grade 7 composing"], ["G7 Scores", "Grade 7 scores"], ["G7 Papers", "Grade 7 practice papers"]];
+const PH_CERT = [["Harmony", "Four-part harmony"], ["Melody", "Harmonising melodies"], ["Compose", "Melody writing"], ["Scores", "Score reading"], ["Papers", "Grade 6 practice papers"], ["G7 Chords", "Grade 7 chords"], ["G7 Figuring", "Figuring a bass"], ["G7 Decoration", "Suspensions and decoration"], ["G7 Compose", "Grade 7 composing"], ["G7 Scores", "Grade 7 scores"], ["G7 Papers", "Grade 7 practice papers"], ["G8 Chords", "Chromatic harmony"], ["G8 Trio", "Trio sonata writing"], ["G8 Keyboard", "Keyboard textures"], ["G8 Compose", "Grade 8 composing"], ["G8 Scores", "Grade 8 scores"], ["G8 Papers", "Grade 8 practice papers"]];
 function phaseDone(k) { const ids = S.map((s, i) => phaseOf(s[0]) === k ? i : -1).filter(i => i >= 0); return ids.every(i => state.done[SID(i)]) ? ids.map(i => state.done[SID(i)]).sort().pop() : null; }
 function certsHTML() {
   const got = PH_CERT.filter(([k]) => phaseDone(k)); if (!got.length) return "";
@@ -5995,7 +6552,7 @@ function cardAnswer(knew) {
   save(); renderCard();
 }
 /* which days teach each exam strand */
-const STRAND_DAYS = { chords7: [50, 51, 52, 53, 54], fig7: [57, 58, 59, 61, 62], sus7: [64, 65, 66, 67, 68], score7: [76, 77, 78, 79, 80, 81], chords: [2, 3, 9, 11, 13, 14], fb: [5, 6, 9, 13, 15, 16], cadences: [7, 10, 19], melody: [18, 19, 20], nonchord: [21, 22], keys: [23, 26], compose: [25, 26, 27, 28, 29], score: [32, 33, 34, 37], orch: [35, 36], terms: [30, 48] };
+const STRAND_DAYS = { chords8: [90, 91, 92, 93, 94], trio8: [97, 98, 99, 100, 101, 102], kb8: [104, 105, 106, 107, 108], compose8: [110, 111, 112, 113, 114], score8: [116, 117, 118, 119, 120, 121, 122], chords7: [50, 51, 52, 53, 54], fig7: [57, 58, 59, 61, 62], sus7: [64, 65, 66, 67, 68], score7: [76, 77, 78, 79, 80, 81], chords: [2, 3, 9, 11, 13, 14], fb: [5, 6, 9, 13, 15, 16], cadences: [7, 10, 19], melody: [18, 19, 20], nonchord: [21, 22], keys: [23, 26], compose: [25, 26, 27, 28, 29], score: [32, 33, 34, 37], orch: [35, 36], terms: [30, 48] };
 function termsListHTML() {
   const DAY = { 1: 30, 2: 30, 3: 30, 4: 30, 5: 30, 6: 30 }, known = state.termBox || {};
   return `<details class="deep syl" data-k="terms" ${OPEN.terms ? "open" : ""}><summary>All ${TERMS_DATA.length} terms, by grade</summary>${[1, 2, 3, 4, 5, 6].map(g => `<h4 class="tl-g">${g === 6 ? "Grade 6 additions" : "Grade " + g} <span class="meta">· reviewed by Day ${DAY[g]}</span></h4><table class="syl-t"><tbody>${TERMS_DATA.filter(t => t[0] === g).map(t => `<tr><td><i>${esc(t[1])}</i></td><td>${esc(tclean(t[2]))}</td><td class="meta">${tlang(t[2]) === "Italian" ? "" : tlang(t[2])}</td><td>${known[t[1]] && known[t[1]].b ? "★".repeat(known[t[1]].b) : ""}</td></tr>`).join("")}</tbody></table>`).join("")}<p class="meta" style="margin:0 12px 12px">Stars show how well Philip knows each word from his Word cards.</p></details>`;
@@ -6019,7 +6576,7 @@ function renderSettings() {
   const el = $("psettings"); if (!el) return; const p = P(), DN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const f = fitInfo(), [cls] = projText(f, p.exam);
   el.innerHTML = `<p class="ps-fit ${cls}">${!f.last ? "Every day is done." : `At ${p.days.length} day${p.days.length > 1 ? "s" : ""} a week, skipping trips, Day ${S.length} would be around <b>${nice(f.last)}</b>. ${!p.exam ? "No exam date is set, so there's nothing to keep up with." : f.last < p.exam ? `That leaves about ${Math.floor((parse(p.exam) - parse(f.last)) / (7 * 864e5))} weeks before the exam date.` : "That's after the exam date: add a day a week or move the date."}`}</p>
-    <div class="ps-row"><label for="ps-exam"><b>Exam date</b></label><input type="date" id="ps-exam" value="${p.exam}">${p.exam ? `<button class="btn small ghost" type="button" data-act="clearexam">No date yet</button>` : ""}<span class="meta">Optional. Grade 6 is taken on set session dates; book once a practice paper is about 75/100.</span></div>
+    <div class="ps-row"><label for="ps-exam"><b>Exam date</b></label><input type="date" id="ps-exam" value="${p.exam}">${p.exam ? `<button class="btn small ghost" type="button" data-act="clearexam">No date yet</button>` : ""}<span class="meta">Optional. Grades 6–8 are taken on set session dates; book once a practice paper is about 75/100.</span></div>
     <div class="ps-row"><b>Moving on</b><label class="ps-days"><input type="checkbox" id="ps-self" ${selfAdvance() ? "checked" : ""}> Philip can finish a day himself and go on to the next one, after 7 out of 10 in Today's practice</label><span class="meta">Practice-paper days (${[...PAPERS].map(k => k + 1).join(", ")}) always need you.</span></div>
     <div class="ps-row"><b>Days in one day</b><label class="ps-days">Philip can finish up to <select id="ps-max">${[[0, "any number of"], [1, "1"], [2, "2"], [3, "3"], [4, "4"]].map(([v, l]) => `<option value="${v}" ${maxNew() === v ? "selected" : ""}>${l}</option>`).join("")}</select> day${maxNew() === 1 ? "" : "s"} a day</label><span class="meta">After that, the games, word cards and Match pairs stay open for extra practice.</span></div>
     <div class="ps-row"><b>Usual days</b><span class="ps-days">${[1, 2, 3, 4, 5, 6, 0].map(x => `<label><input type="checkbox" data-pday="${x}" ${p.days.includes(x) ? "checked" : ""}> ${DN[x]}</label>`).join("")}</span><span class="meta">Only used for the estimate. Do a day whenever it suits.</span></div>
@@ -6044,7 +6601,7 @@ document.addEventListener("click", e => {
   if (e.target.closest('[data-act="clearexam"]')) { setPlan({ exam: "" }); return; }
   const b = e.target.closest('[data-act="plandefault"]'); if (b) { state.plan = null; save(); renderAll(); }
 });
-const STRAND_DRILLS = { chords: ["chords6", "harmony"], fb: ["satb", "err6"], cadences: ["cad6"], melody: ["harm"], nonchord: ["nonchord"], keys: ["modul"], compose: [], score: ["score6", "dev6", "int6", "intervals"], orch: ["orch", "orch6"], terms: ["terms6"], chords7: ["chords7"], fig7: ["fig7"], sus7: ["sus7"], score7: ["score7", "orch7", "terms7"] };
+const STRAND_DRILLS = { chords: ["chords6", "harmony"], fb: ["satb", "err6"], cadences: ["cad6"], melody: ["harm"], nonchord: ["nonchord"], keys: ["modul"], compose: [], score: ["score6", "dev6", "int6", "intervals"], orch: ["orch", "orch6"], terms: ["terms6"], chords7: ["chords7"], fig7: ["fig7"], sus7: ["sus7"], score7: ["score7", "orch7", "terms7"], chords8: ["chords8"], trio8: ["trio8"], kb8: ["kb8"], compose8: [], score8: ["score8", "orch8", "terms8"] };
 function renderDiag() {
   const el = $("diagbox"); const d = state.diag;
   if (!d) { el.innerHTML = `<p class="meta">No check-up yet. Philip can do <b>Show what you know</b> from his corner (24 questions, about 15 minutes) to fill in this tracker quickly.</p>`; return; }
@@ -6594,6 +7151,370 @@ function ref7HTML() {
   out.push(sec("17. Grade 7 terms", `<div class="ref-terms">${TERMS7.map(t => `<span><i>${esc(t[1])}</i>: ${esc(t[2])}</span>`).join("")}</div>`));
   return out.join("");
 }
+
+/* ================= Grade 8: help cards, printing, marking keys, writing tiles, lesson pack extras, reference book, lessons ================= */
+Object.assign(HOW, {
+  chords8: [["Grade 8 adds secondary dominants (V7/V, V7/IV, V7/II, V7/VI), diminished 7ths on other degrees (VII7/V) and the augmented 6ths.", null],
+    ["A sharp that rises a semitone is often a new leading note (a secondary dominant). ♭6 in the bass with ♯4 above is an augmented 6th.", null],
+    ["Italian ♭6–1–♯4; French adds 2; German adds ♭3. All go to V (the German usually via Ic).", null]],
+  terms8: [["Grade 8 terms in Italian, French and German: sotto voce, l'istesso tempo, pressez, cuivré, Hauptstimme, innig…", null]],
+  trio8: [["Exam question 1: two violins over a figured bass. Work out the chord from the bass and its figures.", null],
+    ["Both violin notes must belong to the chord, the 3rd must be there (only three parts!), and no consecutive 5ths or octaves with the beat before.", null]],
+  trio8w: [["Write the two violin parts on paper, then compare with the checklist and one model answer.", null]],
+  kb8: [["Exam question 2: keep the left-hand pattern from bar 1, changing the notes to fit each chord.", null], ["Find the chord from the melody and the bass; keep the shape and rhythm the same.", null]],
+  kb8w: [["Copy the outline, continue the pattern to the end, then compare.", null]],
+  mel8: [["Exam question 3: continue an opening to at least 12 bars. Plan 4 + 4 + 4 bars, modulate and come back, and add directions.", null]],
+  score8: [["Exam question 4: a score of up to 5 staves. Work out sounding notes first (clarinet and horn transpose), then name the chord.", null]],
+  orch8: [["Exam question 5: a big orchestra. Brass 'in X' sound X when they play a written C: horn in E♭ a major 6th lower, trumpet in D a major 2nd higher.", null],
+    ["Read chords from the strings. Piccolo sounds an octave higher, double bass an octave lower.", null]],
+});
+
+/* ---------- marking keys and printing ---------- */
+const _g7Key8 = g7KeyHTML;
+g7KeyHTML = function (q) {
+  if (q.trio) return `<div class="stave">${Eng.score(Object.assign({ z: .8 }, trioSpec(q, "model").score))}</div><ol class="clist">${TRIO_CHECKS.map(c => `<li>${esc(c)}</li>`).join("")}</ol><p class="meta">Marking: start from ${q._marks || 15}. Take off 2 for each wrong chord, missing 3rd or consecutive; 1 for a weak part (no movement, too far apart). Other good answers earn full marks.</p>`;
+  if (q.kb) return `<div class="stave">${Eng.grand(Object.assign({ z: .8 }, kbSpec(q, "model")))}</div><p class="meta">Chords: ${esc(q.kb.ch.join(" – "))}</p><ol class="clist">${KB_CHECKS.map(c => `<li>${esc(c)}</li>`).join("")}</ol><p class="meta">Marking: start from ${q._marks || 15}. Take off 1–2 for each bar with a wrong chord or a broken pattern, and 2 for each consecutive.</p>`;
+  if (q.m8) { const t = MEL8[q.m8.k]; return `<p class="tempo">${esc(t.tempo)}</p>${[0, 1, 2].map(r => stave(mel8Spec(q.m8.k, true, r), .85)).join("")}<ol class="clist">${t.notes.map(n => `<li>${esc(n)}</li>`).join("")}</ol><p class="meta">Checklist:</p><ol class="clist">${MEL8_CHECKS.map(c => `<li>${esc(c)}</li>`).join("")}</ol>`; }
+  return _g7Key8(q);
+};
+const _wsQ8 = wsQ, _wsAnswer8 = wsAnswer;
+wsQ = function (q, k, extra) {
+  const head = `<p><b>${k + 1}.</b> ${esc(q.prompt)}</p>`, blank = (clef, key) => stave({ clef, key, notes: [], minW: 560, end: false }, .9);
+  if (q.trio) { const K = trioK(q); return `<div class="ws-q">${head}<div class="stave">${Eng.score(Object.assign({ z: 1 }, trioSpec(q, "question").score))}</div><p class="meta">Copy onto manuscript paper, or write straight onto the staves above.</p>${extra || ""}</div>`; }
+  if (q.kb) return `<div class="ws-q">${head}<div class="stave">${Eng.grand(Object.assign({ z: 1.05 }, kbSpec(q, "outline")))}</div><p class="meta">Pattern: ${esc(KB_PATTERNS[q.kb.pat].name)}. Write the left hand in the empty bars.</p>${blank("bass", kbK(q).key)}${extra || ""}</div>`;
+  if (q.m8) { const t = MEL8[q.m8.k]; return `<div class="ws-q">${head}${[0, 1, 2].map(r => stave(mel8Spec(q.m8.k, false, r), 1)).join("")}<p class="meta">${esc(t.inst[0].toUpperCase() + t.inst.slice(1))} range: ${esc(t.range)}. Add tempo, dynamics, phrasing and articulation.</p>${extra || ""}</div>`; }
+  return _wsQ8(q, k, extra);
+};
+wsAnswer = function (q) {
+  if (q.trio) return "Mark with the checklist; one model answer below";
+  if (q.kb) return "Mark with the checklist; one model answer below";
+  if (q.m8) return "Mark with the checklist; one model answer below";
+  return _wsAnswer8(q);
+};
+
+/* ---------- the three writing tiles in Philip's corner ---------- */
+function g8WritePage(kind) {
+  paused = null; R = null;
+  const q = GEN[kind](5), title = { trio8w: "Write a trio", kb8w: "Complete a keyboard piece" }[kind];
+  $("kid").innerHTML = `<div class="drill-bar"><button class="btn ghost" type="button" data-act="home">← Home</button><b class="r-title">${title}</b><span class="spacer"></span><button class="btn small" type="button" data-act="${kind}">Another one</button></div>
+    <div class="q kid"><p class="prompt">${esc(q.prompt)}</p>${q.trio ? trioUI(q) : kbUI(q)}</div>`;
+}
+function mel8Home() {
+  paused = null; R = null;
+  $("kid").innerHTML = `<div class="drill-bar"><button class="btn ghost" type="button" data-act="home">← Home</button><b class="r-title">Compose (Grade 8)</b></div>
+    <p class="k-sub">Pick an opening. Continue it on paper to at least 12 bars, then compare with the checklist and a model answer.</p>
+    <div class="ladder-pick">${MEL8.map((t, k) => `<button class="lad-btn" type="button" data-act="m8open" data-k="${k}"><b>${esc(t.inst[0].toUpperCase() + t.inst.slice(1))}</b><small>${esc(keyLab(mel8K(t)))} · ${t.time.join("/")}</small></button>`).join("")}</div>`;
+}
+function mel8Open(k) {
+  const t = MEL8[k];
+  $("kid").innerHTML = `<div class="drill-bar"><button class="btn ghost" type="button" data-act="mel8">← Openings</button><b class="r-title">${esc(t.inst[0].toUpperCase() + t.inst.slice(1))}, ${esc(keyLab(mel8K(t)))}</b></div>
+    <div class="q kid"><p class="prompt">Continue this opening for ${esc(t.inst)} to make a melody of at least 12 bars. Modulate to a related key and come back, and add performance directions.</p>${mel8UI({ m8: { k } })}</div>`;
+}
+document.addEventListener("click", e => { const a = e.target.closest("[data-act]"); if (!a) return; const act = a.dataset.act;
+  if (act === "trio8w" || act === "kb8w") g8WritePage(act); else if (act === "mel8") mel8Home(); else if (act === "m8open") mel8Open(+a.dataset.k); });
+
+/* ---------- lesson pack: today's written task on Grade 8 writing days ---------- */
+function g8PackHTML(i, tag) {
+  if (tag === "G8 Compose") { const k = (i - 109 + MEL8.length * 4) % MEL8.length, t = MEL8[k];
+    return `<section class="pk-sec"><h3>Today's composition task</h3><p>${esc(`Continue this opening for ${t.inst} to at least 12 bars (${keyLab(mel8K(t))}).`)}</p>${[0, 1, 2].map(r => stave(mel8Spec(k, false, r), .9)).join("")}<p class="meta">${esc(t.inst)} range: ${esc(t.range)}.</p><h4>One model answer (for Mum)</h4>${g7KeyHTML({ m8: { k } })}</section>`; }
+  if (tag === "G8 Trio" && i >= 99) { const q = seeded(9100 + i, () => GEN.trio8w(5)); if (!q.trio) return "";
+    return `<section class="pk-sec"><h3>Today's trio passage</h3><p>${esc(q.prompt)}</p><div class="stave">${Eng.score(Object.assign({ z: .95 }, trioSpec(q, "question").score))}</div><h4>One model answer (for Mum)</h4>${g7KeyHTML(q)}</section>`; }
+  if (tag === "G8 Keyboard" && i >= 104) { const q = seeded(9200 + i, () => GEN.kb8w(5)); if (!q.kb) return "";
+    return `<section class="pk-sec"><h3>Today's keyboard outline</h3><p>${esc(q.prompt)}</p><div class="stave">${Eng.grand(Object.assign({ z: .95 }, kbSpec(q, "outline")))}</div><h4>One model answer (for Mum)</h4>${g7KeyHTML(q)}</section>`; }
+  return "";
+}
+
+/* ---------- pictures for the reference book and lessons (made and checked by the harmony engine) ---------- */
+function _p8(key, minor, labs, o) { const K = K6(key, minor), ch = labs.map(CH), V = realize(K, ch); if (!V) return null; return satbSpec(K, ch, V, Object.assign({ figures: true, labels: true }, o || {})); }
+function _t8(seed, key, minor, labs, mode) {
+  const K = K6(key, minor), ch = labs.map(CH);
+  /* the given chords if they fit three parts; otherwise another phrase of the same length in the same key */
+  const r = seeded(seed, () => { for (let t = 0; t < 120; t++) { const V0 = realize(K, ch, null, { noise: 1.5 }); const V1 = V0 && trioFit(K, ch, V0); if (V1) return [labs, V1]; }
+    for (let t = 0; t < 300; t++) { const ph = phrase(K, labs.length, "perfect", {}); const V1 = ph && trioFit(K, ph.chords, ph.V); if (V1) return [ph.chords.map(chLabel), V1]; } return null; });
+  if (!r) return null; return trioSpec({ trio: { key, minor, ch: r[0], V: r[1] } }, mode || "model").score;
+}
+function _k8(key, minor, labs, pat) { const K = K6(key, minor), ch = labs.map(CH), V = realize(K, ch); if (!V) return null; return kbSpec({ kb: { key, minor, ch: labs, V, pat } }, "model"); }
+const _n8 = (clef, key, notes, w) => ({ clef, key: key || 0, notes: notes.map(([n, dur, lbl, acc]) => Object.assign({ n, dur: dur || "q" }, lbl ? { lbl } : {}, acc ? { acc } : {})), minW: w || 220, sp: 34, end: false });
+
+/* ---------- Grade 8 section of the reference book ---------- */
+function ref8HTML() {
+  const sec = (t, body, intro) => `<section class="ref-sec"><h3>${t}</h3>${intro ? `<p class="meta">${intro}</p>` : ""}${body}</section>`;
+  const tbl = (head, rows) => `<table class="ref-t"><thead><tr>${head.map(h => `<th>${h}</th>`).join("")}</tr></thead><tbody>${rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+  const fig = (title, key, minor, labs) => { const sp = _p8(key, minor, labs); return sp ? `<figure><div class="stave">${Eng.grand(Object.assign({ z: .72 }, sp))}</div><figcaption>${title} (${K6(key, minor).label})</figcaption></figure>` : ""; };
+  const Kc = K6("C", false), Km = K6("C", true), sp = (K, l) => tonesOf(K, CH(l)).map(t => nm(t.l, t.a)).join("–");
+  const out = [];
+  out.push(`<h2 style="margin-top:28px">Grade 8</h2>`);
+  out.push(sec("18. Secondary dominants", tbl(["Chord", "In C major", "Figures (root)", "Goes to", "The note to watch"], [
+    ["V/V", sp(Kc, "V/V"), figureOf(Kc, CH("V/V")) || "♯", "V", "F♯ rises to G"], ["V7/V", sp(Kc, "V7/V"), figureOf(Kc, CH("V7/V")), "V (or Ic–V)", "F♯ rises, C falls"], ["V7/IV", sp(Kc, "V7/IV"), figureOf(Kc, CH("V7/IV")), "IV", "B♭ falls to A"],
+    ["V7/II", sp(Kc, "V7/II"), figureOf(Kc, CH("V7/II")), "II", "C♯ rises to D"], ["V7/VI", sp(Kc, "V7/VI"), figureOf(Kc, CH("V7/VI")), "VI", "G♯ rises to A"], ["VII7/V", sp(Kc, "VII7/V"), figureOf(Kc, CH("VII7/V")), "V", "F♯ rises, E♭ falls"]]),
+    "A secondary dominant is the dominant (or dominant 7th, or diminished 7th) of a chord other than I. It borrows that chord's leading note, so it brings an accidental."));
+  out.push(sec("19. Augmented 6th chords", tbl(["Chord", "In C minor", "In C major", "Figures", "Goes to"], [
+    ["Italian 6th", sp(Km, "It6"), sp(Kc, "It6"), "♯6", "V"], ["French 6th", sp(Km, "Fr6"), sp(Kc, "Fr6"), "♯6/4/3", "V"], ["German 6th", sp(Km, "Ger6"), sp(Kc, "Ger6"), "♯6/5 (major: ♯6/♭5/♭3)", "Ic then V (avoids consecutive 5ths)"]]),
+    "All three are built on the flattened 6th in the bass, with the sharpened 4th above: an augmented 6th that opens out to the octave on the dominant. Double the tonic in the Italian; never double the ♭6 or ♯4."));
+  out.push(sec("20. Grade 8 progressions", `<div class="ref-grid g2">${[fig("V7/V–V–I", "C", false, ["I", "V7/V", "V", "I"]), fig("V7/IV–IV–V–I", "G", false, ["I", "V7/IV", "IV", "V", "I"]), fig("It6–V–I", "A", true, ["I", "IV", "It6", "V", "I"]), fig("Ger6–Ic–V–I", "C", true, ["I", "IV", "Ger6", "Ic", "V", "I"])].join("")}</div>`));
+  out.push(sec("21. Question 1: the trio sonata checklist", `<ol class="ref-list">${TRIO_CHECKS.map(c => `<li>${esc(c)}</li>`).join("")}</ol>`, "Pencil each chord's notes over the bass first. With three parts, keep the 3rd (and the 7th of a 7th chord); the 5th may go."));
+  out.push(sec("22. Question 2: keyboard patterns", tbl(["Pattern", "Time", "Shape (in C)"], [["Alberti bass", "4/4 or 2/4", "C–G–E–G"], ["Broken chord", "4/4", "C–E–G–E"], ["Waltz bass", "3/4", "C, then E+G, E+G"], ["Rocking quavers", "6/8", "C–G–E, C–G–E"]]) + `<ol class="ref-list">${KB_CHECKS.map(c => `<li>${esc(c)}</li>`).join("")}</ol>`));
+  out.push(sec("23. Question 3: a 12-bar melody", `<ol class="ref-list">${MEL8_CHECKS.map(c => `<li>${esc(c)}</li>`).join("")}</ol>`, "Plan: bars 1–4 to an imperfect cadence; bars 5–8 modulate (dominant or relative); bars 9–12 come home, with the high point and a strong tonic ending."));
+  out.push(sec("24. Brass in old keys and other transposing instruments", tbl(["Instrument", "A written C sounds", "Interval"], [
+    ["Horn in F", "F below", "a perfect 5th lower"], ["Horn in E♭", "E♭ below", "a major 6th lower"], ["Horn in D", "D below", "a minor 7th lower"], ["Trumpet in B♭", "B♭ below", "a major 2nd lower"], ["Trumpet in D", "D above", "a major 2nd higher"], ["Trumpet in F", "F above", "a perfect 4th higher"],
+    ["Clarinet in A", "A below", "a minor 3rd lower"], ["Cor anglais (in F)", "F below", "a perfect 5th lower"], ["Piccolo", "C an octave above", "an octave higher"], ["Double bass, contrabassoon", "C an octave below", "an octave lower"]]),
+    "The rule: an instrument 'in X' sounds X when it plays a written C. Classical horn and trumpet parts usually have no key signature."));
+  out.push(sec("25. Grade 8 terms", `<div class="ref-terms">${TERMS8.map(t => `<span><i>${esc(t[1])}</i>: ${esc(t[2])}</span>`).join("")}</div>`));
+  return out.join("");
+}
+
+/* ---------- Grade 8 lessons (Days 89–130), built lazily so the app starts quickly ---------- */
+const L8 = {
+  89: () => ({ kid: [
+      ["Grade 8 is 3 hours, on paper, out of 100: pass 66. Five questions, like Grades 6 and 7, but harder music.", null],
+      ["Q1: two violins over a figured bass (a trio sonata). Q2: finish a keyboard piece. Q3: a melody of 12+ bars. Q4: a chamber score. Q5: a big orchestral score.", null],
+      ["New chords: secondary dominants like V7 of V, and the augmented 6ths.", _p8("C", false, ["I", "V7/V", "V", "I"])]],
+    say: "Grade 8 is about colour: chords that borrow a sharp or a flat to lean harder towards where they are going.",
+    ex: { q: "Which questions in Grade 8 ask you to write music, and which ask about a score?", steps: ["Questions 1, 2 and 3 are writing: the trio, the keyboard piece and the melody.", "Questions 4 and 5 are about scores: a chamber score and a full orchestral score.", "Writing questions: 50 marks. Score questions: 50 marks."] },
+    oops: ["Thinking question 1 is four-part harmony: it's three real parts (two violins and the bass)."],
+    exam: "Five questions, 3 hours. Leave 25 minutes to check." }),
+  90: () => ({ kid: [
+      ["V of V is the dominant of the dominant. In C major: D–F♯–A. The F♯ is G major's leading note.", _p8("C", false, ["I", "V/V", "V", "I"])],
+      ["Add the 7th (C) to make V7/V. The F♯ rises to G; the C falls to B.", _p8("G", false, ["I", "V7/V", "V", "I"])],
+      ["In first inversion (V7b/V) the F♯ is in the bass and rises a semitone to the dominant.", _p8("C", false, ["I", "IV", "V7b/V", "V", "I"])]],
+    say: "V of V is the dominant's own dominant: it borrows a sharp to point at V.",
+    ex: { q: "Spell V7/V in D major and say where its notes go.", steps: ["The dominant of D is A. The dominant of A is E.", "E7 = E–G♯–B–D.", "G♯ (A major's leading note) rises to A; D (the 7th) falls to C♯; it goes to V (A–C♯–E)."], spec: _p8("D", false, ["I", "V7/V", "V", "I"]) },
+    oops: ["Forgetting the sharp: E–G–B–D is II7, not V7/V.", "Letting the new leading note fall."],
+    exam: "Question 4 and 5 often ask for the name of a chord like V7/V; questions 1 and 2 may imply one with an accidental." }),
+  91: () => ({ kid: [
+      ["V7/IV in C: C–E–G–B♭. The B♭ falls to A in IV.", _p8("C", false, ["I", "V7/IV", "IV", "V", "I"])],
+      ["V7/II in C: A–C♯–E–G, going to D minor (II).", _p8("C", false, ["I", "V7/II", "II", "V", "I"])],
+      ["V7/VI in C: E–G♯–B–D, going to A minor (VI).", _p8("C", false, ["I", "V7/VI", "VI", "IV", "V", "I"])]],
+    say: "Any major or minor chord can borrow its own dominant 7th. Look for the accidental and where it goes.",
+    ex: { q: "In G major, which chord is D–F♯–A–C, and which is G–B–D–F?", steps: ["D–F♯–A–C is V7 of G: the ordinary V7.", "G–B–D–F has an F♮: it is the dominant 7th of C, which is IV in G.", "So G–B–D–F is V7/IV; the F♮ falls to E."] },
+    oops: ["Calling V7/IV 'I7': I7 has a major 7th (B in C), V7/IV has a minor 7th (B♭)."],
+    exam: "In scores, a flat that falls a semitone is often the 7th of V7/IV." }),
+  92: () => ({ kid: [
+      ["VII7/V is the diminished 7th of V. In C: F♯–A–C–E♭.", _p8("C", false, ["I", "VII7/V", "V", "I"])],
+      ["F♯ rises to G and E♭ falls to D: both lean into V.", null],
+      ["In A minor, VII7/V is D♯–F♯–A–C, leaning into E.", _p8("A", true, ["I", "VII7/V", "V", "I"])]],
+    say: "The diminished 7th of V does the same job as V7/V, with even more tension.",
+    ex: { q: "Spell VII7/V in F major.", steps: ["V in F is C. The leading note of C is B.", "Build minor 3rds up from B♮: B–D–F–A♭.", "B rises to C, A♭ falls to G."] },
+    oops: ["Spelling the chord with enharmonic notes (C♭ instead of B): spell it up from the leading note in 3rds."],
+    exam: "Name it as VII7/V (or 'diminished 7th on the sharpened 4th')." }),
+  93: () => ({ kid: [
+      ["The Italian 6th: ♭6 in the bass, then 1 and ♯4. In C minor: A♭–C–F♯.", _p8("C", true, ["I", "IV", "It6", "V", "I"])],
+      ["A♭ and F♯ make an augmented 6th. They spread out to the octave G.", null],
+      ["In A minor: F–A–D♯, going to E.", _p8("A", true, ["I", "VI", "It6", "V", "I"])]],
+    say: "An augmented 6th is two notes squeezing outwards onto the dominant from a semitone each side.",
+    ex: { q: "Write the Italian 6th in G minor.", steps: ["♭6 of G minor is E♭: that's the bass.", "Add the tonic, G, and the sharpened 4th, C♯.", "E♭ falls to D, C♯ rises to D, G stays or moves to D or F♯."], spec: _p8("G", true, ["I", "IV", "It6", "V", "I"]) },
+    oops: ["Spelling the ♯4 as a flat (D♭ instead of C♯ in G minor): then it's not an augmented 6th.", "Doubling the A♭ or the F♯."],
+    exam: "The Italian 6th has only three different notes; double the tonic." }),
+  94: () => ({ kid: [
+      ["French 6th: add the 2nd. In C minor A♭–C–D–F♯.", _p8("C", true, ["I", "IV", "Fr6", "V", "I"])],
+      ["German 6th: add ♭3. In C minor A♭–C–E♭–F♯. It goes to Ic first.", _p8("C", true, ["I", "IV", "Ger6", "Ic", "V", "I"])],
+      ["Why Ic? Ger6 straight to V makes 5ths: A♭–E♭ then G–D.", null]],
+    say: "Italian has three notes, French adds the 2nd, German adds the flat 3rd. Think 'I, F, G: 1, 2, 3 extra'.",
+    ex: { q: "Is A♭–C–E♭–F♯ in C minor a German 6th or an A♭ dominant 7th?", steps: ["A♭ dominant 7th would be A♭–C–E♭–G♭.", "Here the top note is F♯, a sharpened 4th, which rises to G.", "So it's a German 6th, going to Ic then V."] },
+    oops: ["Taking the German 6th straight to V (consecutive 5ths).", "Mixing up French (2nd) and German (♭3rd)."],
+    exam: "Score questions ask 'name the type of chord': say Italian, French or German augmented 6th." }),
+  95: () => ({ kid: [
+      ["Italian: sotto voce (in an undertone), mezza voce (half voice), lontano (distant), l'istesso tempo (same beat).", null],
+      ["French: pressez (hurry), en animant (getting livelier), cuivré (brassy), sur la touche (bow over the fingerboard).", null],
+      ["German: innig (heartfelt), ausdrucksvoll (expressively), Hauptstimme (main part), gedämpft (muted), lebhaft (lively).", null]],
+    say: "Group the terms: speed, mood, and how to play. Then they stick.",
+    ex: { q: "What does 'l'istesso tempo' mean when the time changes from 2/4 to 6/8?", steps: ["It means 'the same speed'.", "The beat stays the same: a crotchet in 2/4 equals a dotted crotchet in 6/8."] },
+    oops: ["Mixing up 'pressez' (hurry) and 'cédez' (slow down)."],
+    exam: "Expect two or three term questions in questions 4 and 5." }),
+  97: () => ({ kid: [
+      ["A trio sonata: two violins and a continuo bass with figures.", _t8(9701, "F", false, ["I", "IV", "V", "I", "VI", "IIb", "V", "I"])],
+      ["You get the bass, the figures and the opening of both violins. You finish the violins.", _t8(9701, "F", false, ["I", "IV", "V", "I", "VI", "IIb", "V", "I"], "question")],
+      ["Only three real parts, so each chord needs its 3rd.", null]],
+    say: "Think of it as a conversation: two violins chatting over a walking bass.",
+    ex: { q: "What do you need to write in question 1?", steps: ["Both upper parts (violin I and violin II) from where they stop to the end.", "Follow the figured bass for every chord.", "Make them move, and end with a cadence."] },
+    oops: ["Writing four parts: there are three."],
+    exam: "15 marks; about 25 minutes." }),
+  98: () => ({ kid: [
+      ["No figure = 5/3. 6 = first inversion. 7, 6/5, 4/3, 4/2 = 7th chords. ♯ alone = sharpen the 3rd.", _p8("G", true, ["I", "IVb", "V", "I", "VI", "IIb", "V7", "I"])],
+      ["Pencil the three chord notes above each bass note first.", null],
+      ["In minor, the ♯ or ♮ shows the raised leading note.", null]],
+    say: "Figures are a code. Crack each one before you write a single violin note.",
+    ex: { q: "In G minor, the bass is F♯ with figure 6. What's the chord?", steps: ["F♯ is the leading note, so it's a chord of D (V) in first inversion: D–F♯–A.", "With F♯ in the bass, the violins have D and A (not another F♯)."] },
+    oops: ["Reading figures from the top note instead of the bass."],
+    exam: "Write chord names in pencil and rub them out at the end." }),
+  99: () => ({ kid: [
+      ["Keep the 3rd: it says major or minor.", _t8(9901, "D", false, ["I", "VI", "IV", "V", "I"])],
+      ["In a 7th chord keep the 3rd and the 7th; the 5th can go.", null],
+      ["Check each pair: violin I–II, violin I–bass, violin II–bass for 5ths and octaves.", null]],
+    say: "Three parts can't carry every note, so choose: 3rd always, 7th if there is one.",
+    ex: { q: "Over a V7 chord in C (bass G), which two notes should the violins have?", steps: ["V7 = G–B–D–F.", "The bass has G (the root).", "The violins take B (the 3rd) and F (the 7th)."] },
+    oops: ["Leaving out the 3rd for a bare 5th.", "Doubling the leading note."],
+    exam: "Examiners take marks off for missing 3rds and consecutives." }),
+  100: () => ({ kid: [
+      ["Take turns: one violin moves while the other holds.", _t8(10001, "G", false, ["I", "IV", "Ib", "V", "VI", "IIb", "V", "I"])],
+      ["Fill a leap of a 3rd with a passing note.", null],
+      ["Imitation: violin II copies violin I's figure a little later.", null]],
+    say: "Two tunes that take turns sound alive; two tunes that move together sound like hymn parts.",
+    ex: { q: "Violin I goes C–A over two beats. How can you add movement?", steps: ["Fill the 3rd: C–B♭–A (or C–B–A in the right key) as quavers.", "Keep violin II still on that beat so the two take turns."] },
+    oops: ["Both violins in quavers all the time.", "Violins more than an octave apart."],
+    exam: "Movement and independence earn marks; correct chords earn more." }),
+  101: () => ({ kid: [
+      ["A 4–3 suspension over V at the cadence: prepare, hold, fall.", _n8("treble", 0, [["C5", "h"], ["C5", "q", "4"], ["B4", "q", "3"], ["C5", "w"]], 260)],
+      ["7–6 chains over a falling bass are very Baroque.", null],
+      ["Leading note rises; the 7th of V7 falls.", null]],
+    say: "A suspension is a note that stays too long, clashes, then steps down.",
+    ex: { q: "Where can a 4–3 suspension go at a perfect cadence in C?", steps: ["Over the G (V) in the bass.", "Prepare C in the chord before (I or IV).", "Hold C over the G (a 4th), then fall to B (the 3rd)."] },
+    oops: ["Not preparing the suspension.", "Resolving upwards."],
+    exam: "A well-made suspension shows real Baroque style." }),
+  102: () => ({ kid: [
+      ["Step 1: key and modulations. Step 2: pencil the chords. Step 3: plan the cadences.", null],
+      ["Step 4: violin I as a tune. Step 5: violin II against it. Step 6: add movement.", _t8(10201, "A", true, ["I", "IVb", "V", "I", "VI", "IIb", "V", "I"], "model")],
+      ["Step 7: check 3rds, consecutives, leading notes and 7ths.", null]],
+    say: "Seven steps, 25 minutes: plan, write, check.",
+    ex: { q: "How long for question 1?", steps: ["About 25 minutes.", "5 to plan, 15 to write, 5 to check."] },
+    oops: ["Skipping the check: most lost marks are consecutives."],
+    exam: "Use the 'Write a trio' tile for practice; compare with the model." }),
+  104: () => ({ kid: [
+      ["Question 2: a keyboard piece. Bar 1 is complete. After that, melody and bass only.", _k8("C", false, ["I", "IV", "V", "I", "VI", "II", "V", "I"], "alberti")],
+      ["Work out each chord from melody + bass + key.", null],
+      ["Continue the left-hand pattern to fit each chord.", null]],
+    say: "The first bar shows you the pattern; the rest is the same pattern on new chords.",
+    ex: { q: "The melody is E and the bass is C in C major. What's the chord?", steps: ["C and E are both in C major's chord I (C–E–G).", "So the pattern uses C, E and G."] },
+    oops: ["Changing the pattern halfway through."],
+    exam: "15 marks; about 25 minutes." }),
+  105: () => ({ kid: [
+      ["Alberti bass: low–high–middle–high.", _k8("G", false, ["I", "IV", "V7", "I", "IV", "Ic", "V", "I"], "alberti")],
+      ["Broken chord: low–middle–high–middle.", _k8("F", false, ["I", "VI", "II", "V", "I", "IV", "V", "I"], "arpeggio")],
+      ["Same shape and rhythm all through; only the notes change.", null]],
+    say: "Alberti is a rocking shape: bottom, top, middle, top.",
+    ex: { q: "Write the Alberti pattern for V7 in C with G in the bass.", steps: ["V7 = G–B–D–F.", "Bottom G, then the notes above: D (top) and B (middle) or F.", "G–D–B–D (or G–F–B–F to show the 7th)."] },
+    oops: ["Letting the left hand climb into the melody."],
+    exam: "Copy the given bar's shape exactly." }),
+  106: () => ({ kid: [
+      ["Waltz bass (3/4): bass on beat 1, chord on beats 2 and 3.", _k8("F", false, ["I", "IV", "V", "I"], "waltz")],
+      ["6/8 rocking: bass–5th–3rd, twice a bar.", _k8("D", false, ["I", "IV", "V", "I"], "rocking")],
+      ["If the chord changes mid-bar, change the notes there and keep the pattern.", null]],
+    say: "Oom-pah-pah: the 'oom' is the bass, the 'pah-pahs' are the chord.",
+    ex: { q: "In a 3/4 waltz in F, bar 2 is chord IV. What does the left hand play?", steps: ["IV in F = B♭–D–F.", "Beat 1: B♭ (the bass).", "Beats 2 and 3: D and F together."] },
+    oops: ["Putting the full chord on beat 1."],
+    exam: "Keep the rhythm of the given bars." }),
+  107: () => ({ kid: [
+      ["An F♯ in C major often means V7/V: keep it, and let it rise.", _k8("C", false, ["I", "VI", "IV", "V7/V", "V", "I", "V", "I"], "alberti")],
+      ["A♭ falling to G in the bass can mean an augmented 6th.", null],
+      ["Spell chromatic notes as the chord needs them.", null]],
+    say: "Chromatic notes are signposts: follow where they point.",
+    ex: { q: "In C major, the melody has F♯ and the bass D, before a G chord. What's the chord?", steps: ["D–F♯–A(–C) is the dominant (7th) of G.", "It's V7/V, going to V.", "The pattern uses D, F♯, A (and C)."] },
+    oops: ["Writing G♭ instead of F♯."],
+    exam: "Each wrong chord in the pattern costs marks." }),
+  108: () => ({ kid: [
+      ["Keep the melody alive: passing notes and appoggiaturas, as in the given bars.", _k8("B♭", false, ["I", "IV", "Ic", "V", "I", "VI", "V", "I"], "arpeggio")],
+      ["Check melody against bass for consecutive 5ths and octaves.", null],
+      ["End with a clear cadence and a full tonic chord.", null]],
+    say: "Finish like a composer: a clear cadence and nothing left hanging.",
+    ex: { q: "How do you check for consecutives between melody and bass?", steps: ["On every beat where both move, name the interval between them.", "Two 5ths or two octaves in a row (in the same direction) = consecutives."] },
+    oops: ["Ending on an incomplete chord."],
+    exam: "Practise with the 'Complete a keyboard piece' tile." }),
+  110: () => ({ kid: [
+      ["Question 3: continue an opening to at least 12 bars.", _n8("treble", 2, [["D5", "q"], ["F#5", "e"], ["A5", "e"], ["D6", "h"]], 220)],
+      ["Plan: 4 + 4 + 4 bars. Imperfect cadence, then modulate, then home.", null],
+      ["Pencil the cadences and the high point first.", null]],
+    say: "Plan the journey before you set off: where you'll pause, where you'll travel, where you'll arrive.",
+    ex: { q: "Plan 12 bars for an opening in D major.", steps: ["Bars 1–4: end on an imperfect cadence (on A, E or C♯).", "Bars 5–8: modulate to A major (G♯) and cadence on A.", "Bars 9–12: G♮ brings you home; high point in bar 10; end on D."] },
+    oops: ["Writing bar by bar with no plan."],
+    exam: "20 marks; about 35 minutes." }),
+  111: () => ({ kid: [
+      ["To the dominant: sharpen the 4th (F♯ in C), cadence on G.", null],
+      ["From minor to the relative major: cancel the raised leading note (G♮ in A minor), cadence on C.", null],
+      ["Cancel the new accidental to come home.", null]],
+    say: "One new accidental and a cadence: that's a modulation.",
+    ex: { q: "A melody in E minor goes to G major. Which accidental changes?", steps: ["E minor uses D♯ as its leading note.", "G major uses D♮.", "So write D♮ and cadence on G; then D♯ again to return."] },
+    oops: ["Modulating without a cadence: it doesn't sound like a new key."],
+    exam: "Examiners look for a clear modulation and return." }),
+  112: () => ({ kid: [
+      ["Sequence: repeat the idea higher or lower.", null],
+      ["Inversion: turn the shape upside down.", null],
+      ["New rhythm: same notes, changed rhythm.", null]],
+    say: "Your best material is already in the opening. Develop it.",
+    ex: { q: "The opening is C–E–G–C (rising). Give two developments.", steps: ["Sequence a step higher: D–F–A–D.", "Inversion: C–A–F–C (falling)."] },
+    oops: ["Throwing the opening away after bar 2."],
+    exam: "Development of the opening is one of the main marks." }),
+  113: () => ({ kid: [
+      ["Strings: slurs show bowing. Violin from G3, viola from C3, cello from C2.", null],
+      ["Wind: leave places to breathe. Flute from C4, oboe from B♭3, clarinet from E3.", null],
+      ["Stay well inside the range.", null]],
+    say: "Write so a real player would enjoy playing it.",
+    ex: { q: "Is A3 a good note for the flute?", steps: ["No: the flute's lowest note is C4 (B3 on some).", "Move the passage up or change the shape."] },
+    oops: ["Writing below the instrument's range.", "No breathing places for wind."],
+    exam: "One mark area is 'suits the instrument'." }),
+  114: () => ({ kid: [
+      ["Tempo at the start.", null],
+      ["Dynamics with changes: crescendo to the high point.", null],
+      ["Phrasing slurs and articulation: staccato, accents.", null]],
+    say: "Directions turn notes into music.",
+    ex: { q: "Where should a crescendo go?", steps: ["Towards the high point.", "Then a diminuendo towards the end, or a forte final cadence for a bold ending."] },
+    oops: ["Only one dynamic for the whole piece."],
+    exam: "Easy marks: never leave directions out." }),
+  116: () => ({ kid: [
+      ["Question 4: a score of up to 5 staves, e.g. a string quartet.", _n8("alto", 0, [["C4", "q", "C4"], ["E4", "q"], ["G4", "q"]], 200)],
+      ["Viola: alto clef, middle C on the middle line.", null],
+      ["Work out sounding notes first for transposing instruments.", null]],
+    say: "Read each instrument in its own clef and pitch, then put them together.",
+    ex: { q: "Which instruments are in a string quartet?", steps: ["Violin I, violin II, viola and cello.", "Clefs: treble, treble, alto, bass (tenor for high cello)."] },
+    oops: ["Reading the viola as if it were treble clef."],
+    exam: "25 marks; about 35 minutes." }),
+  117: () => ({ kid: [
+      ["Collect every sounding note at the point, then find the root.", _p8("A", false, ["I", "VI", "V/V", "V", "I"])],
+      ["A sharp that rises a semitone: a secondary dominant's leading note.", null],
+      ["♭6 in the bass with ♯4 above: an augmented 6th.", null]],
+    say: "Accidentals are clues; follow them to name the chord.",
+    ex: { q: "In A major, the notes are B–D♯–F♯–A. What's the chord?", steps: ["D♯ is the leading note of E (V in A).", "B–D♯–F♯–A is the dominant 7th of E.", "So it's V7/V."] },
+    oops: ["Calling a secondary dominant 'II' because of its root."],
+    exam: "Name the chord with Roman numerals and the type." }),
+  118: () => ({ kid: [
+      ["Clarinet in B♭: a tone lower. Clarinet in A: a minor 3rd lower. Horn in F: a 5th lower.", null],
+      ["Tenor clef: middle C on the 4th line.", _n8("tenor", 0, [["C4", "q", "C4"], ["D4", "q"], ["E4", "q"]], 200)],
+      ["Write a note at concert pitch by going down the transposing interval.", null]],
+    say: "Written isn't always sounding: check the instrument's name first.",
+    ex: { q: "The horn in F plays written D5. What sounds?", steps: ["Horn in F sounds a perfect 5th lower.", "A 5th below D5 is G4.", "So G4 sounds."] },
+    oops: ["Transposing in the wrong direction."],
+    exam: "Transposition questions are quick marks if you know the table." }),
+  119: () => ({ kid: [
+      ["Full score order: woodwind, brass, percussion, harp, strings.", null],
+      ["Read chords from the strings.", null],
+      ["Up to 24 staves: count carefully.", null]],
+    say: "Find the strings first: they're the anchor of every full score.",
+    ex: { q: "In what order do the woodwind appear?", steps: ["Piccolo, flutes, oboes, cor anglais, clarinets, bass clarinet, bassoons, contrabassoon."] },
+    oops: ["Putting the horns below the trumpets: horns come first in the brass."],
+    exam: "25 marks; about 35 minutes." }),
+  120: () => ({ kid: [
+      ["Horn in E♭: written C sounds the E♭ below (a major 6th lower).", _n8("treble", 0, [["C5", "q", "written"], ["Eb4", "q", "sounds", "b"]], 200)],
+      ["Trumpet in D: written C sounds the D above (a major 2nd higher).", _n8("treble", 0, [["C5", "q", "written"], ["D5", "q", "sounds"]], 200)],
+      ["Classical horns and trumpets have no key signature.", null]],
+    say: "An instrument 'in X' plays a written C and you hear X.",
+    ex: { q: "Trumpet in D plays written E5. What sounds?", steps: ["Trumpet in D sounds a major 2nd higher.", "A major 2nd above E5 is F♯5.", "So F♯5 sounds."] },
+    oops: ["Assuming all trumpets sound lower (B♭ trumpets do, D trumpets don't)."],
+    exam: "Expect a question on at least one old-style brass part." }),
+  121: () => ({ kid: [
+      ["Cor anglais: a 5th lower. Clarinet in A: a minor 3rd lower.", null],
+      ["Piccolo: an octave higher. Double bass: an octave lower.", null],
+      ["Trombones don't transpose: tenor clef for high parts.", null]],
+    say: "Learn the table once and every score question gets easier.",
+    ex: { q: "Clarinet in A plays written C5. What sounds?", steps: ["A clarinet sounds a minor 3rd lower.", "A minor 3rd below C5 is A4."] },
+    oops: ["Mixing up B♭ and A clarinet intervals."],
+    exam: "Write the sounding note in pencil over the part before answering." }),
+  122: () => ({ kid: [
+      ["Read all the questions first.", null],
+      ["Find the key from the strings; work out transposing notes one at a time.", null],
+      ["Doublings: flutes with violin I, bassoons with cellos, horns holding harmony.", null]],
+    say: "A full score looks huge, but most instruments double someone else.",
+    ex: { q: "How long for question 5?", steps: ["About 35 minutes.", "Answer the quick ones first, then the chords."] },
+    oops: ["Miscounting bar numbers."],
+    exam: "Use the bar numbers printed on the score." }),
+  130: () => ({ kid: [
+      ["Timing: Q1 25 min, Q2 25, Q3 35, Q4 35, Q5 35, check 25.", null],
+      ["Check: 3rds and consecutives (Q1), pattern and accidentals (Q2), directions (Q3), every transposition (Q4–5).", null],
+      ["Sleep well the night before!", null]],
+    say: "You've done the work. Read every question twice, and enjoy the music.",
+    ex: { q: "What's the most common way to lose marks?", steps: ["Not answering exactly what's asked.", "Forgetting accidentals.", "Not checking for consecutives."] },
+    oops: ["Spending too long on one question."],
+    exam: "Pass 66, merit 80, distinction 90." }),
+};
+Object.keys(L8).forEach(d => { let cache = null; Object.defineProperty(LESSONS, d, { enumerable: true, configurable: true, get() { return cache || (cache = L8[d]()); } }); });
 
 setView(view);
 applyColour();
