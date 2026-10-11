@@ -5361,7 +5361,41 @@ function trioChords(q) { const t = q.trio, K = trioK(q), K2 = t.k2 ? K6(t.k2.nam
 function trioGiven(q) { const n = q.trio.V.length, rh = chordRhythm(n, trioBeats(q)), firstBar = rh.findIndex((r, i) => i > 0 && r.barBefore), bars2 = rh.map((r, i) => r.barBefore ? i : -1).filter(i => i > 0);
   return firstBar < 4 && bars2[1] ? bars2[1] : Math.max(1, firstBar); }
 /* practice: which pair of notes fits the next beat? */
+/* spot the mistake: one note of a correct trio is changed; which rule does it break? */
+const TRIO_ERRNAME = { par5: "consecutive 5ths", par8: "consecutive octaves (or unisons)", miss3: "the 3rd is missing", res7: "the 7th doesn't fall", ln: "the leading note doesn't rise", tone: "a note isn't in the chord", acc: "a missing or wrong accidental", dblLN: "the leading note is doubled", aug2: "an augmented 2nd in a violin part", leap7: "a leap of a 7th in a violin part" };
+function trioSpot() {
+  for (let t = 0; t < 30; t++) {
+    const ph = trioPhrase(); if (!ph) return null;
+    const { K, chords, V } = ph, n = V.length, base = new Set(trioIssues(K, chords, V, 0).filter(x => x.sev === "err").map(x => x.type + x.i));
+    const target = pick(["par5", "par8", "miss3", "res7", "ln", "tone", "dblLN", "par5", "par8", "miss3"]);
+    for (const i of shuffle([...Array(n - 1).keys()].map(k => k + 1))) for (const x of shuffle(["s", "a"])) {
+      const p = V[i][x], T = tonesOf(K, chords[i]), cands = [];
+      for (let d = p.d - 4; d <= p.d + 4; d++) { if (d === p.d) continue; const t2 = T.find(z => z.l === m7(d)); cands.push(P6(d, t2 ? t2.a : sigOf(K, m7(d)))); }
+      for (const np of shuffle(cands)) {
+        if (Math.abs(np.m - p.m) > 7) continue;
+        const W = V.map((v, k) => k === i ? Object.assign({}, v, { [x]: np }) : v);
+        const iss = trioIssues(K, chords, W, 0).filter(e => e.sev === "err" && !base.has(e.type + e.i)), types = [...new Set(iss.map(e => e.type))];
+        if (types.length === 1 && types[0] === target && !iss.some(e => e.i !== i && e.i !== i + 1)) return { K, chords, V: W, i, x, type: target, msg: iss[0].msg };
+      }
+    }
+  }
+  return null;
+}
+function trioSpotQ(lvl) {
+  const sp = trioSpot(); if (!sp) return null;
+  const { K, chords, V, i, type } = sp, q = { trio: { key: K.name, minor: K.minor, ch: chords.map(chLabel), V } }, spec = trioSpec(q, "model");
+  const st = spec.score.staves[sp.x === "s" ? 0 : 1], idx = (() => { let c = -1; for (let k = 0; k < st.notes.length; k++) { if (st.notes[k].bar) continue; const prevChord = c; c++; if (c === i) return k; } return -1; })();
+  /* point at the chord: count chords, not quavers */
+  let chordIdx = -1, pos = -1; const rh = chordRhythm(V.length, 4);
+  st.notes.forEach((nt, k) => { if (nt.bar || pos >= 0) return; if (!nt.b || nt.b !== st.notes[k - 1]?.b) chordIdx++; if (chordIdx === i) pos = k; });
+  spec.score.labels.push([sp.x === "s" ? 0 : 1, pos >= 0 ? pos : idx, "X", "above"]);
+  const right = TRIO_ERRNAME[type], wrongs = shuffle(Object.values(TRIO_ERRNAME).filter(v => v !== right));
+  return Object.assign(mk("trio8", `Trio sonata in ${keyLab(K)}. The ${sp.x === "s" ? "violin I" : "violin II"} note marked X breaks a rule. Which one?`, right, wrongs,
+    `${sp.msg.replace(/^Chords? [\d–]+( \([^)]*\))?: /, "")} Check the chord from the figures, then the movement into and out of the note.`,
+    { hint: "Work out the chord at X from the bass and figures. Then check the note against the chord, and its movement against the other parts (5ths and octaves), and how 7ths and leading notes resolve." }), spec);
+}
 GEN.trio8 = lvl => {
+  if (Math.random() < .35) { const q = trioSpotQ(lvl); if (q) return q; }
   for (let t = 0; t < 30; t++) {
     const ph = trioPhrase(); if (!ph) break;
     const { K, chords, V } = ph, n = V.length, i = 2 + rnd(n - 3), c = chords[i], T = tonesOf(K, c), v = V[i], pv = V[i - 1];
@@ -5517,7 +5551,7 @@ function kbAbove(K, c, b) {
 }
 const KB_PRE = { 2: [["I", "V"], ["I", "V7"]], 3: [["I", "IV", "V"], ["I", "IIb", "V"], ["I", "Ib", "V"]], 4: [["I", "VI", "IV", "V"], ["I", "IV", "Ic", "V"], ["I", "VI", "IIb", "V"], ["I", "Vb", "I", "V"]] };
 function kbPhrase() {
-  for (let t = 0; t < 60; t++) {
+  for (let t = 0; t < 150; t++) {
     const pat = pick(Object.keys(KB_PATTERNS)), P = KB_PATTERNS[pat], n = 4 * P.per;
     let K, chords, V;
     if (Math.random() < .5) {
@@ -5531,6 +5565,9 @@ function kbPhrase() {
     if (V.some(v => v.b.m > 55 || v.b.m < 36)) continue;
     /* no melody note repeated more than twice running */
     if (V.some((v, i) => i > 1 && v.s.m === V[i - 1].s.m && v.s.m === V[i - 2].s.m)) continue;
+    /* the model left hand must pass the same checks as Philip's */
+    const plan = kbPlan(K, chords, V), tq = { kb: { key: K.name, minor: K.minor, ch: chords.map(chLabel), V, pat }, _v: plan.map(([x, y]) => ({ x, y })) };
+    if (kbIssues(tq).some(x => x.sev === "err")) continue;
     return { K, chords, V, pat };
   }
   return null;
@@ -5548,29 +5585,39 @@ function kbRH(K, V, i, pat) {
 const KB_PLANS = new WeakMap();
 function kbPlan(K, chords, V) {
   if (KB_PLANS.has(V)) return KB_PLANS.get(V);
-  const out = []; let prev = null;
-  V.forEach((v, i) => {
-    const c = chords[i], T = tonesOf(K, c), L = leadLA(keyFor(K, c)), b = v.b, mel = v.s, cand = [];
+  /* candidate left-hand pairs for each chord, each with its own cost */
+  const C = V.map((v, i) => {
+    const c = chords[i], T = tonesOf(K, c), L = leadLA(keyFor(K, c)), b = v.b, mel = v.s, cand = [], out = [];
     for (let d = b.d + 1; d <= b.d + 9; d++) { const t = T.find(z => z.l === m7(d)); if (t) { const p = P6(d, t.a); if (p.m < mel.m && p.m > b.m) cand.push(p); } }
-    let best = null, bs = 1e9;
     for (let a = 0; a < cand.length; a++) for (let z = a + 1; z < cand.length; z++) {
       const x = cand[a], y = cand[z]; if (y.m - b.m > 12) continue;
       const L4 = [mel, b, x, y].map(p => m7(p.d)); let sc = 0;
-      const need = c.aug ? [T.length - 1] : [1].concat(c.sev ? [3] : []); need.forEach(k => { if (!L4.includes(T[k].l)) sc += 10; });
-      if ((isDom(c) || c.deg === 7) && L4.filter(l => l === L.l).length > 1) sc += 6;
+      (c.aug ? [T.length - 1] : [1].concat(c.sev ? [3] : [])).forEach(k => { if (!L4.includes(T[k].l)) sc += 20; });
+      if ((isDom(c) || c.deg === 7) && L4.filter(l => l === L.l).length > 1) sc += 15;
       if (m7(x.d) === m7(y.d)) sc += 4;
       [x, y].forEach(p => { if (m7(p.d) === m7(mel.d)) sc += 1; });
-      if (prev) { const pv = V[i - 1], pc = chords[i - 1], PT = tonesOf(K, pc);
-        [[prev[0], x], [prev[1], y]].forEach(([p0, p1]) => { const i1 = ((pv.s.m - p0.m) % 12 + 12) % 12, i2 = ((mel.m - p1.m) % 12 + 12) % 12, mv = pv.s.m !== mel.m || p0.m !== p1.m;
-          if (mv && i1 === 0 && i2 === 0) sc += 5; if (mv && i1 === 7 && i2 === 7) sc += 2;
-          const ti = toneIdx(K, pc, p0), nx = [mel, x, y]; if (pc.sev && ti === 3 && !nx.some(q2 => m7(q2.d) === m7(p0.d - 1) || q2.m === p0.m)) sc += 6; if (pc.aug && ti === PT.length - 1 && !nx.some(q2 => q2.m === p0.m + 1)) sc += 6; if (pc.sec && ti === 1 && !nx.some(q2 => q2.d === p0.d + 1)) sc += 2;
-          sc += Math.abs(p1.m - p0.m) * .15; }); }
       sc += (y.m - b.m) * .05;
-      if (sc < bs) { bs = sc; best = [x, y]; }
+      out.push({ xy: [x, y], sc });
     }
-    if (!best) best = kbAbove(K, c, b);
-    out.push(best); prev = best;
+    if (!out.length) out.push({ xy: kbAbove(K, c, b), sc: 50 });
+    return out;
   });
+  /* the cost of moving from one pair to the next */
+  const trans = (i, A, B) => { const pv = V[i - 1], v = V[i], pc = chords[i - 1], c = chords[i], PT = tonesOf(K, pc); let sc = 0;
+    [[A[0], B[0]], [A[1], B[1]]].forEach(([p0, p1]) => { const i1 = ((pv.s.m - p0.m) % 12 + 12) % 12, i2 = ((v.s.m - p1.m) % 12 + 12) % 12, mv = pv.s.m !== v.s.m || p0.m !== p1.m;
+      if (mv && i1 === 0 && i2 === 0) sc += 15; if (mv && i1 === 7 && i2 === 7) sc += 3; sc += Math.abs(p1.m - p0.m) * .15; });
+    A.forEach(p0 => { const ti = toneIdx(K, pc, p0);
+      if (pc.sev && ti === 3 && !B.some(q2 => (q2.d === p0.d - 1 && p0.m - q2.m <= 2) || q2.m === p0.m)) sc += 25;
+      if (pc.aug && ti === PT.length - 1 && !B.some(q2 => q2.m === p0.m + 1 && q2.d === p0.d + 1)) sc += 25;
+      if (pc.sec && ti === 1 && c.deg === pc.sec && !B.some(q2 => q2.d === p0.d + 1 && q2.m - p0.m <= 2)) sc += 25; });
+    return sc; };
+  /* the cheapest path through the whole piece */
+  let cost = C[0].map(o => o.sc), back = [];
+  for (let i = 1; i < V.length; i++) { const nc = [], bk = [];
+    C[i].forEach(o => { let best = 1e9, bi = 0; C[i - 1].forEach((po, j) => { const t = cost[j] + trans(i, po.xy, o.xy); if (t < best) { best = t; bi = j; } }); nc.push(best + o.sc); bk.push(bi); });
+    cost = nc; back.push(bk); }
+  let j = cost.indexOf(Math.min(...cost)); const out = [];
+  for (let i = V.length - 1; i >= 0; i--) { out[i] = C[i][j].xy; if (i > 0) j = back[i - 1][j]; }
   KB_PLANS.set(V, out); return out;
 }
 function kbLH(K, chords, V, pat, i) {
@@ -5667,11 +5714,11 @@ function kbIssues(q) {
     ["x", "y"].forEach(k => { const i1 = ((V[i - 1].s.m - A[k].m) % 12 + 12) % 12, i2 = ((V[i].s.m - B[k].m) % 12 + 12) % 12, mv = V[i - 1].s.m !== V[i].s.m || A[k].m !== B[k].m;
       if (mv && i1 === 0 && i2 === 0) add("err", "par8", i, `${w}: the left hand moves in octaves with the tune (${pname(A[k])} to ${pname(B[k])}).`);
       else if (mv && i1 === 7 && i2 === 7) add("warn", "par5", i, `${w}: the left hand moves in 5ths with the tune (${pname(A[k])} to ${pname(B[k])}).`);
-      /* in a broken-chord pattern the notes swap places, so a 7th resolves if any note of the next chord is a step below it */
-      const p = A[k], T1 = tonesOf(K, c1), ti = toneIdx(K, c1, p), nxt = [V[i].s, B.x, B.y];
-      if (c1.sev && ti === 3 && !nxt.some(q2 => m7(q2.d) === m7(p.d - 1) || q2.m === p.m)) add("err", "res7", i, `${w}: the 7th (${pname(p)}) in the left hand should fall by step (or stay).`);
-      if (c1.aug && ti === T1.length - 1 && !nxt.some(q2 => q2.m === p.m + 1)) add("err", "aug6", i, `${w}: the sharpened 4th (${pname(p)}) should rise a semitone.`);
-      if (c1.sec && ti === 1 && !nxt.some(q2 => q2.d === p.d + 1)) add("warn", "ln", i, `${w}: ${pname(p)} is the leading note of the new key: let it rise.`); });
+      /* strict: the resolution must be in the left hand itself, by step in the same octave (the note may move to the other position in the pattern) */
+      const p = A[k], T1 = tonesOf(K, c1), ti = toneIdx(K, c1, p), nxt = [B.x, B.y];
+      if (c1.sev && ti === 3 && !nxt.some(q2 => (q2.d === p.d - 1 && p.m - q2.m <= 2) || q2.m === p.m)) add("err", "res7", i, `${w}: the 7th (${pname(p)}) in the left hand should fall a step (to ${nm(m7(p.d - 1), tonesOf(K, ch[i]).concat([{ l: m7(p.d - 1), a: sigOf(K, m7(p.d - 1)) }]).find(t => t.l === m7(p.d - 1)).a)}) in the left hand, or stay on the same note.`);
+      if (c1.aug && ti === T1.length - 1 && !nxt.some(q2 => q2.m === p.m + 1 && q2.d === p.d + 1)) add("err", "aug6", i, `${w}: the sharpened 4th (${pname(p)}) should rise a semitone in the left hand.`);
+      if (c1.sec && ti === 1 && !nxt.some(q2 => q2.d === p.d + 1 && q2.m - p.m <= 2) && ch[i].deg === c1.sec) add("err", "ln", i, `${w}: ${pname(p)} is ${c1.sec ? "the leading note of the new key" : "the leading note"}: let it rise a step in the left hand.`); });
   }
   return iss;
 }
@@ -6302,9 +6349,13 @@ function roundEnd() {
 /* ---------- Mini mock paper ---------- */
 const MOCK_PLAN = [["Chords and figures", ["chords6", "chords6", "chords6", "chords6"]], ["Cadences and part-writing", ["cad6", "cad6", "err6", "err6"]], ["Notes outside the chord", ["nonchord", "nonchord"]], ["Keys and intervals", ["modul", "modul", "int6", "int6"]], ["Score reading", ["score6", "dev6"]], ["Orchestra and terms", ["orch6", "orch", "terms6", "terms6"]]];
 const MOCK_SECT = []; MOCK_PLAN.forEach(([name, ks], i) => ks.forEach(() => MOCK_SECT.push([i + 1, name])));
+/* the mini mock follows the grade he's working on */
+const MOCK_PLAN7 = [["Grade 7 chords", ["chords7", "chords7", "chords7", "chords7"]], ["Suspensions and decoration", ["sus7", "sus7", "sus7"]], ["Solo and piano", ["score7", "score7", "score7", "score7"]], ["Full score", ["orch7", "orch7", "orch7", "orch7"]], ["Terms and cadences", ["terms7", "terms7", "cad6", "chords6", "err6"]]];
+const MOCK_PLAN8 = [["Grade 8 chords", ["chords8", "chords8", "chords8", "chords8", "chords8"]], ["Trio sonata", ["trio8", "trio8", "trio8"]], ["Keyboard patterns", ["kb8", "kb8", "kb8"]], ["Chamber score", ["score8", "score8", "score8", "score8"]], ["Full score and terms", ["orch8", "orch8", "orch8", "terms8", "terms8"]]];
 function startMock(el) {
-  const list = []; MOCK_PLAN.forEach(([, ks]) => ks.forEach(k => list.push([k, 5])));
-  startRound({ mode: "mock", el, qs: makeRound(list, 999).map(q => Object.assign(q, { _marks: 5 })), title: "Mini mock" });
+  const g = curGrade(), plan = g === 8 ? MOCK_PLAN8 : g === 7 ? MOCK_PLAN7 : MOCK_PLAN, list = [], sect = [];
+  plan.forEach(([name, ks], i) => ks.forEach(k => { list.push([k, 5]); sect.push([i + 1, name]); }));
+  startRound({ mode: "mock", el, qs: makeRound(list, 999).map(q => Object.assign(q, { _marks: 5 })), sect, title: `Mini mock (Grade ${g})` });
 }
 function mockTick() {
   if (!R || R.mode !== "mock") return;
