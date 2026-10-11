@@ -3570,13 +3570,13 @@ const leadLA = K => degLA(K, 7);
 const triadName = (K, c) => tonesOf(K, c).map(t => nm(t.l, t.a)).join("–");
 
 /* figured bass: the usual short forms, with accidentals where a note differs from the key signature */
-function figureOf(K, c) {
-  K = c.K || K;
+function figureOf(K, c, sigK) {
+  K = c.K || K; const SK = sigK || c.sigK || K;   /* accidentals are shown against the written key signature (the home key in a modulating passage) */
   if (c.aug) { const f = { It: ["♯6"], Fr: ["♯6", "4", "3"], Ger: ["♯6", "5"] }[c.aug], m3 = degLA(K, 3); return (K.minor ? f : c.aug === "Ger" ? ["♯6", "♭5", "♭3"] : f).join("/"); } const T = tonesOf(K, c), b = T[c.inv];
-  const ivs = T.map((t, i) => i === c.inv ? null : { n: ((t.l - b.l + 7) % 7) + 1, alt: t.a !== sigOf(K, t.l) ? t.a : null }).filter(Boolean);
+  const ivs = T.map((t, i) => i === c.inv ? null : { n: ((t.l - b.l + 7) % 7) + 1, alt: t.a !== sigOf(SK, t.l) ? t.a : null }).filter(Boolean);
   const base = c.sev ? [["7", "5", "3"], ["6", "5", "3"], ["6", "4", "3"], ["6", "4", "2"]][c.inv] : [["5", "3"], ["6", "3"], ["6", "4"]][c.inv];
   const shown = c.sev ? [["7"], ["6", "5"], ["4", "3"], ["4", "2"]][c.inv] : [[], ["6"], ["6", "4"]][c.inv];
-  const sym = (alt, l) => { const sg = sigOf(K, l); return alt > sg ? (alt === 0 ? "♮" : alt === 2 ? "×" : "♯") : (alt === 0 ? "♮" : "♭"); };
+  const sym = (alt, l) => { const sg = sigOf(SK, l); return alt > sg ? (alt === 0 ? "♮" : alt === 2 ? "×" : "♯") : (alt === 0 ? "♮" : "♭"); };
   const out = base.map(n => {
     const iv = ivs.find(x => String(x.n === 1 ? 8 : x.n) === n || String(x.n) === n);
     const alt = iv && iv.alt !== null ? sym(iv.alt, (b.l + +n - 1) % 7) : "";
@@ -3718,7 +3718,7 @@ function moveCost(K, c1, c2, v1, v2, i) {
 }
 function realize(K, chords, fixed, opt) {
   fixed = fixed || []; opt = opt || {};
-  const n = chords.length, cand = chords.map((c, i) => { let vs = voicings(K, c, fixed[i]); if (opt.shuffle) vs = shuffle(vs); return vs.map(v => [v, chordCost(K, c, v, i, n, chords[i - 1])]).filter(x => x[1] !== null); });
+  const n = chords.length, cand = chords.map((c, i) => { let vs = voicings(K, c, fixed[i]); if (opt.filter) vs = vs.filter(v => opt.filter(c, v, i)); if (opt.shuffle) vs = shuffle(vs); return vs.map(v => [v, chordCost(K, c, v, i, n, chords[i - 1])]).filter(x => x[1] !== null); });
   if (cand.some(x => !x.length)) return null;
   let best = cand[0].map(([v, c]) => ({ v, c: c + (opt.noise ? Math.random() * opt.noise : 0), back: null }));
   const layers = [best];
@@ -5111,7 +5111,7 @@ function orchScore7(K, ph, clarA) {
   const parts = [["Flute", "treble", p => P6(p.s.d + 7, p.s.a), 0], ["Oboe", "treble", p => p.s, 0],
     [clarA ? "Clarinet in A" : "Clarinet in B♭", "treble", p => clarA ? trans7(p.a, "m", 3) : trans7(p.a, "M", 2), clarA ? -3 : 2], ["Bassoon", "bass", p => p.t, 0],
     ["Horn in F", "treble", p => trans7(p.t, "P", 5), "none"], ["Trumpet in B♭", "treble", p => trans7(p.s, "M", 2), 2], ["Timpani", "bass", p => { let d = 14 + K.tl; if (d < 16) d += 7; return P6(d, K.ta); }, 0],
-    ["Violin I", "treble", p => p.s, 0], ["Violin II", "treble", p => p.a, 0], ["Viola", "alto", p => p.t, 0], ["Cello", "bass", p => p.b, 0], ["Double bass", "bass", p => P6(p.b.d + 7, p.b.a), 0]];
+    ["Violin I", "treble", p => p.s, 0], ["Violin II", "treble", p => p.a, 0], ["Viola", "alto", p => p.t, 0], ["Cello", "bass", p => p.b, 0], ["Double bass", "bass", p => p.b, 0]];
   const cols = [];
   const staves = parts.map(([name, clef, f, dk]) => {
     const kk = dk === "none" ? 0 : K.key + dk, KK = sigK7(name === "Timpani" ? 0 : kk), notes = [], colOf = []; let bs = {};
@@ -5255,18 +5255,52 @@ function trioFit(K, chords, V) {
   if (!ok3) return null;
   if (Math.max(...V.map(v => v.s.m)) <= 74) V = V.map(v => Object.assign({}, v, { s: P6(v.s.d + 7, v.s.a), a: P6(v.a.d + 7, v.a.a) }));
   if (V.some(v => v.s.m > 86 || v.a.m < 57)) return null;
+  /* the model must pass the same checks Philip's answer gets */
+  if (trioIssues(K, chords, V, 0).some(x => x.sev === "err")) return null;
   return V;
 }
+/* a modulating bass: home key → pivot → cadence in the new key (dominant, or relative major) → back home with a final cadence */
+const TRIO_RET = { major: [["V7", "I", "IV", "V", "I"], ["V7d", "Ib", "IIb", "V", "I"], ["IV", "Ic", "V", "I"], ["V7", "I", "IIb", "Ic", "V", "I"]], minor: [["IVb", "V", "I"], ["IV", "V7", "I"], ["VI", "IIb", "V", "I"], ["IV", "Ic", "V", "I"]] };
+/* realise for three real parts: the 3rd (and 7th, or the ♯4 of an augmented 6th) among soprano, alto and bass; no soprano–alto unison */
+const TRIO_FILTER = K => (c, v) => { if (v.s.m === v.a.m) return false; const T = tonesOf(K, c), L = [v.s, v.a, v.b].map(p => m7(p.d)); return c.aug ? L.includes(T[T.length - 1].l) : L.includes(T[1].l) && (!c.sev || L.includes(T[3].l)); };
+function trioModul() {
+  for (let t = 0; t < 60; t++) {
+    const minor = Math.random() < .4, K = pick(g6Keys(3, minor ? "minor" : "major"));
+    const K2 = minor ? K6(K.maj[0], false) : K6(nm(degLA(K, 5).l, degLA(K, 5).a), false);
+    if (!MAJ.find(k => k[0] === K2.name) || MAJ.find(k => k[0] === K2.name)[1] > 4) continue;
+    const pv = pick(PIVOTS[minor ? "minor" : "major"]), tail = pick(pv.tail), head = ["I"], hl = 2 + rnd(2);
+    let ok = true;
+    while (head.length < hl) { const nx = (TR6[head[head.length - 1]] || []).filter(x => ["I", "IV", "V", "VI", "II", "Ib", "IIb", "IVb", "Vb"].includes(x) && okInKey(K, x) && x !== head[head.length - 1]); if (!nx.length) { ok = false; break; } head.push(pick(nx)); }
+    if (!ok || !(TR6[head[head.length - 1]] || []).includes(pv.a) || head[head.length - 1] === pv.a) continue;
+    const ret = pick(TRIO_RET[minor ? "minor" : "major"]), from = head.length, to = from + 1 + tail.length;
+    const labs = head.concat([pv.b], tail, ret), K2c = l => Object.assign(CH(l), { K: K2, sigK: K });
+    const chords = labs.map((l, i) => i >= from && i < to ? K2c(l) : CH(l));
+    const V = realize(K, chords, null, { noise: 2, filter: TRIO_FILTER(K) }); if (!V) continue;
+    return { K, chords, V, k2: { name: K2.name, minor: false, from, to } };
+  }
+  return null;
+}
+/* a falling-5ths sequence, very Baroque: each chord a 5th below the last */
+const TRIO_SEQ = { major: [["I", "IV", "VIIb", "III", "VI", "II", "V", "I"], ["I", "IV", "VIIb", "III", "VI", "IIb", "V", "I"], ["I", "VI", "II", "V", "I", "IV", "VIIb", "III", "VI", "IIb", "V", "I"]], minor: [["I", "IV", "VII", "III", "VI", "IIb", "V", "I"]] };
+function trioSeq() {
+  for (let t = 0; t < 30; t++) { const minor = Math.random() < .3, K = pick(g6Keys(3, minor ? "minor" : "major")), labs = pick(TRIO_SEQ[minor ? "minor" : "major"]);
+    if (labs.some(l => !okInKey(K, l.replace(/b$/, "")) && !/^VII|^III/.test(l))) continue;
+    const chords = labs.map(CH), V = realize(K, chords, null, { noise: 2, filter: TRIO_FILTER(K) }); if (V) return { K, chords, V, seq: true }; }
+  return null;
+}
 function trioPhrase(long) {
+  const r0 = Math.random(), kind = long && r0 < .4 ? "mod" : long && r0 < .55 ? "seq" : "plain";
   for (let t = 0; t < 200; t++) {
-    let ph;
-    if (!long && Math.random() < .3) { ph = phrase8(p => !p.labs.some(l => /6$/.test(l))); }
+    let ph; const r = Math.random();
+    if (kind === "mod" && t < 120) ph = trioModul();
+    else if (kind === "seq" && t < 120) ph = trioSeq();
+    else if (!long && r < .3) { ph = phrase8(p => !p.labs.some(l => /6$/.test(l))); }
     else { const K = pick(g6Keys(3)); ph = phrase(K, long ? 10 + rnd(3) : 7 + rnd(3), pick(["perfect", "perfect", "imperfect", "interrupted"]), { p64: Math.random() < .3 }); }
-    if (!ph || ph.V.length < (long ? 10 : 6)) continue;
+    if (!ph || ph.V.length < (long ? (ph.seq ? 8 : 10) : 6)) continue;
     /* a bass with some shape: enough different notes, not just I and V swapping */
-    if (long && (new Set(ph.V.map(v => v.b.m)).size < 5 || ph.chords.filter(c => (c.deg === 1 || c.deg === 5) && !c.sec).length > ph.chords.length * .6)) continue;
+    if (long && !ph.seq && (new Set(ph.V.map(v => v.b.m)).size < 5 || ph.chords.filter(c => (c.deg === 1 || c.deg === 5) && !c.sec).length > ph.chords.length * .6)) continue;
     const V = trioFit(ph.K, ph.chords, ph.V); if (!V) continue;
-    return { K: ph.K, chords: ph.chords, V };
+    return { K: ph.K, chords: ph.chords, V, k2: ph.k2 || null, beats: ph.chords.length % 3 === 1 && Math.random() < .35 ? 3 : 4 };
   }
   return null;
 }
@@ -5284,8 +5318,9 @@ function trioLines(K, V, ch) {
   V.forEach((v, i) => ["s", "a"].forEach(x => {
     const p = v[x], q = V[i + 1] && V[i + 1][x], dec = q && Math.abs(q.d - p.d) === 2 && (turn % 2 === (x === "s" ? 0 : 1)) && i < V.length - 2;
     const aux = !dec && q && q.m === p.m && (turn % 2 === (x === "s" ? 0 : 1)) && i < V.length - 2 && !(K.minor && m7(p.d + 1) === degLA(K, 7).l) && m7(p.d + 1) !== m7(v.b.d) && !tonesOf(K, ch ? ch[i] : CH("I")).some(z => z.l === m7(p.d + 1) && z.a !== sigOf(K, z.l));
-    if (dec) { lines[x].push([[p, "e"], [passNote(K, p, q), "e"]]); }
-    else if (aux) { const d = p.d + 1; lines[x].push([[p, "e"], [P6(d, sigOf(K, m7(d))), "e"]]); }
+    const Kl = ch && ch[i] && ch[i].K ? ch[i].K : K;
+    if (dec) { lines[x].push([[p, "e"], [passNote(Kl, p, q), "e"]]); }
+    else if (aux) { const d = p.d + 1; lines[x].push([[p, "e"], [P6(d, sigOf(Kl, m7(d))), "e"]]); }
     else lines[x].push([[p, null]]);
     if (x === "a") turn++;
   }));
@@ -5300,8 +5335,8 @@ function trioLines(K, V, ch) {
   return lines;
 }
 function trioSpec(q, mode, upto) {
-  const K = trioK(q), V = q.trio.V, ch = q.trio.ch.map(CH), n = V.length, rh = chordRhythm(n, 4), lines = trioLines(K, V, mode === "upto" ? null : ch);
-  const firstBar = rh.findIndex((r, i) => i > 0 && r.barBefore), bars2 = rh.map((r, i) => r.barBefore ? i : -1).filter(i => i > 0), shown = mode === "model" ? n : mode === "upto" ? upto : (firstBar < 4 && bars2[1] ? bars2[1] : Math.max(1, firstBar));
+  const K = trioK(q), V = q.trio.V, ch = trioChords(q), n = V.length, rh = chordRhythm(n, trioBeats(q)), lines = trioLines(K, V, mode === "upto" ? null : ch);
+  shown = mode === "model" ? n : mode === "upto" ? upto : trioGiven(q);
   const staves = [["Violin I", "s"], ["Violin II", "a"]].map(([name, x]) => { const notes = []; let bs = {};
     lines[x].forEach((seg, i) => { if (rh[i].barBefore) { notes.push({ bar: 1 }); bs = {}; } const d = durObj(rh[i].dur);
       if (i >= shown) { notes.push(Object.assign({ sk: 1 }, d)); return; }
@@ -5314,9 +5349,16 @@ function trioSpec(q, mode, upto) {
     if (i === lines.sus) labels.push([2, bn.length, "4 " + (/[♯♮♭]/.test(f) ? f : "3")]);
     else if (f || prevIc) labels.push([2, bn.length, prevIc ? "5/" + (/[♯♮♭]/.test(f) ? f : "3") : f]);
     bn.push(Object.assign({ n: noteStr(v.b), acc: accFor(K, v.b, bs) }, durObj(rh[i].dur))); });
-  return { score: { staves: staves.concat([{ name: "Continuo", clef: "bass", key: K.key, notes: bn }]), time: [4, 4], sp: 40, labels, fin: true, gap: 80 } };
+  return { score: { staves: staves.concat([{ name: "Continuo", clef: "bass", key: K.key, notes: bn }]), time: [trioBeats(q), 4], sp: 40, labels, fin: true, gap: 80 } };
 }
 const trioK = q => K6(q.trio.key, q.trio.minor);
+const trioBeats = q => q.trio.beats || 4;
+/* chords, with the new key attached to the modulating section (q.trio.k2: { name, minor, from, to }) */
+function trioChords(q) { const t = q.trio, K = trioK(q), K2 = t.k2 ? K6(t.k2.name, t.k2.minor) : null;
+  return t.ch.map((l, i) => { const c = CH(l); if (K2 && i >= t.k2.from && i < t.k2.to) { c.K = K2; c.sigK = K; } return c; }); }
+/* how many chords of the violin parts the question gives: to the end of the first full bar (or the second bar after a short upbeat) */
+function trioGiven(q) { const n = q.trio.V.length, rh = chordRhythm(n, trioBeats(q)), firstBar = rh.findIndex((r, i) => i > 0 && r.barBefore), bars2 = rh.map((r, i) => r.barBefore ? i : -1).filter(i => i > 0);
+  return firstBar < 4 && bars2[1] ? bars2[1] : Math.max(1, firstBar); }
 /* practice: which pair of notes fits the next beat? */
 GEN.trio8 = lvl => {
   for (let t = 0; t < 30; t++) {
@@ -5337,7 +5379,7 @@ GEN.trio8 = lvl => {
     if (wrongs.length < 3) continue; wrongs.length = 3;
     const q = { trio: { key: K.name, minor: K.minor, ch: chords.map(chLabel), V } };
     const spec = trioSpec(q, "upto", i);
-    const rh = chordRhythm(n, 4); let col = 0; for (let k = 0; k <= i; k++) { if (rh[k].barBefore) col++; if (k < i) col += 1; }
+    const rh = chordRhythm(n, trioBeats(q)); let col = 0; for (let k = 0; k <= i; k++) { if (rh[k].barBefore) col++; if (k < i) col += 1; }
     spec.score.labels.push([2, spec.score.staves[2].notes.findIndex((x, k) => !x.bar && spec.score.staves[2].notes.slice(0, k + 1).filter(z => !z.bar).length === i + 1), "?", "above"]);
     return mk("trio8", `Trio sonata in ${keyLab(K)}. Which pair of notes fits the beat marked ? (read the figures)`, right, wrongs.map(w => w[0]),
       `${right} is right: both notes belong to ${chLabel(c)} (${T.map(z => nm(z.l, z.a)).join("–")}), the 3rd is present and there are no consecutives. ${wrongs.map(w => w[1]).join(" ")}`,
@@ -5348,15 +5390,114 @@ GEN.trio8 = lvl => {
 /* the written task (paper question 1): continue both violins to the end */
 GEN.trio8w = lvl => {
   const ph = trioPhrase(true); if (!ph) return GEN.trio8(lvl);
-  return { kind: "trio8w", selfMark: true, prompt: `Continue the two violin parts of this trio sonata (${keyLab(ph.K)}) to the end, following the figured bass. Keep the parts independent and write a cadence at the end.`,
-    trio: { key: ph.K.name, minor: ph.K.minor, ch: ph.chords.map(chLabel), V: ph.V }, explain: "" };
+  return { kind: "trio8w", selfMark: true, prompt: `Continue the two violin parts of this trio sonata (${keyLab(ph.K)}) to the end, following the figured bass.${ph.k2 ? ` It modulates to ${K6(ph.k2.name, false).label} and back.` : ""} Keep the parts independent and write a cadence at the end.`,
+    trio: Object.assign({ key: ph.K.name, minor: ph.K.minor, ch: ph.chords.map(chLabel), V: ph.V }, ph.k2 ? { k2: ph.k2 } : {}, ph.beats === 3 ? { beats: 3 } : {}), explain: "" };
 };
 const TRIO_CHECKS = ["Every chord follows the figures, with the 3rd present", "No consecutive 5ths or octaves between any two parts (including the bass)", "The two violins are independent: contrary or oblique motion, some imitation or sequence", "Leading notes rise, 7ths fall, suspensions are prepared and resolve down", "The violins stay mostly within an octave of each other (they may cross)", "Some quaver movement for life; a clear cadence at the end"];
 function trioUI(q) {
-  return `<div class="compbox"><div class="stave">${Eng.score(Object.assign({ z: big(.95) }, trioSpec(q, "question").score))}</div><p>Copy it onto manuscript paper and continue both violins. Then compare with the checklist and the model.</p>
+  return `<div class="compbox"><div class="stave">${Eng.score(Object.assign({ z: big(.95) }, trioSpec(q, "question").score))}</div><p>Write the violins below and let the app check the notes. Then copy it onto paper and add movement: passing notes, a suspension, imitation.</p>${trioEntryUI(q)}
     <details class="deep"><summary>Checklist</summary><ol class="clist">${TRIO_CHECKS.map(c => `<li>${esc(c)}</li>`).join("")}</ol></details>
     <details class="deep"><summary>One model answer</summary><div class="stave">${Eng.score(Object.assign({ z: big(.95) }, trioSpec(q, "model").score))}</div></details></div>`;
 }
+
+/* ================= writing the two violin parts on screen, checked by the engine ================= */
+const TVN = { s: "violin I", a: "violin II", b: "bass" }, TRIO_RANGE = [55, 93];
+function trioVoices(q) { const g = trioGiven(q); return q.trio.V.map((v, i) => i < g ? { s: v.s, a: v.a, b: v.b } : { s: (q._v && q._v[i] && q._v[i].s) || null, a: (q._v && q._v[i] && q._v[i].a) || null, b: v.b }); }
+const trioDone = q => trioVoices(q).every(v => v.s && v.a);
+/* the same rules as the four-part checker, for three real parts */
+function trioCheck(q) { return trioIssues(trioK(q), trioChords(q), trioVoices(q), trioGiven(q)); }
+function trioIssues(K, ch, V, g) {
+  const iss = [];
+  const add = (sev, type, i, msg) => iss.push({ sev, type, i, msg });
+  V.forEach((v, i) => {
+    if (i < g) return;
+    const c = ch[i], Kc = keyFor(K, c), T = tonesOf(K, c), w = `Chord ${i + 1} (${chLabel(c)})`, L = leadLA(Kc);
+    ["s", "a"].forEach(x => { const p = v[x]; if (!p) return; const k = toneIdx(K, c, p);
+      if (k < 0) add("err", "tone", i, `${w}: ${TVN[x]}'s ${pname(p)} isn't in the chord. The notes are ${T.map(t => nm(t.l, t.a)).join(", ")}.`);
+      else if (T[k].a !== p.a) add("err", "acc", i, `${w}: ${TVN[x]} needs ${nm(T[k].l, T[k].a)}, not ${pname(p)}.`);
+      if (p.m < TRIO_RANGE[0] || p.m > TRIO_RANGE[1]) add("err", "range", i, `${w}: ${TVN[x]}'s ${pname(p)} is out of the violin's range (G3 up to about A6).`); });
+    if (!v.s || !v.a) return;
+    if (v.a.m > v.s.m) add("warn", "cross", i, `${w}: the violins cross. That's fine for a moment, but don't stay crossed.`);
+    if (v.s.m - v.a.m > 12) add("warn", "gap", i, `${w}: the violins are more than an octave apart. Keep them closer.`);
+    if (v.s.m === v.a.m) add("warn", "unison", i, `${w}: both violins on the same note. With only three parts, a unison wastes one.`);
+    const idx = ["s", "a", "b"].map(x => toneIdx(K, c, v[x])), cnt = T.map((_, k) => idx.filter(z => z === k).length);
+    if (c.aug) { if (!cnt[T.length - 1]) add("err", "missAug", i, `${w}: the sharpened 4th (${nm(T[T.length - 1].l, T[T.length - 1].a)}) is missing; it's what makes the augmented 6th.`); }
+    else if (!cnt[1]) add("err", "miss3", i, `${w}: the 3rd (${nm(T[1].l, T[1].a)}) is missing. With only three parts, the 3rd must be there.`);
+    if (c.sev && !cnt[3]) add("err", "miss7", i, `${w}: the 7th (${nm(T[3].l, T[3].a)}) is missing. The figures show it.`);
+    if (isDom(c) || c.deg === 7) { const li = T.findIndex(t => t.l === L.l); if (li >= 0 && cnt[li] > 1) add("err", "dblLN", i, `${w}: the leading note (${nm(L.l, L.a)}) is doubled.`); }
+    if (c.sev && cnt[3] > 1) add("err", "dbl7", i, `${w}: the 7th is doubled.`);
+  });
+  for (let i = Math.max(1, g); i < V.length; i++) {
+    const v1 = V[i - 1], v2 = V[i], c1 = ch[i - 1], c2 = ch[i], w = `Chords ${i}–${i + 1}`, L = leadLA(keyFor(K, c1));
+    if (!v1.s || !v1.a || !v2.s || !v2.a) continue;
+    [["s", "a"], ["s", "b"], ["a", "b"]].forEach(([x, y]) => {
+      const a1 = v1[x].m - v1[y].m, a2 = v2[x].m - v2[y].m; if (v1[x].m === v2[x].m && v1[y].m === v2[y].m) return;
+      const i1 = ((a1 % 12) + 12) % 12, i2 = ((a2 % 12) + 12) % 12;
+      if (i1 === 7 && i2 === 7) add("err", "par5", i, `${w}: consecutive 5ths between ${TVN[x]} and ${TVN[y]} (${pname(v1[y])}–${pname(v1[x])} to ${pname(v2[y])}–${pname(v2[x])}).`);
+      if (i1 === 0 && i2 === 0) add("err", "par8", i, `${w}: consecutive octaves (or unisons) between ${TVN[x]} and ${TVN[y]}.`);
+    });
+    const ds = Math.sign(v2.s.m - v1.s.m), db = Math.sign(v2.b.m - v1.b.m), o2 = ((v2.s.m - v2.b.m) % 12 + 12) % 12;
+    if (ds && ds === db && (o2 === 0 || o2 === 7) && Math.abs(v2.s.m - v1.s.m) > 2) add("warn", "hidden", i, `${w}: violin I and the bass move the same way into ${o2 === 0 ? "an octave" : "a 5th"} with a leap (exposed ${o2 === 0 ? "octaves" : "5ths"}).`);
+    ["s", "a"].forEach(x => { const p = v1[x], q2 = v2[x], iv = Math.abs(q2.m - p.m), ld = Math.abs(q2.d - p.d);
+      if (ld === 1 && iv === 3) add("err", "aug2", i, `${w}: ${TVN[x]} moves by an augmented 2nd (${pname(p)}–${pname(q2)}).`);
+      if (iv > 12) add("err", "leap", i, `${w}: ${TVN[x]} leaps more than an octave.`); else if (ld === 6) add("err", "leap7", i, `${w}: ${TVN[x]} leaps a 7th.`);
+      else if (ld === 3 && iv === 6) add("warn", "tritone", i, `${w}: ${TVN[x]} leaps an augmented 4th.`);
+      const resolving = isDom(c1) && (c1.sec ? c2.deg === c1.sec && !c2.sec : (c2.deg === 1 && c2.inv < 2) || c2.deg === 6);
+      if (resolving && m7(p.d) === L.l && p.a === L.a && q2.d !== p.d + 1) { if (x === "s") add("err", "ln", i, `${w}: the leading note (${pname(p)}) in violin I should rise.`); else add("warn", "lnfree", i, `${w}: the leading note in violin II falls. Rising is safer.`); }
+      if (c1.sev && toneIdx(K, c1, p) === 3 && !(q2.d === p.d - 1 && p.m - q2.m <= 2) && !(q2.m === p.m && toneIdx(K, c2, q2) >= 0 && !(c2.deg === 1 && c2.inv < 2))) add("err", "res7", i, `${w}: the 7th (${pname(p)}) in ${TVN[x]} should fall by step.`);
+      if (c1.aug) { const T1 = tonesOf(K, c1); if (toneIdx(K, c1, p) === T1.length - 1 && q2.m !== p.m + 1) add("err", "aug6", i, `${w}: the sharpened 4th (${pname(p)}) in ${TVN[x]} should rise a semitone to the dominant.`); }
+    });
+  }
+  return iss;
+}
+/* an exam-style mark out of 15 for the notes alone (style and movement are marked on paper) */
+const trioMark = iss => Math.max(0, Math.round(15 - 2 * iss.filter(x => x.sev === "err").length - .5 * iss.filter(x => x.sev === "warn").length));
+let TW_Q = null;
+function trioEntryUI(q) {
+  TW_Q = q;
+  const K = trioK(q), ch = trioChords(q), V = trioVoices(q), g = trioGiven(q), n = V.length, cur = q._tc || (q._tc = { i: g, v: "s" });
+  const spec = satbSpec(K, ch, V.map(v => ({ s: v.s, a: v.a, b: v.b })), { figures: true, beats: trioBeats(q), hl: q._tchk ? null : cur.i, hlColor: "rgba(47,90,168,.16)" });
+  const done = V.filter((v, i) => i >= g && v.s && v.a).length, iss = q._tchk ? trioCheck(q) : null;
+  return `<div class="writebox triobox"><h4 style="margin:14px 0 4px">Your answer</h4><p class="meta">Violin I has stems up, violin II stems down. The first ${g} chord${g > 1 ? "s are" : " is"} given.</p>
+    <div class="stave tap" id="tstave">${Eng.grand(Object.assign({ z: big(1.2) }, spec))}</div>
+    <div class="satb-bar"><div class="seg-v" role="group" aria-label="Which violin">${["s", "a"].map(x => `<button type="button" data-tv="${x}" aria-pressed="${cur.v === x}">${x === "s" ? "Violin I" : "Violin II"}</button>`).join("")}</div>
+    <div class="seg-v" role="group" aria-label="Which chord"><button type="button" data-tc="-1" aria-label="Previous chord">◀</button><span class="meta">Chord ${cur.i + 1} of ${n}</span><button type="button" data-tc="1" aria-label="Next chord">▶</button></div></div>
+    <p class="meta">Tap the stave to put the ${cur.v === "s" ? "violin I" : "violin II"} note for chord ${cur.i + 1}. ${done} of ${n - g} chords complete.</p>
+    <div class="nudge" role="group" aria-label="Move or change the note"><button type="button" class="btn" data-tnudge="-1">▼ Down</button><button type="button" class="btn" data-tnudge="1">▲ Up</button><button type="button" class="btn" data-tacc="-1">♭</button><button type="button" class="btn" data-tacc="0">♮</button><button type="button" class="btn" data-tacc="1">♯</button><button type="button" class="btn ghost" data-tdel="1">Clear</button></div>
+    <div class="row-btns"><button class="btn small" type="button" data-thint="1">💡 Which notes for chord ${cur.i + 1}?</button><button class="btn primary" type="button" data-tcheck="1" ${trioDone(q) ? "" : "disabled"}>Check my violins</button></div>
+    ${q._thint === cur.i ? `<p class="coach-out">${trioHint(q, cur.i)}</p>` : ""}
+    ${iss ? `<div class="fb-in"><p><b>${iss.some(x => x.sev === "err") ? "Some things to fix" : "Well done"}</b>: about <b>${trioMark(iss)}/15</b> for the notes. ${iss.some(x => x.sev === "err") ? "Fix the ✗ points, then check again." : "Now make it more alive on paper: passing notes, a suspension at the cadence, some imitation."}</p>${issuesHTML(iss, "No mistakes: every chord is right, the 3rds are there, and no consecutives.")}</div>` : ""}</div>`;
+}
+function trioHint(q, i) {
+  const K = trioK(q), c = trioChords(q)[i], T = tonesOf(K, c), f = figureOf(K, c), b = q.trio.V[i].b, bi = toneIdx(K, c, b), N = t => nm(t.l, t.a);
+  const need = (c.aug ? [T.length - 1, 1] : c.sev ? [1, 3, 0] : [1, 0, 2]).filter(k => k !== bi).slice(0, 2), names = { 0: "root", 1: "3rd", 2: "5th", 3: "7th" };
+  return `The bass is ${pname(b)}${f ? ` with ${f.replace(/\//g, " over ")}` : " with no figures (5/3)"}: chord ${chLabel(c)}${c.K && c.K !== K ? ` (in ${c.K.label})` : ""}, ${T.map(N).join("–")}. Give the violins ${need.map(k => c.aug ? N(T[k]) : `the ${names[k]} (${N(T[k])})`).join(" and ")}${!c.aug && bi === 1 ? "; the bass already has the 3rd, so don't double it" : ""}.`;
+}
+function refreshTrio() { const q = TW_Q, w = document.querySelector(".triobox"); if (!q || !w) return; w.outerHTML = trioEntryUI(q); }
+function trioPlace(q, d) { const K = trioK(q), cur = q._tc; q._v = q._v || q.trio.V.map(() => ({})); const old = q._v[cur.i][cur.v], l = m7(d);
+  const a = old && m7(old.d) === l ? old.a : sigOf(K, l);   /* key-signature note by default: add accidentals yourself */
+  q._v[cur.i][cur.v] = P6(d, a); q._tchk = false; if (typeof tone === "function") tone(midi(d, a), 0, .5); }
+document.addEventListener("pointerdown", e => { const box = e.target.closest("#tstave"); if (!box || !TW_Q) return; const q = TW_Q;
+  const svg = box.querySelector("svg"), pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
+  const p = pt.matrixTransform(svg.getScreenCTM().inverse()), cols = svg.dataset.cols.split(",").map(Number), g = trioGiven(q);
+  const spec = satbSpec(trioK(q), trioChords(q), trioVoices(q), { beats: trioBeats(q) }); let best = q._tc.i, bd = 1e9;
+  spec.cols.forEach((ci, i) => { if (i < g) return; const dx = Math.abs(cols[ci] - p.x); if (dx < bd) { bd = dx; best = i; } });
+  if (bd < 26) q._tc.i = best;
+  const d = Math.max(32, Math.min(52, Math.round(30 + (70 - p.y) / 5)));
+  trioPlace(q, d); q._thint = null;
+  const nx = q._tc.i + 1; if (nx < q.trio.V.length && !(q._v[nx] && q._v[nx][q._tc.v])) q._tc.i = nx;
+  refreshTrio(); });
+document.addEventListener("click", e => { const q = TW_Q; if (!q || !e.target.closest(".triobox")) return; const t = e.target.closest("button"); if (!t) return; const d = t.dataset, g = trioGiven(q);
+  const cur = q._v && q._v[q._tc.i] && q._v[q._tc.i][q._tc.v];
+  if (d.tv) q._tc.v = d.tv;
+  else if (d.tc) q._tc.i = Math.max(g, Math.min(q.trio.V.length - 1, q._tc.i + +d.tc));
+  else if (d.tnudge) { if (!cur) return; trioPlace(q, cur.d + +d.tnudge); }
+  else if (d.tacc) { if (!cur) return; q._v[q._tc.i][q._tc.v] = P6(cur.d, +d.tacc); q._tchk = false; }
+  else if (d.tdel) { if (q._v && q._v[q._tc.i]) delete q._v[q._tc.i][q._tc.v]; q._tchk = false; }
+  else if (d.thint) q._thint = q._tc.i;
+  else if (d.tcheck) q._tchk = true;
+  else return;
+  refreshTrio(); });
 
 /* ================= Grade 8 question 2: completing a keyboard outline ================= */
 /* accompaniment patterns, built from the chord's notes above its bass */
@@ -5554,7 +5695,7 @@ const ENS8 = {
   quartet: { name: "string quartet", parts: [["Violin I", "treble", v => v.s, 0], ["Violin II", "treble", v => v.a, 0], ["Viola", "alto", v => v.t, 0], ["Cello", "bass", v => v.b, 0]] },
   quintet: { name: "wind quintet", parts: [["Flute", "treble", v => P6(v.s.d + 7, v.s.a), 0], ["Oboe", "treble", v => v.a, 0], ["Clarinet in B♭", "treble", v => trans7(v.t, "M", 2), 2],
     ["Horn in F", "treble", v => trans7(P6(v.b.d + 7, v.b.a), "P", 5), "none"], ["Bassoon", "bass", v => v.b, 0]] },
-  pianoQ: { name: "piano quintet", parts: [["Violin I", "treble", v => v.s, 0], ["Violin II", "treble", v => v.a, 0], ["Viola", "alto", v => v.t, 0], ["Cello", "bass", v => v.b, 0], ["Double bass", "bass", v => P6(v.b.d + 7, v.b.a), 0]] },
+  pianoQ: { name: "piano quintet", parts: [["Violin I", "treble", v => v.s, 0], ["Violin II", "treble", v => v.a, 0], ["Viola", "alto", v => v.t, 0], ["Cello", "bass", v => v.b, 0], ["Double bass", "bass", v => v.b, 0]] },
 };
 /* the sounding part each staff carries, to say who plays what */
 const ENS8_VOICE = { quartet: ["s", "a", "t", "b"], quintet: ["s", "a", "t", "b", "b"], pianoQ: ["s", "a", "t", "b", "b"] };
@@ -5577,11 +5718,17 @@ const NOTE_ROLE8 = (K, c, p) => { const T = tonesOf(K, c), k = T.findIndex(z => 
 GEN.score8 = lvl => {
   for (let t0 = 0; t0 < 50; t0++) {
     const ens = pick(Object.keys(ENS8)), E = ENS8[ens];
-    const ph = longer8(Math.random() < .7 ? phrase8() : phrase7(), 8); if (!ph) continue;
+    const rr = Math.random(), ph = rr < .25 ? trioModul() : longer8(rr < .75 ? phrase8() : phrase7(), 8); if (!ph) continue;
     if (ph.V.some(v => ["s", "a", "t", "b"].some(x => Math.abs(v[x].a) > 1))) continue;
     const K = ph.K, sc = buildScore8(K, ph, E.parts); if (sc.staves.some(s => Math.abs(s.key) > 6)) continue;
-    const { chords, V } = ph, n = chords.length, f = ph.focus >= 0 && ph.focus !== undefined ? ph.focus : 1 + rnd(n - 2), c = chords[f], at = (si, k, txt) => [si, sc.cols[si][k], txt];
-    const wrap = labels => ({ score: { staves: sc.staves, time: [4, 4], sp: 40, labels, fin: true, gap: 74, nameW: 110 } });
+    const D = decorate8(K, ph, sc, E.parts.map(p => p[0]));
+    const { chords, V } = ph, n = chords.length, home = [...Array(n - 1).keys()].filter(k => !chords[k].K), f = ph.focus >= 0 && ph.focus !== undefined ? ph.focus : pick(home.length ? home : [1]), c = chords[f], at = (si, k, txt) => [si, sc.cols[si][k], txt];
+    const wrap = labels => ({ score: { staves: sc.staves, time: [4, 4], sp: 40, labels, fin: true, gap: 92, nameW: 110 }, tempo: D.tempo[0] });
+    if (ph.k2) { const K2 = K6(ph.k2.name, ph.k2.minor), rel = K.minor ? K6(K.maj[0], false) : null, dom = K6(nm(degLA(K, 5).l, degLA(K, 5).a), K.minor), sub = K6(nm(degLA(K, 4).l, degLA(K, 4).a), K.minor);
+      if (Math.random() < .35) { const b1 = barNo8(chordRhythm(n, 4), ph.k2.to - 1, 4);
+        return mk("score8", `This ${E.name} begins in ${keyLab(K)}. In which key is the cadence that ends in bar ${b1}?${D.ana ? " (Bar 1 is the first complete bar.)" : ""}`, K2.label, [dom.label, sub.label, rel ? rel.label : K6(nm(degLA(K, 6).l, degLA(K, 6).a), true).label, K6(nm(degLA(K, 2).l, degLA(K, 2).a), true).label].filter(x => x !== K2.label),
+          `The music modulates to ${K2.label}, the ${K.minor ? "relative major" : "dominant"}: ${K.minor ? "the leading note's sharp disappears" : `the new sharp (${nm(degLA(K2, 7).l, degLA(K2, 7).a)}) is its leading note`}, and the cadence is V–I in ${K2.label}.`, Object.assign(wrap([]), { hint: "Look for an accidental that keeps coming back, and a cadence: V–I in the new key." })); } }
+    if (Math.random() < .5) { const dq = decoQ8(pick(["tempo", "dir", "dir", "dyn", "hair", "orn", "art", "pas", "pas"]), D, E.parts.map(p => p[0]), K, wrap, at); if (dq) return dq; }
     const ans = chLabel(c), tones = tonesOf(K, c).map(t => nm(t.l, t.a)).join("–");
     const types = ["chord", "chord", "type", "interval", "cadence"].concat(c.aug || c.sec ? ["who", "who"] : []).concat(ens === "quintet" ? ["sound", "sound"] : ["clef", "clef"]);
     const t = pick(types);
@@ -5603,7 +5750,7 @@ GEN.score8 = lvl => {
     if (t === "clef") { const p = V[f].t;
       return mk("score8", `Name the viola's note at X, with its octave (middle C is C4).`, pnameO(p), [-1, 1, -7, 2].map(k => pnameO(P6(p.d + k, sigOf(K, m7(p.d + k))))),
         `In the alto clef middle C is on the middle line, so X is ${pnameO(p)}.`, Object.assign(wrap([at(2, f, "X")]), { hint: "Alto clef: middle C is the middle line." })); }
-    if (t === "interval") { const lo = V[f].b, hi = ens === "quintet" ? P6(V[f].s.d + 7, V[f].s.a) : V[f].s, iv = intervalName(lo.d, lo.a, hi.d, hi.a); if (!iv) continue;
+    if (t === "interval") { const lo = ens === "pianoQ" ? P6(V[f].b.d - 7, V[f].b.a) : V[f].b, hi = ens === "quintet" ? P6(V[f].s.d + 7, V[f].s.a) : V[f].s, iv = intervalName(lo.d, lo.a, hi.d, hi.a); if (!iv) continue;
       const Q = { M: "major", m: "minor", P: "perfect", A: "augmented", d: "diminished" }, simple = iv.n > 15 ? iv.n - 14 : iv.n > 8 ? iv.n - 7 : iv.n, pre = iv.n > 8 ? "compound " : "", nm2 = `${pre}${Q[iv.q]} ${ORD(simple)}`;
       const pool = ["major", "minor", "perfect", "augmented", "diminished"].filter(qq => qq !== Q[iv.q]).map(qq => `${pre}${qq} ${ORD(simple)}`).concat(iv.n > 8 ? [`${Q[iv.q]} ${ORD(simple)}`] : [`compound ${Q[iv.q]} ${ORD(simple)}`]);
       const lowS = E.parts.length - 1;
@@ -5625,7 +5772,7 @@ const ORCH8_PARTS = K => [
   ["Horn in E♭", "treble", v => trans7(v.t, "M", 6), "none"], ["Trumpet in D", "treble", v => transDown8(v.s, "M", 2), "none"],
   ["Trombone I", "tenor", v => v.t, 0], ["Trombone II", "bass", v => v.b, 0],
   ["Timpani", "bass", (v, c) => { if (c.sec || c.aug || c.nea || !(c.deg === 1 || c.deg === 5) || c.inv) return null; const t = degLA(K, c.deg); let d = 14 + t.l; if (d < 16) d += 7; return P6(d, t.a); }, 0],
-  ["Violin I", "treble", v => v.s, 0], ["Violin II", "treble", v => v.a, 0], ["Viola", "alto", v => v.t, 0], ["Cello", "bass", v => v.b, 0], ["Double bass", "bass", v => P6(v.b.d + 7, v.b.a), 0]];
+  ["Violin I", "treble", v => v.s, 0], ["Violin II", "treble", v => v.a, 0], ["Viola", "alto", v => v.t, 0], ["Cello", "bass", v => v.b, 0], ["Double bass", "bass", v => v.b, 0]];
 const OI = n => ORCH8_PARTS(K6("C", false)).findIndex(p => p[0] === n);
 GEN.orch8 = lvl => {
   for (let t0 = 0; t0 < 50; t0++) {
@@ -5635,7 +5782,9 @@ GEN.orch8 = lvl => {
     const os = buildScore8(K, ph, ORCH8_PARTS(K)); if (os.staves.some(s => Math.abs(s.key) > 6)) continue;
     const { chords, V } = ph, n = chords.length, i = ph.focus >= 0 ? ph.focus : rnd(n - 1), at = (si, k, txt) => [si, os.cols[si][k], txt];
     if (os.staves.some(s => s.notes.some(x => x.acc && /[𝄪𝄫]|##|bb/.test(String(x.acc))))) continue;
-    const sc = labels => ({ score: { staves: os.staves, time: [4, 4], sp: 34, labels, fin: true, gap: 74, nameW: 112 } });
+    const D = decorate8(K, ph, os, ORCH8_PARTS(K).map(p => p[0]));
+    const sc = labels => ({ score: { staves: os.staves, time: [4, 4], sp: 34, labels, fin: true, gap: 96, nameW: 112 }, tempo: D.tempo[0] });
+    if (Math.random() < .3) { const dq = decoQ8(pick(["tempo", "dir", "dir", "dyn", "hair", "orn"]), D, ORCH8_PARTS(K).map(p => p[0]), K, sc, at); if (dq) { dq.kind = "orch8"; return dq; } }
     const near = p => [-1, 1, 2, -2].map(k => pname(P6(p.d + k, sigOf(K, m7(p.d + k)))));
     const t = pick(["horn", "horn", "tpt", "tpt", "cor", "clA", "picc", "tbn", "count", "timp", "chord", "chord"]);
     const sound = (name, si, snd, wr, how, hint) => mk("orch8", `The ${lc(name)} plays the written note at X. Which note actually sounds?`, pname(snd), near(snd).concat([pname(wr)]),
@@ -5662,6 +5811,69 @@ GEN.orch8 = lvl => {
   }
   return GEN.orch7(lvl);
 };
+
+/* ================= performance markings for Grade 8 scores, and questions about them ================= */
+const TEMPO8 = [["Adagio sostenuto", "slow, sustained"], ["Allegro con slancio", "fast, with dash"], ["Andante mesto", "at a walking pace, sad"], ["Largo e lamentoso", "very slow and lamenting"], ["Allegro agitato", "fast and agitated"],
+  ["Andante con moto", "at a walking pace, with movement"], ["Moderato, mezza voce", "at a moderate speed, at half voice"], ["Langsam, innig", "slow, heartfelt (German)"], ["Lebhaft", "lively (German)"], ["Nicht zu schnell", "not too fast (German)"],
+  ["Allegretto grazioso", "fairly quick and graceful"], ["Lento, sotto voce", "slow, in an undertone"]];
+const DIR8 = [["dolce", "sweetly"], ["espress.", "expressively"], ["sotto voce", "in an undertone, quietly"], ["mezza voce", "at half voice, restrained"], ["sempre legato", "always smoothly"], ["morendo", "dying away"],
+  ["calando", "getting softer and slower"], ["innig", "heartfelt, intimate (German)"], ["zögernd", "hesitating, slowing (German)"], ["pressez", "hurry (French)"], ["cédez", "slow down (French)"], ["en dehors", "bring the part out (French)"],
+  ["incalzando", "getting quicker and louder"], ["allargando", "broadening, getting slower and fuller"], ["con sord.", "with a mute"], ["sul pont.", "bow near the bridge"], ["sul tasto", "bow over the fingerboard"], ["pizz.", "pluck the strings"]];
+const DIR8_STR = ["con sord.", "sul pont.", "sul tasto", "pizz."];
+/* bar numbers count from the first complete bar */
+function barNo8(rh, k, beats) { const first = rh.findIndex((r, i) => i > 0 && r.barBefore), ana = first > 0 && first < beats; let b = 0; for (let i = 0; i <= k; i++) if (rh[i].barBefore) b++; return ana ? b : b + 1; }
+/* add markings to a built score (sc from buildScore8); strings = which staves are strings. Returns what was added. */
+function decorate8(K, ph, sc, names) {
+  const { chords, V } = ph, n = chords.length, rh = chordRhythm(n, 4), D = {}, st = sc.staves, col = sc.cols;
+  const isStr = si => /Violin|Viola|Cello|Double/.test(names[si]);
+  D.tempo = pick(TEMPO8);
+  /* dynamics at the start, a change at the second bar, and a hairpin into it */
+  const LV = ["pp", "p", "mp", "mf", "f", "ff"], barK = rh.findIndex(r => r.barBefore), d1 = pick(["p", "pp", "mp", "mf", "f"]), d2 = pick(LV.filter(x => x !== d1 && Math.abs(LV.indexOf(x) - LV.indexOf(d1)) <= 2));
+  st.forEach((s, si) => { s.notes[col[si][0]].dyn = d1; if (barK > 1) s.notes[col[si][barK]].dyn = d2; });
+  D.dyn = { d1, d2, k: barK, bar: barK > 0 ? barNo8(rh, barK, 4) : 1 };
+  if (barK > 2) { D.hair = LV.indexOf(d2) > LV.indexOf(d1) ? "cresc" : "dim"; st.forEach((s, si) => { s.hair = [[col[si][1], col[si][barK - 1], D.hair]]; }); D.hairBar = barNo8(rh, 1, 4); }
+  /* a direction over one part */
+  const dk = Math.min(n - 2, barK > 0 ? barK : 1), dsi = pick(st.map((s, si) => si).filter(si => st[si].notes[col[si][dk]].n !== "r")), pool = DIR8.filter(x => isStr(dsi) || !DIR8_STR.includes(x[0]));
+  D.dir = { si: dsi, k: dk, term: pick(pool), bar: barNo8(rh, dk, 4) }; if (!st[dsi].notes[col[dsi][dk]].txt) st[dsi].notes[col[dsi][dk]].txt = D.dir.term[0]; else D.dir = null;
+  /* an ornament and an articulation in the top part */
+  const ok = n - 2; D.orn = { k: ok, kind: pick(["tr", "turn", "mord", "mordInv"]), bar: barNo8(rh, ok, 4) }; st[0].notes[col[0][ok]].orn = D.orn.kind;
+  const ak = 1 + rnd(Math.max(1, ok - 1)); D.art = { k: ak, kind: pick(["stacc", "acc", "ten"]), bar: barNo8(rh, ak, 4) }; if (ak !== ok) st[0].notes[col[0][ak]].art = D.art.kind; else D.art = null;
+  /* a passing or auxiliary note in the top part (two quavers instead of a crotchet) */
+  const top = V.map(v => sc.top ? sc.top(v) : v.s), dia = d => P6(d, sigOf(keyFor(K, chords[0]), m7(d)));
+  for (const i of shuffle([...Array(Math.max(1, n - 2)).keys()])) {
+    if (i === ok || i === ak || rh[i].dur !== "q" || chords[i].K || chords[i].sec || chords[i].aug) continue;
+    const a = V[i].s, b = V[i + 1].s, inCh = p => tonesOf(K, chords[i]).some(t => t.l === m7(p.d)), risky = p => K.minor && [degLA(K, 6).l, degLA(K, 7).l].includes(m7(p.d));
+    let p = null, kind = null;
+    if (Math.abs(b.d - a.d) === 2) { const mid = dia((a.d + b.d) / 2); if (!inCh(mid) && !risky(mid)) { p = mid; kind = "passing note"; } }
+    else if (a.m === b.m) { const nb = dia(a.d + pick([1, -1])); if (!inCh(nb) && !risky(nb)) { p = nb; kind = "auxiliary note"; } }
+    if (!p) continue;
+    const f0 = ENS8_TOP[names[0]] || (v => v), wp = f0(p), idx = col[0][i], base = st[0].notes[idx], bs = {};
+    st[0].notes.splice(idx, 1, Object.assign({}, base, { dur: "e", b: "pn" }), { n: noteStr(wp), acc: (accFor(sigK7(st[0].key), wp, bs) || ""), dur: "e", b: "pn", hl: false });
+    for (let k = i + 1; k < n; k++) col[0][k]++;
+    st[0].slur = [[idx, idx + 1]];
+    if (st[0].hair) st[0].hair = st[0].hair.map(h => [h[0] > idx ? h[0] + 1 : h[0], h[1] > idx ? h[1] + 1 : h[1], h[2]]);
+    D.pas = { k: i, kind, idx: idx + 1, bar: barNo8(rh, i, 4), p };
+    break;
+  }
+  D.ana = (() => { const f = rh.findIndex((r, i) => i > 0 && r.barBefore); return f > 0 && f < 4; })();
+  return D;
+}
+/* written pitch of the top staff for a sounding note (the flute in the wind quintet plays an octave up) */
+const ENS8_TOP = { Flute: p => P6(p.d + 7, p.a) };
+const ORN8 = { tr: "a trill", turn: "a turn", mord: "an upper mordent", mordInv: "a lower mordent" }, ART8 = { stacc: "staccato: short and detached", acc: "an accent: play it with extra emphasis", ten: "tenuto: hold it for its full length, slightly stressed" };
+/* a question about the markings; at(si,k,txt) makes a label; returns null if this kind isn't available */
+function decoQ8(kind, D, names, K, wrap, at, barNote) {
+  const bar = b => `bar ${b}${D.ana ? "" : ""}`, note = D.ana ? " (bar 1 is the first complete bar)" : "";
+  if (kind === "tempo") return mk(kind === "tempo" ? "score8" : "score8", `What does the tempo marking "${D.tempo[0]}" mean?`, D.tempo[1], TEMPO8.filter(x => x !== D.tempo).map(x => x[1]), `"${D.tempo[0]}" means ${D.tempo[1]}.`, Object.assign(wrap([]), { tempo: D.tempo[0] }));
+  if (kind === "dir" && D.dir) return mk("score8", `What does "${D.dir.term[0]}" over the ${lc(names[D.dir.si])} in ${bar(D.dir.bar)} mean?${note}`, D.dir.term[1], DIR8.filter(x => x !== D.dir.term).map(x => x[1]), `${D.dir.term[0]} means "${D.dir.term[1]}".`, Object.assign(wrap([]), { tempo: D.tempo[0] }));
+  if (kind === "dyn" && D.dyn.k > 0) { const W = { pp: "very quiet", p: "quiet", mp: "moderately quiet", mf: "moderately loud", f: "loud", ff: "very loud" };
+    return mk("score8", `How loud should the music be at the start of ${bar(D.dyn.bar)}?${note}`, W[D.dyn.d2], Object.values(W).filter(x => x !== W[D.dyn.d2]), `${D.dyn.d2} means ${W[D.dyn.d2]}${D.hair ? `; the ${D.hair === "cresc" ? "crescendo" : "diminuendo"} hairpin before it leads there` : ""}.`, Object.assign(wrap([]), { tempo: D.tempo[0] })); }
+  if (kind === "hair" && D.hair) return mk("score8", `What does the hairpin sign under the staves in the first bars tell the players to do?`, D.hair === "cresc" ? "get gradually louder" : "get gradually quieter", ["get gradually louder", "get gradually quieter", "get gradually faster", "get gradually slower", "play smoothly"].filter(x => x !== (D.hair === "cresc" ? "get gradually louder" : "get gradually quieter")), `The hairpin opens out for a crescendo and closes for a diminuendo: here it ${D.hair === "cresc" ? "opens: crescendo, from " + D.dyn.d1 + " to " + D.dyn.d2 : "closes: diminuendo, from " + D.dyn.d1 + " to " + D.dyn.d2}.`, Object.assign(wrap([]), { tempo: D.tempo[0] }));
+  if (kind === "orn") return mk("score8", `Which ornament is written over the ${lc(names[0])}'s note in ${bar(D.orn.bar)}?${note}`, ORN8[D.orn.kind], Object.values(ORN8).filter(x => x !== ORN8[D.orn.kind]).concat(["an acciaccatura"]), `The sign is ${ORN8[D.orn.kind]}.`, Object.assign(wrap([]), { tempo: D.tempo[0] }));
+  if (kind === "art" && D.art) return mk("score8", `What does the mark on the ${lc(names[0])}'s note in ${bar(D.art.bar)} tell the player?${note}`, ART8[D.art.kind], Object.values(ART8).filter(x => x !== ART8[D.art.kind]).concat(["pause on the note"]), `It's ${ART8[D.art.kind]}.`, Object.assign(wrap([]), { tempo: D.tempo[0] }));
+  if (kind === "pas" && D.pas) return mk("score8", `The quaver marked Z in the ${lc(names[0])} isn't part of the chord. What kind of note is it?`, D.pas.kind, ["passing note", "auxiliary note", "appoggiatura", "anticipation", "suspension"].filter(x => x !== D.pas.kind), D.pas.kind === "passing note" ? "It moves by step between two chord notes a 3rd apart, off the beat: a passing note." : "It steps away from a chord note and back to the same note: an auxiliary note.", Object.assign(wrap([[0, D.pas.idx, "Z"]]), { tempo: D.tempo[0] }));
+  return null;
+}
 
 /* ---------- Drill catalogue ---------- */
 const DR = {
@@ -7209,7 +7421,7 @@ Object.assign(HOW, {
   terms8: [["Grade 8 terms in Italian, French and German: sotto voce, l'istesso tempo, pressez, cuivré, Hauptstimme, innig…", null]],
   trio8: [["Exam question 1: two violins over a figured bass. Work out the chord from the bass and its figures.", null],
     ["Both violin notes must belong to the chord, the 3rd must be there (only three parts!), and no consecutive 5ths or octaves with the beat before.", null]],
-  trio8w: [["Write the two violin parts on paper, then compare with the checklist and one model answer.", null]],
+  trio8w: [["Tap the stave to write violin I (stems up) and violin II (stems down) for each chord, then press Check my violins: the app marks the chords, 3rds, consecutives and resolutions and gives a mark out of 15 for the notes.", null], ["Then copy it onto paper and make it alive: passing notes, a suspension at the cadence, a little imitation. Compare with the model.", null]],
   kb8: [["Exam question 2: keep the left-hand pattern from bar 1, changing the notes to fit each chord.", null], ["Find the chord from the melody and the bass; keep the shape and rhythm the same.", null]],
   kb8w: [["Copy the outline, continue the pattern to the end, then compare.", null]],
   mel8: [["Exam question 3: continue an opening to at least 12 bars. Plan 4 + 4 + 4 bars, modulate and come back, and add directions.", null]],
