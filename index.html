@@ -1987,6 +1987,238 @@ Object.assign(LESSONS, {
     exam: "Rest the day before the exam." },
 });
 
+/* ---------- Grade 8 lessons, Days 89–108: chromatic chords (secondary dominants, diminished 7ths, augmented 6ths), terms,
+   question 1 (the Baroque trio sonata) and question 2 (the keyboard outline). Review days (96, 103) come from g8late.js.
+   The four-part pictures were voiced with the app's harmony engine and pass checkAll in g6core.js; the trio pictures pass
+   trioIssues in g8trio.js (beat by beat), and their quaver decoration was checked for consecutive 5ths and octaves. ---------- */
+/* one stave from tokens: "D5 q", "F#5 e b1", "A3+C4 q" (a chord), "s h" (an empty beat), "r q" (a rest), "|" (bar line).
+   Flags after the duration: b1 = beam group, tie, ! = cautionary accidental, orn=tr, u=text above (score), f=figure, r=chord label (grand) */
+function _t8a(tokens, key) {
+  const notes = [], figs = [], labs = [], ups = []; let mem = {}, bar = 0;
+  tokens.forEach(t => {
+    if (t === "|") { notes.push({ bar: 1 }); mem = {}; bar++; return; }
+    const [n, d, ...fl] = t.split(" "), i = notes.length, x = { dur: d.replace(".", "") };
+    if (d.endsWith(".")) x.dot = 1;
+    if (n === "r") x.n = "r";
+    else if (n === "s") x.sk = 1;
+    else {
+      const ns = n.split("+"), acc = ns.map(p => {
+        const m = /^([A-G])(bb|#|b|x)?(-?\d)$/.exec(p), L = m[1], a = m[2] || "", slot = L + m[3];
+        const cur = mem[slot] !== undefined ? mem[slot] : (_sig(key)[L] || ""); mem[slot] = a;
+        return (a !== cur || fl.includes("!")) ? (a || "n") : "";
+      });
+      x.n = ns.length > 1 ? ns : ns[0]; x.acc = ns.length > 1 ? acc : acc[0];
+    }
+    fl.forEach(f => {
+      const v = f.slice(f.indexOf("=") + 1).replace(/_/g, " ");
+      if (/^b\d+$/.test(f)) x.b = "a" + bar + "_" + f;
+      else if (f === "tie") x.tie = true;
+      else if (f.startsWith("orn=")) x.orn = v;
+      else if (f.startsWith("f=")) figs.push([i, v]);
+      else if (f.startsWith("r=")) labs.push([i, v]);
+      else if (f.startsWith("u=")) ups.push([i, v]);
+    });
+    notes.push(x);
+  });
+  return { notes, figs, labs, ups };
+}
+/* a trio (or any small score): rows are [name, clef, key, tokens]; f= figures go under a stave, u= words above it */
+function _sc8a(rows, o) {
+  const labels = [], staves = rows.map(([name, clef, key, tokens], s) => { const r = _t8a(tokens, key);
+    r.figs.forEach(([i, v]) => labels.push([s, i, v])); r.ups.forEach(([i, v]) => labels.push([s, i, v, "above"]));
+    return { name, clef, key, notes: r.notes }; });
+  return Object.assign({ staves, key: 0, time: [4, 4], sp: 34, gap: 82, fin: true, labels }, o || {});
+}
+const _tr8a = (key, v1, v2, bass, o) => _sc8a([["Violin I", "treble", key, v1], ["Violin II", "treble", key, v2], ["Continuo", "bass", key, bass]], o);
+/* a keyboard picture: right-hand and left-hand tokens on a grand stave; r= labels and f= figures come from the left hand */
+function _kb8a(key, time, rh, lh, o) {
+  const T = _t8a(rh, key), B = _t8a(lh, key);
+  return Object.assign({ top: { clef: "treble", notes: T.notes }, bottom: { clef: "bass", notes: B.notes }, key, time, prop: true, sp: 34, gap: 90, fin: true,
+    figures: B.figs.length ? B.figs : B.labs.length ? [] : null, labels: B.labs.length ? B.labs : null }, o || {});
+}
+/* the trio sonata used on Days 97 (F major) and 102 (G major): given = the violins' first bar only */
+const _trio97 = given => _tr8a(-1,
+  ["C5 q", "D5 q", "E5 e b1", "G5 e b1", "F5 q", "|"].concat(given ? ["s w", "|", "s w"] : ["F5 e b1", "G5 e b1", "F5 q tie", "F5 q", "E5 q", "|", "F5 w"]),
+  ["A4 q", "Bb4 e b1", "A4 e b1", "G4 q", "A4 q", "|"].concat(given ? ["s w", "|", "s w"] : ["A4 q", "D5 e b1", "Bb4 e b1", "G4 q", "C5 q", "|", "A4 w"]),
+  ["F3 q", "Bb2 q", "C3 q", "F3 q", "|", "D3 q", "Bb2 q", "C3 h f=4_3", "|", "F2 w"]);
+const _trio102 = given => _tr8a(1,
+  ["D5 q", "D5 q", "E5 e b1", "G5 e b1", "D5 q", "|"].concat(given ? ["s w", "|", "s w", "|", "s w"] : ["B4 q", "C#5 q", "D5 q", "C5 q", "|", "B4 e b1", "D5 e b1", "E5 q", "D5 q", "C5 q", "|", "B4 w"]),
+  ["B4 e b1", "A4 e b1", "G4 e b2", "B4 e b2", "G4 q", "F#4 e b3", "A4 e b3", "|"].concat(given ? ["s w", "|", "s w", "|", "s w"] : ["G4 e b1", "E4 e b1", "G4 q", "F#4 e b2", "A4 e b2", "F#4 q", "|", "G4 q", "G4 q tie", "G4 q", "F#4 q", "|", "G4 w"]),
+  ["G2 q", "B2 q f=6", "C3 q", "D3 q", "|", "E3 q", "A2 q f=7/♯", "D3 q", "D3 q f=7", "|", "G2 q", "C3 q", "D3 h f=4_3", "|", "G2 w"], { sp: 30 });
+/* the keyboard piece used on Days 104 and 108 (C major, Alberti bass) */
+const _alb104 = ["C3 e b1 r=I", "G3 e b1", "E3 e b1", "G3 e b1", "F2 e b2 r=IV", "C3 e b2", "A2 e b2", "C3 e b2", "|",
+  "G2 e b1 r=V7", "D3 e b1", "B2 e b1", "D3 e b1", "C3 e b2 r=I", "G3 e b2", "E3 e b2", "G3 e b2", "|",
+  "A2 e b1 r=VI", "E3 e b1", "C3 e b1", "E3 e b1", "F2 e b2 r=IIb", "D3 e b2", "A2 e b2", "D3 e b2", "|",
+  "G2 e b1 r=V", "G3 e b1", "D3 e b1", "G3 e b1", "C3+E3+G3 h r=I"];
+const _mel104 = ["E5 h", "A5 q", "F5 q", "|", "D5 q", "F5 q", "E5 h", "|", "C5 q", "E5 q", "D5 q", "F5 q", "|", "D5 q", "B4 q", "C5 h"];
+/* the outline (bar 1 complete, then the bass only), with or without chord labels */
+const _out104 = labs => ["C3 e b1", "G3 e b1", "E3 e b1", "G3 e b1", "F2 e b2", "C3 e b2", "A2 e b2", "C3 e b2", "|", "G2 h", "C3 h", "|", "A2 h", "F2 h", "|", "G2 h", "C3 h"]
+  .map((t, i) => { const L = { 0: "I", 4: "IV", 9: "V7", 10: "I", 12: "VI", 13: "IIb", 15: "V", 16: "I" }[i]; return labs && L ? t + " r=" + L : t; });
+Object.assign(LESSONS, {
+  89: { kid: [
+      ["Grade 8 is 3 hours, on paper, marked out of 100. You need 66 to pass, 80 for merit and 90 for distinction.", null],
+      ["Five questions. Question 1 (15 marks): finish the two violin parts of a Baroque trio sonata over a figured bass. Question 2 (15): finish a keyboard piece in the style of Haydn or later.", null],
+      ["Question 3 (20): compose a melody of at least 12 bars for an instrument. Questions 4 and 5 (25 each): questions on a chamber score and on a full orchestral score.", null],
+      ["New chords: secondary dominants. V7/V is the dominant 7th of the dominant: in C major D–F♯–A–C. The F♯ rises to G, and the C falls to B. Later come the augmented 6ths.", _g(["C5/G4", "C5/F#4", "B4/G4", "C5/G4:h"], ["E4/C3", "D4/D3", "D4/G3", "E4/C3:h"], { key: 0, lab: ["I", "V7/V", "V", "I"], fig: ["", "7/♯", "", ""] })]],
+    say: "Grade 8 puts everything together. Half the marks are for writing music in real styles: Baroque, Classical and your own melody. The other half are for finding your way around real scores. The new chords borrow a sharp or a flat to lean harder towards where they're going.",
+    ex: { q: "How are the 100 marks shared out, and what do you need to pass?", steps: ["Writing: question 1 (trio sonata) 15 + question 2 (keyboard) 15 + question 3 (melody) 20 = 50.", "Score questions: question 4 (chamber score) 25 + question 5 (orchestral score) 25 = 50.", "Pass 66, merit 80, distinction 90."] },
+    oops: ["Thinking question 1 is four-part harmony like Grade 6: it's three real parts, two violins and the bass.", "Leaving the score questions until you're tired: they're half the marks.", "Expecting the app to mark the trio and keyboard answers perfectly: they can be right in many ways, so a teacher's eye helps."],
+    exam: "3 hours, 5 questions: 15 + 15 + 20 + 25 + 25. Pass 66, merit 80, distinction 90." },
+  90: { kid: [
+      ["A secondary dominant is the dominant of a chord other than I. The most common is V of V (written V/V). In C major the dominant is G, and G's own dominant is D major: D–F♯–A.", _g(["E5/C5", "F#5/A4", "G5/B4", "G5/C5:h"], ["G4/C3", "D4/D3", "D4/G2", "E4/C3:h"], { key: 0, lab: ["I", "V/V", "V", "I"], fig: ["", "♯", "", ""] })],
+      ["The F♯ is the leading note of G major, so it rises to G. Add a 7th to make V7/V. In G major that's A–C♯–E–G: the C♯ rises to D, and the G (the 7th) falls to F♯.", _g(["B4/G4", "C#5/G4", "D5/F#4", "B4/G4:h"], ["D4/G2", "A3/A2", "A3/D3", "G3/G2:h"], { key: 1, lab: ["I", "V7/V", "V", "I"], fig: ["", "7/♯", "", ""] })],
+      ["V7/V in first inversion (V7b/V) has the F♯ in the bass, rising a semitone to the dominant. It's figured 6/5 with no sharp, because the F♯ is the bass note itself, written on the stave.", _g(["E5/G4", "C5/A4", "C5/A4", "B4/G4", "C5/G4:h"], ["C4/C3", "C4/F3", "D4/F#3", "D4/G3", "E4/C3:h"], { key: 0, lab: ["I", "IV", "V7b/V", "V", "I"], fig: ["", "", "6/5", "", ""] })],
+      ["V7/V goes to V, or to Ic and then V. In root position it's figured 7 with ♯: the ♯ raises the 3rd above the bass (F♯ above D).", _g(["E5/C5", "F#5/C5", "G5/C5", "G5/B4", "E5/C5:h"], ["G4/C3", "D4/D3", "E4/G2", "D4/G2", "C4/C3:h"], { key: 0, lab: ["I", "V7/V", "Ic", "V", "I"], fig: ["", "7/♯", "6/4", "", ""] })]],
+    say: "V of V borrows the dominant key's leading note to lean harder into V. Whenever you see a sharp that isn't the key's own leading note, ask: whose leading note is this?",
+    ex: { q: "Spell V7/V in D major and resolve it.", steps: ["The dominant of D major is A. The dominant of A is E.", "So V7/V is E–G♯–B–D, figured 7 with ♯ (for the G♯).", "G♯ (A major's leading note) rises to A; D (the 7th) falls to C♯; the chord goes to V (A–C♯–E)."], spec: _g(["D5/F#4", "D5/E4", "C#5/E4", "D5/F#4:h"], ["A3/D3", "G#3/E3", "A3/A2", "A3/D3:h"], { key: 2, lab: ["I", "V7/V", "V", "I"], fig: ["", "7/♯", "", ""] }) },
+    oops: ["Forgetting the accidental: D–F–A–C in C major is II7, not V7/V.", "Writing ♯6/5 for V7b/V: the F♯ is the bass note, so the figures are just 6/5.", "Letting the F♯ fall: it's a leading note, so it rises.", "Doubling the F♯."],
+    exam: "Questions 4 and 5: 'name the chord in bar 3'. Answer 'V7b/V' or 'V7 of V in first inversion'; either is usually accepted. In questions 1 and 2, a ♯ in the figures or the melody is often the clue." },
+  91: { kid: [
+      ["Any major or minor chord can have its own dominant 7th. V7/IV in G major is G–B–D–F♮: the F♮ is the 7th, and it falls to E in IV (C–E–G).", _g(["D5/G4", "F5/G4", "E5/G4", "D5/F#4", "B4/G4:h"], ["B3/G2", "B3/G2", "C4/C3", "A3/D3", "G3/G2:h"], { key: 1, lab: ["I", "V7/IV", "IV", "V", "I"], fig: ["", "♮7", "", "", ""] })],
+      ["V7/II in G major is E–G♯–B–D, the dominant 7th of A minor (II). The G♯ is a borrowed leading note: it rises to A.", _g(["B4/D4", "D5/E4", "C5/E4", "A4/D4", "B4/D4:h"], ["G3/G2", "G#3/E2", "A3/A2", "F#3/D3", "G3/G2:h"], { key: 1, lab: ["I", "V7/II", "II", "V", "I"], fig: ["", "7/♯", "", "", ""] })],
+      ["V7/VI in G major is B–D♯–F♯–A, the dominant 7th of E minor (VI). D♯ rises to E; A (the 7th) falls to G.", _g(["B4/G4", "A4/D#4", "G4/E4", "G4/E4", "F#4/D4", "G4/D4:h"], ["D4/G2", "B3/B2", "B3/E3", "C4/C3", "A3/D3", "B3/G2:h"], { key: 1, lab: ["I", "V7/VI", "VI", "IV", "V", "I"], fig: ["", "7/♯", "", "", "", ""] })],
+      ["Spot them by the accidental: a sharp that rises a semitone is a new leading note; a flat (or natural) that falls is a new 7th. In minor keys V7/IV and V7/V are the most common. In A minor, V7/IV is A–C♯–E–G.", _g(["C5/E4", "C#5/G4", "D5/F4", "B4/E4", "C5/E4:h"], ["A3/A2", "A3/A2", "A3/D3", "G#3/E3", "A3/A2:h"], { key: 0, lab: ["I", "V7/IV", "IV", "V", "I"], fig: ["", "7/♯", "", "♯", ""] })]],
+    say: "Every secondary dominant is just V or V7 in a borrowed key. Find the chord it's going to, then pretend for a moment you're in that key.",
+    ex: { q: "In G major, write V7/IV, V7/II and V7/VI, and say where each goes.", steps: ["V7/IV: IV is C, so its dominant 7th is G–B–D–F♮. It goes to IV; the F♮ falls to E.", "V7/II: II is A minor, so its dominant 7th is E–G♯–B–D. It goes to II; the G♯ rises to A.", "V7/VI: VI is E minor, so its dominant 7th is B–D♯–F♯–A. It goes to VI; the D♯ rises to E and the A falls to G."] },
+    oops: ["Calling V7/IV 'I7': I7 in G has F♯ (a major 7th); V7/IV has F♮ (a minor 7th), which falls.", "Leaving out the sharp: E–G–B–D in G major is VI7, not V7/II.", "Resolving to the wrong chord: V7/VI goes to VI, not back to I."],
+    exam: "Name the chord with the borrowed key: V7/VI (or 'the dominant 7th of the relative minor'). Add the position if the bass isn't the root." },
+  92: { kid: [
+      ["VII7/V is the diminished 7th that leads into V. In C major: F♯–A–C–E♭, all minor 3rds. It does the same job as V7/V, with even more tension. (The E♭ is borrowed from G minor.)", _g(["E5/G4", "F5/A4", "Eb5/A4", "D5/G4", "C5/E4:h"], ["C4/C3", "C4/F3", "C4/F#3", "B3/G3", "C4/C3:h"], { key: 0, lab: ["I", "IV", "VII7/V", "V", "I"], fig: ["", "", "♭7", "", ""] })],
+      ["Its root (F♯) is the leading note of G, so it rises to G. Its 7th (E♭) falls to D. Two notes squeeze onto the dominant from a semitone each side.", null],
+      ["In D major, VII7/V is G♯–B–D–F♮: G♯ rises to A, F♮ falls to E. In A minor it's D♯–F♯–A–C, leaning into E.", _g(["F#5/A4", "G5/B4", "F5/B4", "E5/A4", "D5/F#4:h"], ["D4/D3", "D4/G2", "D4/G#2", "C#4/A2", "D4/D3:h"], { key: 2, lab: ["I", "IV", "VII7/V", "V", "I"], fig: ["", "", "♮7", "", ""] })],
+      ["Every note of a diminished 7th is a minor 3rd from the next, so it can be respelt as the leading-note chord of a different key. F♯–A–C–E♭ leads to G; respelt as A–C–E♭–G♭ it leads to B♭. That makes it a handy pivot for modulating.", null]],
+    say: "A diminished 7th is a chord of pure tension. Find its root, the note a semitone below where it's going, and you know which chord comes next.",
+    ex: { q: "Spell VII7/V in F major and in A minor.", steps: ["F major: V is C. The leading note of C is B♮. Stack minor 3rds: B–D–F–A♭. B rises to C, A♭ falls to G.", "A minor: V is E. Its leading note is D♯: D♯–F♯–A–C. D♯ rises to E, C falls to B.", "Below, A minor: notice the D and F of IV each rise a semitone into the D♯ and F♯."], spec: _g(["C5/E4", "D5/F4", "C5/F#4", "B4/E4", "C5/E4:h"], ["A3/A2", "A3/D3", "A3/D#3", "G#3/E3", "A3/A2:h"], { key: 0, lab: ["I", "IV", "VII7/V", "V", "I"], fig: ["", "", "7/♯", "♯", ""] }) },
+    oops: ["Spelling it with the wrong letters (G♭ instead of F♯): build it up from the leading note in 3rds.", "Writing E♮ instead of E♭ in C major: F♯–A–C–E is a half-diminished 7th, not a diminished 7th.", "Letting the 7th rise."],
+    exam: "Name it 'VII7/V' or 'diminished 7th on the sharpened 4th'. In C major its figures are ♭7 over F♯." },
+  93: { kid: [
+      ["Augmented 6th chords are built on the flattened 6th of the key, in the bass. The Italian 6th adds just two notes: the tonic and the sharpened 4th. In C minor: A♭–C–F♯. It goes to V.", _g(["G4/Eb4", "Ab4/F4", "C5/F#4", "B4/G4", "C5/G4:h"], ["C4/C3", "C4/F2", "C4/Ab2", "D4/G2", "Eb4/C3:h"], { key: -3, lab: ["I", "IV", "It6", "V", "I"], fig: ["", "", "♯6", "♮", ""] })],
+      ["From A♭ up to F♯ is an augmented 6th. The two notes move outwards by a semitone to the octave G–G: the A♭ falls, the F♯ rises.", _g(["F#4", "G4:h"], ["-/Ab3", "-/G3:h"], { key: -3, lab: ["aug. 6th", "octave"], sp: 70 })],
+      ["Figure it ♯6. It has three different notes, so in four parts double the tonic. Never double the ♭6 or the ♯4. In A minor: F–A–D♯, going to E.", _g(["C5/E4", "D5/F4", "D#5/A4", "E5/G#4", "C5/A4:h"], ["A3/A2", "A3/D3", "A3/F3", "B3/E3", "C4/A2:h"], { key: 0, lab: ["I", "IV", "It6", "V", "I"], fig: ["", "", "♯6", "♯", ""] })],
+      ["In a major key the bass is flattened too, so in C major the Italian 6th has the same notes: A♭–C–F♯.", _g(["G4/E4", "A4/F4", "C5/F#4", "B4/G4", "C5/G4:h"], ["C4/C3", "C4/F3", "C4/Ab3", "D4/G3", "E4/C3:h"], { key: 0, lab: ["I", "IV", "It6", "V", "I"], fig: ["", "", "♯6", "", ""] })]],
+    say: "An augmented 6th chord is like two hands closing in on the dominant: the bass sinks a semitone, the sharpened 4th climbs a semitone, and they meet on the octave.",
+    ex: { q: "Write the Italian 6th in G minor and resolve it.", steps: ["The ♭6 of G minor is E♭ (already in the key signature): that's the bass.", "Add the tonic, G, and the sharpened 4th, C♯. Figure: ♯6.", "Double the G. E♭ falls to D and C♯ rises to D; the two G's move to F♯ and A, the other notes of chord V (D–F♯–A)."], spec: _g(["D5/G4", "C5/Eb4", "C#5/G4", "D5/F#4", "D5/G4:h"], ["Bb3/G2", "G3/C3", "G3/Eb3", "A3/D3", "Bb3/G2:h"], { key: -2, lab: ["I", "IV", "It6", "V", "I"], fig: ["", "", "♯6", "♯", ""] }) },
+    oops: ["Spelling the ♯4 as a flat (D♭ in G minor): then it's a minor 7th, not an augmented 6th, and it can't rise.", "Doubling the bass note or the ♯4.", "Letting the ♯4 fall or the ♭6 rise: they must spread outwards.", "Approaching the ♯4 by an augmented 2nd (E♭ up to F♯ in C minor). The smoothest way in is from the plain 4th: F to F♯."],
+    exam: "Questions 4 and 5: 'name the chord marked X'. Answer 'Italian augmented 6th'. In question 1, a ♭6 bass note with ♯6 above it is the clue." },
+  94: { kid: [
+      ["French 6th: add the 2nd of the scale to the Italian. In C minor: A♭–C–D–F♯, figured ♯6/4/3. Like the Italian, it goes straight to V.", _g(["G4/Eb4", "Ab4/F4", "C5/F#4", "B4/G4", "C5/G4:h"], ["C4/C3", "C4/F2", "D4/Ab2", "D4/G2", "Eb4/C3:h"], { key: -3, lab: ["I", "IV", "Fr6", "V", "I"], fig: ["", "", "♯6/4/3", "♮", ""] })],
+      ["German 6th: add the flattened 3rd instead. In C minor: A♭–C–E♭–F♯, figured ♯6/5. On a piano it sounds just like a dominant 7th on A♭, but the F♯ is spelt as a sharp because it rises.", null],
+      ["Taken straight to V, the German 6th makes consecutive 5ths: A♭ and E♭ would both fall, to G and D. So it usually goes to Ic first. The E♭ stays where it is, then falls to D.", _g(["Eb5/G4", "F5/Ab4", "Eb5/F#4", "Eb5/G4", "D5/G4", "C5/Eb4:h"], ["C4/C3", "C4/F2", "C4/Ab2", "C4/G2", "B3/G2", "C4/C3:h"], { key: -3, lab: ["I", "IV", "Ger6", "Ic", "V", "I"], fig: ["", "", "♯6/5", "6/4", "♮", ""] })],
+      ["Italian: 3 different notes. French: adds the 2nd. German: adds the ♭3. All three are built on ♭6 with ♯4 above, and all three lead to the dominant.", null]],
+    say: "Three countries, one family. The Italian is the thinnest, the French has a spicy clash (the 2nd), and the German is the fullest. All of them open out onto the dominant.",
+    ex: { q: "Write the Italian, French and German 6ths in G minor.", steps: ["♭6 = E♭ (bass), tonic = G, ♯4 = C♯. Italian: E♭–G–C♯ (♯6).", "French adds the 2nd, A: E♭–G–A–C♯ (♯6/4/3). German adds the ♭3, B♭: E♭–G–B♭–C♯ (♯6/5).", "Italian and French go to V (D–F♯–A). German goes to Ic (D–G–B♭) first, then V, as below."], spec: _g(["D5/G4", "C5/Eb4", "Bb4/C#4", "Bb4/D4", "A4/D4", "Bb4/D4:h"], ["Bb3/G2", "G3/C3", "G3/Eb3", "G3/D3", "F#3/D3", "G3/G2:h"], { key: -2, lab: ["I", "IV", "Ger6", "Ic", "V", "I"], fig: ["", "", "♯6/5", "6/4", "♯", ""] }) },
+    oops: ["Taking the German 6th straight to V (consecutive 5ths).", "Mixing up French (adds the 2nd) and German (adds the ♭3).", "Spelling the German 6th as a dominant 7th (A♭–C–E♭–G♭): G♭ would fall, but the ♯4 must rise."],
+    exam: "Score questions: 'name the type of chord'. Say Italian, French or German augmented 6th. Count the different notes, then look for the 2nd or the ♭3." },
+  95: { kid: [
+      ["Speed. Italian: affrettando (hurrying), stringendo (pressing on), incalzando (getting quicker and louder), allargando (broadening), tempo rubato (with some freedom of time), a piacere (freely), l'istesso tempo (the beat stays the same speed). French: pressez (hurry), en animant (getting livelier), à volonté (freely). German: langsamer (slower), lebhaft (lively), nicht zu schnell (not too fast), zögernd (hesitating).", null],
+      ["Mood. mesto (sad), elegiaco (mournful), lamentoso (lamenting), piangevole (plaintive, tearful), con slancio (with dash). German: innig (heartfelt), ausdrucksvoll (expressively), kräftig (strong, vigorous).", null],
+      ["How to make the sound. sotto voce (in an undertone), mezza voce (at half voice), lontano (distant), laissez vibrer (let it vibrate). French: cuivré (brassy), sur la touche (bow over the fingerboard). German: gedämpft (muted), markiert (marked), Hauptstimme (the main part) and Nebenstimme (a secondary part).", null],
+      ["L'istesso tempo: when the time signature changes, say from 2/4 to 6/8, the beat keeps the same speed. A crotchet beat becomes a dotted-crotchet beat.", null]],
+    say: "Sort the words into three boxes: speed, mood, and how to make the sound. A word with a home is easier to remember.",
+    ex: { q: "A cello part says 'sur la touche, sotto voce', and later 'pressez'. What should the cellist do?", steps: ["Sur la touche: bow over the fingerboard, for a soft, veiled sound.", "Sotto voce: in an undertone, very quietly.", "Pressez: hurry, push the tempo on."] },
+    oops: ["Mixing up pressez (hurry) and cédez (slow down, Grade 7).", "Thinking l'istesso tempo means 'the same time signature': it means the beat stays the same speed.", "Mixing up Hauptstimme (main part) and Nebenstimme (secondary part)."],
+    exam: "Questions 4 and 5 usually include two or three terms. A short meaning is enough." },
+  97: { kid: [
+      ["A trio sonata (about 1650–1750) has three lines: two treble instruments, usually violins, and a bass line, the continuo. A cellist plays the bass, and a harpsichord player fills in chords from the figures.", _trio97(false)],
+      ["Question 1 gives you the bass and its figures all the way through, and the opening of both violin parts. You write the rest of both violin parts.", _trio97(true)],
+      ["Think in three real parts: violin I, violin II and the bass together make each chord, so every chord needs its 3rd. Here are the chords under the trio above, one per beat. (The harpsichord adds more notes, but you don't write them.)", _g(["C5/A4", "D5/Bb4", "E5/G4", "F5/A4", "|", "F5/A4", "F5/D5", "E5/C5:h", "|", "F5/A4:w"], ["-/F3", "-/Bb2", "-/C3", "-/F3", "|", "-/D3", "-/Bb2", "-/C3:h", "|", "-/F2:w"], { key: -1, time: [4, 4], lab: ["I", "IV", "V", "I", "VI", "IV", "V", "I"] })],
+      ["The violins are equal partners: they take turns to move, copy each other's ideas, and sometimes cross.", null]],
+    say: "A trio sonata is a conversation between two violins, with the bass keeping the harmony steady underneath. Your job in question 1 is to finish the conversation.",
+    ex: { q: "In the trio above, what makes each violin interesting to play?", steps: ["They take turns: in bar 1, violin II moves in quavers on beat 2 and violin I on beat 3.", "Bar 2: violin I holds its F while the bass moves to C, a 4–3 suspension (see the 4 3 in the figures), then falls to E.", "The violins finish with the leading note (E) rising to F."] },
+    oops: ["Writing four parts: in question 1 you write only the two violins.", "Making violin II a copy of violin I a 3rd lower all the way through: it should have its own shape.", "Ignoring the figures: they tell you the chord on every beat."],
+    exam: "Question 1: 15 marks, about 25 minutes. The bass and figures are complete; you write the two violin parts from where the given opening stops." },
+  98: { kid: [
+      ["Each figure is a list of intervals above the bass. No figure means 5/3: a root-position chord. 6 means 6/3: first inversion. 6/4 means second inversion.", _kb8a(0, null, ["E4+G4 q", "G4+C5 q", "C5+E5 q"], ["C3 q r=I", "E3 q f=6 r=Ib", "G3 q f=6/4 r=Ic"], { sp: 64, fin: false })],
+      ["7th chords: 7 (root position), 6/5 (first inversion), 4/3 (second), 4/2 (third). Count up from the BASS, not from the root.", _kb8a(0, null, ["B4+D5+F5 q", "D5+F5+G5 q", "F5+G5+B5 q", "G4+B4+D5 q"], ["G2 q f=7 r=V7", "B2 q f=6/5 r=V7b", "D3 q f=4/3 r=V7c", "F3 q f=4/2 r=V7d"], { sp: 60, fin: false })],
+      ["An accidental on its own (♯, ♭ or ♮) changes the 3rd above the bass. An accidental next to a number changes that note: ♯6 raises the 6th. A stroke through a figure also means 'raise it'. In A minor, E with ♯ means E–G♯–B.", _kb8a(0, null, ["C5+E5 q", "F4+B4 q", "G#4+B4 q", "C5+E5 q"], ["A2 q r=I", "D3 q f=6 r=IIb", "E2 q f=♯ r=V", "A2 q r=I"], { sp: 60 })],
+      ["Pencil the chord's letter names above every bass note before you write a single violin note. In minor keys, look out for ♯ or ♮ in the figures: they show the raised leading note.", null]],
+    say: "Figures are a shorthand. The bass note plus the numbers give you the whole chord. Spell every chord in letters first, and the violin parts become much easier.",
+    ex: { q: "In D minor the bass is D, then B♭ with 6, then A with ♯, then D. Spell each chord.", steps: ["D, no figure (5/3): D–F–A (I).", "B♭ with 6: a 3rd (D) and a 6th (G) above B♭: G–B♭–D (IVb).", "A with ♯: the 3rd above A is raised to C♯: A–C♯–E (V).", "D: D–F–A (I)."], spec: _kb8a(-1, null, ["F4+A4 q", "D5+G5 q", "C#5+E5 q", "F4+A4 q"], ["D3 q r=I", "Bb2 q f=6 r=IVb", "A2 q f=♯ r=V", "D3 q r=I"], { sp: 60 }) },
+    oops: ["Counting from the root instead of the bass.", "Thinking a ♯ on its own sharpens the bass note: it raises the 3rd above the bass.", "Leaving accidentals out of the violin parts: if the figures show a raised leading note, you must write it."],
+    exam: "Question 1 gives every bass note with figures. A wrongly read figure costs marks every time it appears, so spell them all before you start." },
+  99: { kid: [
+      ["With only three parts, every chord must have its 3rd: the 3rd tells you whether it's major or minor. The 5th is the note to leave out. Look at IV here: just C and E over the C bass.", _g(["D5/B4", "E5/C5", "E5/A4", "F#5/C5", "G5/B4:h"], ["-/G2", "-/C3", "-/C3", "-/D3", "-/G2:h"], { key: 1, lab: ["I", "IV", "IIb", "V7", "I"], fig: ["", "", "6", "7", ""] })],
+      ["In a 7th chord, keep the 3rd and the 7th, and let the 5th go. Here V7 in A minor has G♯ (the 3rd) and D (the 7th) over the root, E. G♯ rises to A; D falls to C.", _g(["C5/A4", "D5/G#4", "C5/A4:h"], ["-/A2", "-/E3", "-/A2:h"], { key: 0, lab: ["I", "V7", "I"], fig: ["", "7/♯", ""], sp: 60 })],
+      ["In a first-inversion (6) chord the bass is already the 3rd. So the violins take the root and the 5th, or both play the root. Never double a bass that's the leading note: over C♯ (Vb in D major) the violins have E and A.", _g(["F#5/A4", "E5/A4", "F#5/A4", "E5/B4", "E5/C#5", "F#5/D5:h"], ["-/D3", "-/C#3", "-/D3", "-/G2", "-/A2", "-/D3:h"], { key: 2, lab: ["I", "Vb", "I", "IIb", "V", "I"], fig: ["", "6", "", "6", "", ""] })],
+      ["No consecutive 5ths or octaves between ANY two of the three parts: violin I and violin II, violin I and the bass, violin II and the bass. Check all three pairs.", null]],
+    say: "Three parts means every note counts. Choose the notes that tell the listener what the chord is: the 3rd always, and the 7th when there is one.",
+    ex: { q: "In D major the bass is C♯ with a 6. Which notes should the violins play?", steps: ["C♯ with 6: a 3rd (E) and a 6th (A) above it, so the chord is A–C♯–E: Vb.", "The bass C♯ is both the 3rd and the leading note, so it mustn't be doubled.", "The violins take A and E (the root and 5th), or both play A, an octave apart."] },
+    oops: ["Leaving out the 3rd to dodge a problem: find another note instead.", "Doubling the leading note when it's already in the bass of a 6 chord.", "Checking only violin I against the bass: violin II counts too."],
+    exam: "Examiners take marks for each missing 3rd, each doubled leading note and each pair of consecutives, wherever they appear." },
+  100: { kid: [
+      ["Two violins should sound like two tunes, not one tune and its shadow. Take turns: while one moves in quavers, the other plays steadier notes. Here violin I has the busy figure in bar 1 ...", _tr8a(1, ["G5 e b1 u=figure", "D5 e b1", "E5 e b2", "G5 e b2", "F#5 e b3", "A5 e b3", "G5 q", "|", "B5 q", "E6 q", "D6 q", "B5 q"], ["B4 q", "C5 q", "A4 q", "B4 q", "|", "G5 e b1 u=imitation", "D5 e b1", "E5 e b2", "G5 e b2", "F#5 e b3", "A5 e b3", "G5 q"], ["G2 q", "C3 q", "D3 q", "G2 q", "|", "G2 q", "C3 q", "D3 q", "G2 q"])],
+      ["... and in bar 2 violin II copies it, note for note, while violin I takes the steady notes above it. That's imitation: one violin copies the other's idea a beat or a bar later.", null],
+      ["Fill leaps of a 3rd with passing notes, and use contrary motion. Sequence: when the bass repeats a pattern a step lower, repeat the violins' idea a step lower too. Here each pair of chords is the one before, a step down.", _tr8a(1, ["D5 q", "E5 e b1", "D5 e b1", "C5 q u=sequence", "D5 e b2", "C5 e b2", "|", "B4 q", "C5 e b1", "B4 e b1", "A4 q", "B4 q"], ["B4 q", "C5 q", "A4 q", "B4 q", "|", "G4 q", "A4 q", "F#4 q", "G4 q"], ["G2 q", "C3 q", "F#2 q", "B2 q", "|", "E3 q", "A2 q", "D3 q", "G2 q"])],
+      ["The violins may cross for a moment, but keep them within about an octave of each other, and don't let them sit on the same note.", null]],
+    say: "In a trio sonata the two violins are like two people talking: one speaks, the other answers, sometimes with the same words. Your answer sounds Baroque when they take turns and echo each other.",
+    ex: { q: "In the first trio above, why doesn't bar 2 sound like a plain repeat of bar 1?", steps: ["The harmony is the same (I–IV–V–I), but the violins have swapped jobs.", "Violin II plays violin I's quaver figure at the same pitch (imitation).", "Violin I now has the steady crotchets above it, a new counter-melody: B–E–D–B."] },
+    oops: ["Both violins moving in quavers all the time: nobody can hear either tune.", "Parallel 3rds for bars on end: fine for a sequence, dull for a whole answer.", "Passing notes that make consecutive 5ths or octaves with the bass: check the quavers too."],
+    exam: "The examiner gives marks for 'stylish, independent' violin parts: some imitation, a sequence where the bass has one, and movement shared between the violins." },
+  101: { kid: [
+      ["A suspension has three steps: prepare the note (a concord), hold it over the change of chord (the clash, on a strong beat), then resolve it down a step.", _tr8a(0, ["E5 q", "C5 q tie u=prepare", "C5 q u=clash", "B4 q u=resolve", "|", "C5 w"], ["G4 q", "A4 q", "G4 h", "|", "E4 w"], ["C3 q", "F3 q", "G2 h f=4_3", "|", "C3 w"], { sp: 56 })],
+      ["The figures show suspensions: 4 3, 7 6 and 9 8 over one bass note. The first number is the clash, the second its resolution.", null],
+      ["A chain of 7–6 suspensions over a falling bass is very Baroque: violin I holds each note while the bass steps down (a 7th), then falls to a 6th, while violin II moves with the bass. It ends here with a 4–3 at the cadence.", _tr8a(0, ["F5 h tie", "F5 q", "E5 q tie", "|", "E5 q", "D5 q tie", "D5 q", "C5 q tie", "|", "C5 h tie", "C5 q", "B4 q", "|", "C5 w"], ["C5 h", "B4 h", "|", "A4 h", "G4 h", "|", "A4 h", "G4 h", "|", "E4 w"], ["A2 h f=6", "G2 h f=7_6", "|", "F2 h f=7_6", "E2 h f=7_6", "|", "F2 h", "G2 h f=4_3", "|", "C3 w"], { sp: 30 })],
+      ["At a cadence the leading note often has a trill (tr), here after a 4–3 in A minor. In minor keys the figures show the raised 3rd: 4 then ♯.", _tr8a(0, ["C6 q", "A5 q tie", "A5 q", "G#5 q orn=tr", "|", "A5 w"], ["E5 q", "F5 q", "E5 h", "|", "C5 w"], ["A2 q", "D3 q", "E3 h f=4_♯", "|", "A2 w"])]],
+    say: "A suspension is like holding your breath for a moment before the music relaxes. Prepare it, hold it, let it fall.",
+    ex: { q: "The bass falls from F to E in C major. How do you write a 7–6 suspension in violin I?", steps: ["Prepare: over the F, violin I plays D, a 6th above F (a concord).", "Hold: tie the D over the E in the bass. Now it's a 7th above E: the clash, on the strong beat.", "Resolve: D falls a step to C, a 6th above E. The figures under E are 7 6."] },
+    oops: ["Resolving upwards.", "Forgetting to prepare it: an unprepared clash isn't a suspension.", "Putting the clash on a weak beat: the suspension belongs on the strong beat, its resolution on the weak one.", "Having the resolution note already in the other violin."],
+    exam: "One or two well-placed suspensions (always one at the final cadence) make a question 1 answer sound truly Baroque." },
+  102: { kid: [
+      ["Here's a question 1: the bass and figures throughout, and the violins for bar 1 only.", _trio102(true)],
+      ["Steps 1–3. Find the key and any modulations: the ♯ under A in bar 2 means C♯, so the music touches D major. Pencil each chord's notes above the bass. Plan the cadences: D major in bar 2, G major at the end with a 4–3.", null],
+      ["Steps 4–5. Write violin I as a tune, then violin II against it. Add life: quavers that take turns, a suspension at the end.", _trio102(false)],
+      ["Step 6. Check every chord's 3rd (and 7th), every pair of parts for 5ths and octaves, leading notes rising, 7ths falling.", null]],
+    say: "Question 1 is a recipe: key, chords, cadences, violin I, violin II, decoration, check. Follow it in the same order every time and nothing gets forgotten.",
+    ex: { q: "How does the model answer handle bar 2 (E, A with 7/♯, D, D with 7)?", steps: ["E: E–G–B (VI). The violins have B and G, with violin II's quavers G–E.", "A with 7/♯: A–C♯–E–G, the dominant 7th of D. Violin I has C♯ (the 3rd), violin II keeps G (the 7th).", "D: C♯ rises to D and G falls to F♯. Then D with 7: violin I falls D–C, making the dominant 7th of G, which takes the music home in bar 3."] },
+    oops: ["Starting to write before spelling the chords.", "Missing an accidental in the figures (the ♯ under A).", "Keeping both violins busy all the time.", "Leaving no time to check consecutives between violin II and the bass."],
+    exam: "About 25 minutes. Leave the last 3–4 minutes for the checks in step 6." },
+  104: { kid: [
+      ["Question 2 is a piano piece in the style of Haydn, Mozart or later. The opening is complete; after that you get the melody and the bass line.", _kb8a(0, [4, 4], _mel104, _out104(false))],
+      ["Your job: carry on the left-hand pattern so it fits each chord, and fill any gaps in the melody. Here the Alberti pattern of bar 1 continues to the end.", _kb8a(0, [4, 4], _mel104, _alb104.map(t => t.replace(/ r=\S+/, "")))],
+      ["First find the chord under every melody note: bass + melody + key. Pencil a Roman numeral under each bass note.", _kb8a(0, [4, 4], _mel104, _out104(true))],
+      ["The common patterns: Alberti bass, broken chord, waltz bass ('oom-pah-pah') and rocking quavers in 6/8.", { clef: "bass", notes: _t8a(["C3 e b1", "G3 e b1", "E3 e b1", "G3 e b1", "|", "C3 e b2", "E3 e b2", "G3 e b2", "E3 e b2", "|", "C3 q", "E3+G3 q", "E3+G3 q", "|", "C3 e b3", "G3 e b3", "E3 e b3", "C3 e b4", "G3 e b4", "E3 e b4"], 0).notes.map((x, i) => Object.assign(x, { 0: { lbl: "Alberti" }, 5: { lbl: "broken" }, 10: { lbl: "waltz" }, 14: { lbl: "6/8" } }[i] || {})), prop: true, sp: 30, minW: 340, end: false }]],
+    say: "Question 2 is like finishing a jigsaw: the composer has given you the edges (melody and bass) and one corner (the opening). Work out the chords, then copy the pattern into each bar.",
+    ex: { q: "Bar 3 above has bass A with melody C–E, then bass F with melody D–F (C major). Which chords, and what does the left hand play?", steps: ["A with C and E: A–C–E, chord VI.", "F with D and F: the D shows it's D–F–A over F, chord IIb (IV, F–A–C, has no D).", "Left hand, keeping the Alberti shape: A–E–C–E, then F–D–A–D."] },
+    oops: ["Changing the pattern halfway: keep the opening's shape and rhythm.", "Choosing chords from the bass alone: the melody decides between IV and IIb, or I and VI.", "Letting the left hand climb above the melody."],
+    exam: "Question 2: 15 marks, about 25 minutes. Marks are for correct, stylish chords, the pattern kept going, and the melody completed where it's missing." },
+  105: { kid: [
+      ["Alberti bass: lowest, highest, middle, highest (C–G–E–G). Mozart and Haydn used it all the time. Here it runs through I–IV–V7–I in C. The 7th (F) falls to E, and the leading note (B) rises to C.", { clef: "bass", notes: _t8a(["C3 e b1", "G3 e b1", "E3 e b1", "G3 e b1", "F2 e b2", "C3 e b2", "A2 e b2", "C3 e b2", "|", "G2 e b1", "F3 e b1", "B2 e b1", "F3 e b1", "C3 e b2", "G3 e b2", "E3 e b2", "G3 e b2"], 0).notes.map((x, i) => Object.assign(x, { 0: { lbl: "I" }, 4: { lbl: "IV" }, 9: { lbl: "V7" }, 13: { lbl: "I" } }[i] || {})), time: [4, 4], prop: true, sp: 30, minW: 340 }],
+      ["Broken chord: lowest, middle, highest, middle (C–E–G–E). The same notes in a different order.", { clef: "bass", notes: _t8a(["C3 e b1", "E3 e b1", "G3 e b1", "E3 e b1", "F2 e b2", "A2 e b2", "C3 e b2", "A2 e b2", "|", "G2 e b1", "B2 e b1", "F3 e b1", "B2 e b1", "C3 e b2", "E3 e b2", "G3 e b2", "E3 e b2"], 0).notes.map((x, i) => Object.assign(x, { 0: { lbl: "I" }, 4: { lbl: "IV" }, 9: { lbl: "V7" }, 13: { lbl: "I" } }[i] || {})), time: [4, 4], prop: true, sp: 30, minW: 340 }],
+      ["Keep the same shape and rhythm all the way: only the notes change with the chord. Start each group on the given bass note and use the chord notes just above it. Here in G major, the melody has the 7th (C) of V7, so the left hand doesn't double it.", _kb8a(1, [4, 4], ["B4 h", "E5 h", "|", "D5 q", "C5 q", "B4 h"], ["G2 e b1 r=I", "D3 e b1", "B2 e b1", "D3 e b1", "C3 e b2 r=IV", "G3 e b2", "E3 e b2", "G3 e b2", "|", "D3 e b1 r=V7", "A3 e b1", "F#3 e b1", "A3 e b1", "G2 e b2 r=I", "D3 e b2", "B2 e b2", "D3 e b2"])],
+      ["Keep the left hand below the right hand and close together: the pattern usually fits within an octave above the bass note.", null]],
+    say: "The left hand is like a drummer: it keeps exactly the same pattern going, and only changes the notes when the harmony changes.",
+    ex: { q: "Continue an Alberti bass in G major through I, IV, V7, I (bass notes G, C, D, G).", steps: ["I: G–D–B–D.", "IV: C–G–E–G.", "V7: D–A–F♯–A, with the 7th (C) in the melody falling to B.", "I: G–D–B–D."] },
+    oops: ["Slipping from Alberti into broken chords without noticing.", "Spreading the pattern too wide: keep it within about an octave.", "Starting a group on the wrong note: the first note of each group is the given bass note."],
+    exam: "The examiner wants the given pattern continued exactly. A correct pattern that's different from the opening loses marks." },
+  106: { kid: [
+      ["Waltz bass (3/4): the bass note on beat 1, then two other chord notes together on beats 2 and 3: oom-pah-pah. In V7 here the melody has the leading note (E), so the 'pah' chords use G and B♭ instead.", _kb8a(-1, [3, 4], ["A4 h", "C5 q", "|", "Bb4 h", "D5 q", "|", "G5 h", "E5 q", "|", "F5 h."], ["F2 q r=I", "A3+C4 q", "A3+C4 q", "|", "Bb2 q r=IV", "Bb3+D4 q", "Bb3+D4 q", "|", "C3 q r=V7", "G3+Bb3 q", "G3+Bb3 q", "|", "F2 q r=I", "A3+C4 h"])],
+      ["6/8 rocking quavers: the bass, then the chord notes above, three quavers to each dotted-crotchet beat (bass, 5th, 3rd). Keep the lilt of two beats in a bar.", _kb8a(2, [6, 8], ["A5 q.", "G5 q.", "|", "E5 q", "G5 e", "F#5 q."], ["D3 e b1 r=I", "A3 e b1", "F#3 e b1", "G2 e b2 r=IV", "D3 e b2", "B2 e b2", "|", "A2 e b1 r=V7", "E3 e b1", "C#3 e b1", "D3 e b2 r=I", "A3 e b2", "F#3 e b2"])],
+      ["When the chord changes in the middle of a bar, change the notes at that point but keep the rhythm of the pattern going.", null],
+      ["Keep the 'pah' chords in the middle of the bass stave, close together. Too low sounds muddy; too high gets in the way of the melody.", null]],
+    say: "Waltz: oom-pah-pah. 6/8: a gentle rocking, like a boat. Say the rhythm out loud while you write, and the pattern stays steady.",
+    ex: { q: "Write the waltz left hand for one bar of V7 in F major (bass C), with E in the melody.", steps: ["V7 in F major is C–E–G–B♭.", "Beat 1: the bass, C.", "Beats 2 and 3: two other chord notes. The melody has E, the leading note, so don't double it: use G and B♭.", "In the next bar (I), the B♭ (the 7th) falls to A."] },
+    oops: ["'Pah' chords so low they sound muddy.", "Losing the 6/8 lilt by writing straight crotchets.", "Doubling the leading note or the 7th that's already in the melody."],
+    exam: "Look hard at the opening bar: the examiner expects that pattern, with its rhythm, spacing and register, in every bar you complete." },
+  107: { kid: [
+      ["Grade 8 outlines often include secondary dominants and augmented 6ths. The accidental is your clue. F♯ in C major often means V7/V: here the F♯ rises to G in the melody, and the 7th (C) falls to B in the left hand.", _kb8a(0, [4, 4], ["E5 h", "F#5 h", "|", "G5 h", "E5 h"], ["C3 e b1 r=I", "G3 e b1", "E3 e b1", "G3 e b1", "D3 e b2 r=V7/V", "C4 e b2", "A3 e b2", "C4 e b2", "|", "G2 e b1 r=V", "B3 e b1", "D3 e b1", "B3 e b1", "C3 e b2 r=I", "C4 e b2", "G3 e b2", "C4 e b2"])],
+      ["A♭ in the bass falling to G (in C), or F falling to E (in A minor), usually means an augmented 6th. Here a French 6th in a waltz: F in the bass falls, D♯ in the melody rises, A falls to G♯, and B stays.", _kb8a(0, [3, 4], ["F5 h", "D5 q", "|", "D#5 h.", "|", "E5 h", "D5 q !", "|", "C5 h."], ["D3 q r=IV", "F3+A3 q", "F3+A3 q", "|", "F2 q r=Fr6", "A3+B3 q", "A3+B3 q", "|", "E2 q r=V", "G#3+B3 q", "G#3+B3 q", "|", "A2 q r=I", "A3+C4 h"])],
+      ["Spell the chromatic note exactly as the chord needs it: F♯, not G♭, in V7/V, because it rises to G. D♯, not E♭, in A minor's augmented 6th, because it rises to E.", null],
+      ["Don't add accidentals the chord doesn't need, and remember an accidental lasts only to the end of the bar: cancel it if the next chord needs the plain note.", null]],
+    say: "A chromatic note is a signpost. A sharpened note almost always wants to rise; a flattened note wants to fall. Spell it so it points the right way, and resolve it, even inside a busy left-hand pattern.",
+    ex: { q: "In C major the melody has F♯ over bass D, then G over bass G. The pattern is Alberti. What does the left hand play?", steps: ["Bass D with F♯ above: D–F♯–A–C, V7/V.", "The F♯ is already in the melody, so the left hand doesn't double it: D–C–A–C (bass, 7th, 5th, 7th).", "Then V: the C falls to B. G–B–D–B keeps the Alberti shape (lowest, highest, middle, highest)."] },
+    oops: ["Writing G♭ for F♯ (or E♭ for D♯): the spelling must show which way the note goes.", "Doubling the chromatic note between the hands.", "Forgetting to cancel an accidental in the next chord."],
+    exam: "There's usually at least one chromatic chord in the outline. A wrong chord there loses marks, so look for it before you start." },
+  108: { kid: [
+      ["If the melody has gaps, carry on its style: passing notes and auxiliary notes in quavers, the same kinds the composer used in the opening. Here is question 2's piece from Day 104 with a livelier melody.", _kb8a(0, [4, 4], ["E5 q", "F5 e b1", "G5 e b1", "A5 e b2", "G5 e b2", "F5 q", "|", "D5 e b1", "E5 e b1", "F5 q", "E5 h", "|", "C5 e b1", "D5 e b1", "E5 q", "D5 e b2", "E5 e b2", "F5 q", "|", "D5 q", "C5 e b1", "B4 e b1", "C5 h"], _alb104)],
+      ["An appoggiatura leans on the beat (a clash) and falls by step to the chord note. It's very Classical, especially at a cadence: here the F leans on the C chord and falls to E.", _kb8a(0, [4, 4], ["C5 q", "E5 q", "B4 q", "D5 q", "|", "F5 q", "E5 q", "C5 h"], ["G2 e b1 r=Ic", "E3 e b1", "C3 e b1", "E3 e b1", "G2 e b2 r=V7", "F3 e b2", "D3 e b2", "F3 e b2", "|", "C3 e b1 r=I", "G3 e b1", "E3 e b1", "G3 e b1", "C3+E3+G3 h"])],
+      ["Check melody against bass for consecutive 5ths and octaves wherever the bass moves, especially from one strong beat to the next.", null],
+      ["Finish with a clear perfect cadence and a full tonic chord, often Ic–V7–I, with the 6/4 on the stronger beat, as in the last picture.", null]],
+    say: "A melody stays alive when it keeps the character of its opening: the same kinds of rhythm, the same kinds of decoration. Then check it against the bass, like any other pair of parts.",
+    ex: { q: "In bar 2 above, the melody is D–E–F–E over V7 then I. Which notes are chord notes?", steps: ["V7 in C is G–B–D–F. D (beat 1) and F (beat 2) are chord notes.", "E (the second quaver) is a passing note between D and F.", "F is the 7th, so it falls to E on beat 3, over chord I."] },
+    oops: ["Decorating every beat: the melody gets fussy and the cadences blur.", "A passing note that makes octaves with the bass on the next strong beat.", "Ending on V or a thin final chord."],
+    exam: "In the last 3–4 minutes, check melody against bass at every bar line and every chord change." },
+});
+
 /* ---------- Grade 8 lessons, Days 110–130: composing (question 3) and score reading (questions 4 and 5).
    The string-quartet harmony pictures (Days 116–117) were voiced with the app's harmony engine and pass checkAll in g6core.js
    (Vln I = soprano, Vln II = alto, viola = tenor, cello = bass). ---------- */
